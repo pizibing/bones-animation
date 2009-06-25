@@ -7,13 +7,24 @@ Command::Command(void){
 	display = new ConcreteDisplay();
 	modelLoader = new SimpleModelLoader();
 	calculator = new Calculator();
-	meshManager = new SimpleMeshManager();
+	meshManager = SimpleMeshManager::getInstance();
+	cameraManager = new CameraManager();
+	lightManager = new LightManager();
 }
 
 Command::~Command(void){
+	delete display;
+	delete modelLoader;
+	delete calculator;
+	delete cameraManager;
+	delete lightManager;
 }
 
 void Command::drawScene(){
+	cameraManager->look();
+	display->display(true,meshManager->getMeshes(MESH_KIND_CHARACTER));
+}
 
-	display->display(true,)
+bool Command::loadModel(){
+	return modelLoader->loadModel(0,"");
 }

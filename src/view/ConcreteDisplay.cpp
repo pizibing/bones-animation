@@ -21,6 +21,7 @@ void ConcreteDisplay::display(bool isWire,const std::vector<Mesh*>* toDisplay){
 void ConcreteDisplay::displayWire(const std::vector<Mesh*>* toDisplay){
 	//each mesh
 	glDisable(GL_TEXTURE);
+	glColor3f(1,1,1);
 	for(int i = 0; i < (signed int)toDisplay->size(); i++){
 		Mesh* mesh = (*toDisplay)[i];
 		glPushMatrix();
