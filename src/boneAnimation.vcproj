@@ -176,6 +176,10 @@
 			Name="commands"
 			>
 			<File
+				RelativePath=".\Command.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Command.h"
 				>
 			</File>
@@ -219,6 +223,14 @@
 				RelativePath=".\Mesh.h"
 				>
 			</File>
+			<File
+				RelativePath=".\Polygon.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Polygon.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="matrixlib"
@@ -232,6 +244,14 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\Vector3D.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\Vector3D.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
