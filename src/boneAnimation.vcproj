@@ -276,6 +276,22 @@
 			Name="managers"
 			>
 			<File
+				RelativePath=".\managers\CameraManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\managers\CameraManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\managers\LightManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\managers\LightManager.h"
+				>
+			</File>
+			<File
 				RelativePath=".\managers\MeshManager.h"
 				>
 			</File>
@@ -285,6 +301,14 @@
 			</File>
 			<File
 				RelativePath=".\managers\SimpleMeshManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\managers\TextureManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\managers\TextureManager.h"
 				>
 			</File>
 		</Filter>

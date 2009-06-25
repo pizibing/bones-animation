@@ -99,11 +99,12 @@ void myGlutDisplay( void )
 
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
-	glFrustum( -xy_aspect*.04, xy_aspect*.04, -.04, .04, .1, 15.0 );
+	glFrustum( -xy_aspect*.04, xy_aspect*.04, -.04, .04, .1, EYE_SIGHT );
 
 	//draw scene
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
+	
 	command->drawScene();
 
 	glutSwapBuffers(); 
@@ -118,8 +119,11 @@ void initGL(){
 	glEnable(GL_DEPTH_TEST);
 }
 
-/**************************************** main() ********************/
+void initScene(){
+	command->loadModel();
+}
 
+/**************************************** main() ********************/
 int main(int argc, char* argv[])
 {
 	/****************************************/
@@ -143,6 +147,8 @@ int main(int argc, char* argv[])
 
 	//initialize command
 	command = new Command();
+
+	initScene();
 
 #if 0
 	/**** We register the idle callback with GLUI, *not* with GLUT ****/

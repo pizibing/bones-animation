@@ -2,6 +2,7 @@
 
 #include "../data/Mesh.h"
 
+#define MESH_KIND_NUM 10
 #define MESH_KIND_CHARACTER 0
 #define MESH_KIND_TERRAIN 1
 #define MESH_KIND_STATIC_OBJECT 2
@@ -38,5 +39,5 @@ public:
 	* func: get all meshes of kind from the manager
 	* return: a vector of point to mesh
 	*/
-	virtual std::vector<Mesh*> getMeshes(int kind) = 0;
+	virtual std::vector<Mesh*>* getMeshes(int kind) = 0;
 };
