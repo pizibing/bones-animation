@@ -15,14 +15,6 @@ Command* command;//command
 
 /********** Miscellaneous global variables **********/
 
-GLfloat light0_ambient[] =  {0.1f, 0.1f, 0.3f, 1.0f};
-GLfloat light0_diffuse[] =  {.6f, .6f, 1.0f, 1.0f};
-GLfloat light0_position[] = {.5f, .5f, 1.0f, 0.0f};
-
-GLfloat light1_ambient[] =  {0.1f, 0.1f, 0.3f, 1.0f};
-GLfloat light1_diffuse[] =  {.9f, .6f, 0.0f, 1.0f};
-GLfloat light1_position[] = {-1.0f, -1.0f, 1.0f, 0.0f};
-
 /**************************************** control_cb() *******************/
 /* GLUI control callback                                                 */
 
@@ -102,19 +94,29 @@ void myGlutReshape( int x, int y )
 
 void myGlutDisplay( void )
 {
-	glClearColor( .9f, .9f, .9f, 1.0f );
+	glClearColor( 0,0,0,1 );
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
 	glFrustum( -xy_aspect*.04, xy_aspect*.04, -.04, .04, .1, 15.0 );
 
+	//draw scene
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
+	command->drawScene();
 
 	glutSwapBuffers(); 
 }
 
+//init glut
+void initGL(){
+	glClearDepth(1.0f);
+	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+	glShadeModel(GL_SMOOTH);
+
+	glEnable(GL_DEPTH_TEST);
+}
 
 /**************************************** main() ********************/
 
@@ -137,7 +139,10 @@ int main(int argc, char* argv[])
 	GLUI_Master.set_glutMouseFunc( myGlutMouse );
 	glutMotionFunc( myGlutMotion );
 
-	glEnable(GL_DEPTH_TEST);
+	initGL();
+
+	//initialize command
+	command = new Command();
 
 #if 0
 	/**** We register the idle callback with GLUI, *not* with GLUT ****/

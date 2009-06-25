@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Mesh.h"
+
 #define MESH_KIND_CHARACTER 0
 #define MESH_KIND_TERRAIN 1
 #define MESH_KIND_STATIC_OBJECT 2
@@ -30,4 +32,11 @@ public:
 	 * return: the i-th Mesh* of kind
 	 */
 	virtual Mesh* getMesh(int kind, int i) = 0;
+
+	/*
+	* para: kind: the kind of mesh
+	* func: get all meshes of kind from the manager
+	* return: a vector of point to mesh
+	*/
+	virtual std::vector<Mesh*> getMeshes(int kind) = 0;
 };
