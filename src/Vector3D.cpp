@@ -1,5 +1,5 @@
  // Vector3d.cpp: implementation of the Vector3D class.   
-#include "stdafx.h" .  
+//#include "stdafx.h" .  
 #include "Vector3D.h"   
     
  //////////////////////////////////////////////////////////////////////   
