@@ -183,6 +183,14 @@
 		<Filter
 			Name="caculation"
 			>
+			<File
+				RelativePath=".\Caculator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Caculator.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="view"
@@ -193,6 +201,10 @@
 			</File>
 			<File
 				RelativePath=".\main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\para.h"
 				>
 			</File>
 		</Filter>
@@ -215,6 +227,10 @@
 		<Filter
 			Name="managers"
 			>
+			<File
+				RelativePath=".\MeshManager.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
