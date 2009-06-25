@@ -235,6 +235,22 @@
 		<Filter
 			Name="matrixlib"
 			>
+			<File
+				RelativePath=".\mtxlib.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\mtxlib.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Vector3D.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Vector3D.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="managers"
@@ -244,14 +260,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath=".\Vector3D.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\Vector3D.h"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
