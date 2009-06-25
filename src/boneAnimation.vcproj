@@ -168,7 +168,15 @@
 			Name="loaders"
 			>
 			<File
-				RelativePath=".\ModelLoader.h"
+				RelativePath=".\loaders\ModelLoader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\loaders\SimpleModelLoader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\loaders\SimpleModelLoader.h"
 				>
 			</File>
 		</Filter>
@@ -176,23 +184,23 @@
 			Name="commands"
 			>
 			<File
-				RelativePath=".\Command.cpp"
+				RelativePath=".\commands\Command.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Command.h"
+				RelativePath=".\commands\Command.h"
 				>
 			</File>
 		</Filter>
 		<Filter
-			Name="caculation"
+			Name="calculation"
 			>
 			<File
-				RelativePath=".\Caculator.cpp"
+				RelativePath=".\calculation\Calculator.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Caculator.h"
+				RelativePath=".\calculation\Calculator.h"
 				>
 			</File>
 		</Filter>
@@ -200,15 +208,23 @@
 			Name="view"
 			>
 			<File
-				RelativePath=".\Display.h"
+				RelativePath=".\view\ConcreteDisplay.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\main.cpp"
+				RelativePath=".\view\ConcreteDisplay.h"
 				>
 			</File>
 			<File
-				RelativePath=".\para.h"
+				RelativePath=".\view\Display.h"
+				>
+			</File>
+			<File
+				RelativePath=".\view\main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\view\para.h"
 				>
 			</File>
 		</Filter>
@@ -216,19 +232,19 @@
 			Name="data"
 			>
 			<File
-				RelativePath=".\Mesh.cpp"
+				RelativePath=".\data\Mesh.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Mesh.h"
+				RelativePath=".\data\Mesh.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Polygon.cpp"
+				RelativePath=".\data\Polygon.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Polygon.h"
+				RelativePath=".\data\Polygon.h"
 				>
 			</File>
 		</Filter>
@@ -236,19 +252,23 @@
 			Name="matrixlib"
 			>
 			<File
-				RelativePath=".\mtxlib.cpp"
+				RelativePath=".\matrixlib\Grphcs.h"
 				>
 			</File>
 			<File
-				RelativePath=".\mtxlib.h"
+				RelativePath=".\matrixlib\mtxlib.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Vector3D.cpp"
+				RelativePath=".\matrixlib\mtxlib.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Vector3D.h"
+				RelativePath=".\matrixlib\Vector3D.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\matrixlib\Vector3D.h"
 				>
 			</File>
 		</Filter>
@@ -256,7 +276,15 @@
 			Name="managers"
 			>
 			<File
-				RelativePath=".\MeshManager.h"
+				RelativePath=".\managers\MeshManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\managers\SimpleMeshManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\managers\SimpleMeshManager.h"
 				>
 			</File>
 		</Filter>

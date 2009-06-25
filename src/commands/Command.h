@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Caculator.h"
-#include "Display.h"
-#include "MeshManager.h"
-#include "ModelLoader.h"
+#include "../calculation/Calculator.h"
+#include "../view/Display.h"
+#include "../managers/MeshManager.h"
+#include "../loaders/ModelLoader.h"
 
 class Command
 {
@@ -17,6 +17,6 @@ public:
 private:
 	Display* display;
 	ModelLoader* modelLoader;
-	Caculator* caculator;
+	Calculator* calculator;
 	MeshManager* meshManager;
 };
