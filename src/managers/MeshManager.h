@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Mesh.h"
+#include "../data/Mesh.h"
 
 #define MESH_KIND_CHARACTER 0
 #define MESH_KIND_TERRAIN 1

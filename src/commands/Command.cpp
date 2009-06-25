@@ -1,12 +1,12 @@
 #include "Command.h"
-#include "ConcreteDisplay.h"
-#include "SimpleModelLoader.h"
-#include "SimpleMeshManager.h"
+#include "../view/ConcreteDisplay.h"
+#include "../loaders/SimpleModelLoader.h"
+#include "../managers/SimpleMeshManager.h"
 
 Command::Command(void){
 	display = new ConcreteDisplay();
 	modelLoader = new SimpleModelLoader();
-	caculator = new Caculator();
+	calculator = new Calculator();
 	meshManager = new SimpleMeshManager();
 }
 

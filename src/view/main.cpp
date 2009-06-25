@@ -1,7 +1,7 @@
 #include <string.h>
 #include <GL/glui.h>
 #include "para.h"
-#include "Command.h"
+#include "../commands/Command.h"
 
 float xy_aspect;//screen width/height
 int main_window;//main window

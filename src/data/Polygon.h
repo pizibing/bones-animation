@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vector3D.h"
+#include "../matrixlib/Vector3D.h"
 #include <vector>
 #include <GL/glui.h>
 
