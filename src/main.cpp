@@ -1,9 +1,11 @@
 #include <string.h>
 #include <GL/glui.h>
 #include "para.h"
+#include "Command.h"
 
-float xy_aspect;
-int main_window;
+float xy_aspect;//screen width/height
+int main_window;//main window
+Command* command;//command
 
 /** These are the live variables passed into GLUI ***/
 
