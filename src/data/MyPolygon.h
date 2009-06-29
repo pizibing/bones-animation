@@ -4,11 +4,11 @@
 #include <vector>
 #include <GL/glui.h>
 
-class Polygon
+class MyPolygon
 {
 public:
-	Polygon(void);
-	~Polygon(void);
+	MyPolygon(void);
+	~MyPolygon(void);
 
 	//vertices
 	std::vector<Vector3D*>* vertices;

@@ -28,7 +28,7 @@ void ConcreteDisplay::displayWire(const std::vector<Mesh*>* toDisplay){
 		glMultMatrixf(mesh->matrix);
 		//each polygon
 		for(int j = 0; j < (signed int)mesh->polygons->size(); j++){
-			Polygon* polygon = (*mesh->polygons)[j];
+			MyPolygon* polygon = (*mesh->polygons)[j];
 			glBegin(GL_LINE_LOOP);
 			//each vertex
 			for(int k = 0; k < (signed int)polygon->vertices->size(); k++){
@@ -49,7 +49,7 @@ void ConcreteDisplay::displaySolid(const std::vector<Mesh*>* toDisplay){
 		glMultMatrixf(mesh->matrix);
 		//each polygon
 		for(int j = 0; j < (signed int)mesh->polygons->size(); j++){
-			Polygon* polygon = (*mesh->polygons)[j];
+			MyPolygon* polygon = (*mesh->polygons)[j];
 			//texture
 			if(polygon->hasTexture){
 				glEnable(GL_TEXTURE_2D);

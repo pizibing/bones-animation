@@ -12,42 +12,42 @@ bool SimpleModelLoader::loadModel(int kind, char* path){
 
 	Mesh* mesh = new Mesh();
 	//upper face
-	Polygon* polygon = new Polygon();
+	MyPolygon* polygon = new MyPolygon();
 	polygon->vertices->push_back(new Vector3D(0.5,0.5,0.5));
 	polygon->vertices->push_back(new Vector3D(0.5,0.5,-0.5));
 	polygon->vertices->push_back(new Vector3D(-0.5,0.5,-0.5));
 	polygon->vertices->push_back(new Vector3D(-0.5,0.5,0.5));
 	mesh->polygons->push_back(polygon);
 	//down face
-	polygon = new Polygon();
+	polygon = new MyPolygon();
 	polygon->vertices->push_back(new Vector3D(0.5,-0.5,0.5));
 	polygon->vertices->push_back(new Vector3D(0.5,-0.5,-0.5));
 	polygon->vertices->push_back(new Vector3D(-0.5,-0.5,-0.5));
 	polygon->vertices->push_back(new Vector3D(-0.5,-0.5,0.5));
 	mesh->polygons->push_back(polygon);
 	//left
-	polygon = new Polygon();
+	polygon = new MyPolygon();
 	polygon->vertices->push_back(new Vector3D(-0.5,0.5,0.5));
 	polygon->vertices->push_back(new Vector3D(-0.5,0.5,-0.5));
 	polygon->vertices->push_back(new Vector3D(-0.5,-0.5,-0.5));
 	polygon->vertices->push_back(new Vector3D(-0.5,-0.5,0.5));
 	mesh->polygons->push_back(polygon);
 	//right
-	polygon = new Polygon();
+	polygon = new MyPolygon();
 	polygon->vertices->push_back(new Vector3D(0.5,0.5,0.5));
 	polygon->vertices->push_back(new Vector3D(0.5,0.5,-0.5));
 	polygon->vertices->push_back(new Vector3D(0.5,-0.5,-0.5));
 	polygon->vertices->push_back(new Vector3D(0.5,-0.5,0.5));
 	mesh->polygons->push_back(polygon);
 	//front
-	polygon = new Polygon();
+	polygon = new MyPolygon();
 	polygon->vertices->push_back(new Vector3D(0.5,0.5,0.5));
 	polygon->vertices->push_back(new Vector3D(0.5,-0.5,0.5));
 	polygon->vertices->push_back(new Vector3D(-0.5,-0.5,0.5));
 	polygon->vertices->push_back(new Vector3D(-0.5,0.5,0.5));
 	mesh->polygons->push_back(polygon);
 	//back
-	polygon = new Polygon();
+	polygon = new MyPolygon();
 	polygon->vertices->push_back(new Vector3D(0.5,0.5,-0.5));
 	polygon->vertices->push_back(new Vector3D(0.5,-0.5,-0.5));
 	polygon->vertices->push_back(new Vector3D(-0.5,-0.5,-0.5));

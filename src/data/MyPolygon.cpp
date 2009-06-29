@@ -1,6 +1,6 @@
-#include "Polygon.h"
+#include "MyPolygon.h"
 
-Polygon::Polygon(void){
+MyPolygon::MyPolygon(void){
 	vertices = new std::vector<Vector3D*>();
 
 	verticeNormals = new std::vector<Vector3D*>();
@@ -13,7 +13,7 @@ Polygon::Polygon(void){
 	hasMaterial = false;
 }
 
-Polygon::~Polygon(void){
+MyPolygon::~MyPolygon(void){
 	delete vertices;
 	delete verticeNormals;
 	delete verticeTexCoords;
