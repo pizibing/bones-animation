@@ -177,6 +177,14 @@
 			Name="loaders"
 			>
 			<File
+				RelativePath=".\loaders\FColladaModelLoader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\loaders\FColladaModelLoader.h"
+				>
+			</File>
+			<File
 				RelativePath=".\loaders\ModelLoader.h"
 				>
 			</File>
