@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(SolutionDir)\include"
+				AdditionalIncludeDirectories="$(ProjectDir)\include"
 				PreprocessorDefinitions="GLUT_BUILDING_LIB;WIN32;_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -60,7 +60,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="glui32.lib glut32.lib glu32.lib opengl32.lib FColladaU.lib DevIL.lib ILU.lib"
-				AdditionalLibraryDirectories="$(SolutionDir)\lib"
+				AdditionalLibraryDirectories="$(ProjectDir)\lib"
 				IgnoreDefaultLibraryNames="LIBCMT"
 				GenerateDebugInformation="true"
 				LinkTimeCodeGeneration="1"
@@ -115,7 +115,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="3"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="$(SolutionDir)\include"
+				AdditionalIncludeDirectories="$(ProjectDir)\include"
 				PreprocessorDefinitions="GLUT_BUILDING_LIB;WIN32"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -134,7 +134,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="glui32.lib glut32.lib glu32.lib opengl32.lib FColladaU.lib DevIL.lib ILU.lib"
-				AdditionalLibraryDirectories="$(SolutionDir)\lib"
+				AdditionalLibraryDirectories="$(ProjectDir)\lib"
 				IgnoreDefaultLibraryNames="MSVCRTD;LIBCMT"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
