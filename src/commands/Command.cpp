@@ -2,6 +2,7 @@
 #include "../view/ConcreteDisplay.h"
 #include "../loaders/SimpleModelLoader.h"
 #include "../managers/SimpleMeshManager.h"
+#include <gl/glut.h>
 
 Command::Command(void){
 	display = new ConcreteDisplay();
@@ -9,7 +10,7 @@ Command::Command(void){
 	calculator = new Calculator();
 	meshManager = SimpleMeshManager::getInstance();
 	cameraManager = new CameraManager();
-	lightManager = new LightManager();
+	lightManager = LightManager::getInstance();
 }
 
 Command::~Command(void){
@@ -17,12 +18,18 @@ Command::~Command(void){
 	delete modelLoader;
 	delete calculator;
 	delete cameraManager;
-	delete lightManager;
 }
 
 void Command::drawScene(){
+	//calculate
+	calculator->rotate(1,AXIS_X);
+	//light
+	GLfloat* position = lightManager->getPosition(0);
+	position[1] = 6;
+	glEnable(GL_LIGHT0);
+	//draw
 	cameraManager->look();
-	display->display(true,meshManager->getMeshes(MESH_KIND_CHARACTER));
+	display->display(false,meshManager->getMeshes(MESH_KIND_CHARACTER));
 }
 
 bool Command::loadModel(){

@@ -56,7 +56,7 @@ void ConcreteDisplay::displaySolid(const std::vector<Mesh*>* toDisplay){
 				glBindTexture(GL_TEXTURE_2D,polygon->texID);
 			}
 			//normal
-			if(polygon->hasNormals) glEnable(GL_NORMALIZE);
+			if(polygon->hasNormals) glEnable(GL_LIGHTING);
 			//material
 			if(polygon->hasMaterial){
 				glMaterialfv(GL_FRONT,GL_AMBIENT,polygon->ambient);
@@ -81,6 +81,9 @@ void ConcreteDisplay::displaySolid(const std::vector<Mesh*>* toDisplay){
 				glVertex3f(dot->x,dot->y,dot->z);
 			}
 			glEnd();
+			//back to default
+			glDisable(GL_TEXTURE_2D);
+			glDisable(GL_LIGHTING);
 		}
 		glPopMatrix();
 	}
