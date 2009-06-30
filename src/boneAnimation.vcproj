@@ -304,6 +304,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\managers\Texture.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\managers\Texture.h"
+				>
+			</File>
+			<File
 				RelativePath=".\managers\TextureManager.cpp"
 				>
 			</File>
@@ -312,6 +320,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\ClassDiagram1.cd"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
