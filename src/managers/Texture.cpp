@@ -4,6 +4,9 @@
 #include <gl\gl.h>														// OpenGL32库的头文件
 #include "Texture.h"
 
+#define MessageBox MessageBoxA
+#define GetCurrentDirectory GetCurrentDirectoryA
+
 bool BuildTexture(char *szPathName, GLuint &texid)						// 载入图片并转换为纹理
 {
 	HDC			hdcTemp;												// DC用来保存位图
