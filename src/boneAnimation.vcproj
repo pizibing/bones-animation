@@ -264,6 +264,18 @@
 				RelativePath=".\data\MyPolygon.h"
 				>
 			</File>
+			<File
+				RelativePath=".\data\VBO.h"
+				>
+			</File>
+			<File
+				RelativePath=".\data\VBOMesh.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\data\VBOMesh.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="matrixlib"
