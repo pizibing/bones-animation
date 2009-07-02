@@ -1,4 +1,5 @@
 #include "MyPolygon.h"
+#include "../matrixlib/Vector3D.h"
 
 MyPolygon::MyPolygon(void){
 	vertices = new std::vector<Vector3D*>();

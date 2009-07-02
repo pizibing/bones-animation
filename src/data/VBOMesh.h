@@ -1,6 +1,8 @@
 #pragma once
 
 #include "gl/glut.h"
+#include <gl/glext.h>
+
 
 //a VBOMesh is all the information of a mesh include position of 
 //every vertices, normals, textures, material and matrix
@@ -19,7 +21,7 @@ public:
 	// Other usages are GL_STREAM_DRAW_ARB, GL_STREAM_READ_ARB, GL_STREAM_COPY_ARB,
 	// GL_STATIC_DRAW_ARB, GL_STATIC_READ_ARB, GL_STATIC_COPY_ARB,
 	// GL_DYNAMIC_DRAW_ARB, GL_DYNAMIC_READ_ARB, GL_DYNAMIC_COPY_ARB.
-	VBOMesh(const GLfloat* vertex, GLenum usage);
+	VBOMesh(const GLfloat* vertex, int size, GLenum usage);
 
 	//destructor
 	~VBOMesh(void);
@@ -34,7 +36,7 @@ public:
 	// Other usages are GL_STREAM_DRAW_ARB, GL_STREAM_READ_ARB, GL_STREAM_COPY_ARB,
 	// GL_STATIC_DRAW_ARB, GL_STATIC_READ_ARB, GL_STATIC_COPY_ARB,
 	// GL_DYNAMIC_DRAW_ARB, GL_DYNAMIC_READ_ARB, GL_DYNAMIC_COPY_ARB.
-	void setVertices(const GLfloat* vertex, GLenum usage);
+	void setVertices(const GLfloat* vertex, int size, GLenum usage);
 	//if normals of this VBOMesh is 0 (no VBO is generated for normals)
 	//then generate a VBO using normal and usage, hasNormal will be set to true
 	//else nothing will happen
@@ -43,7 +45,7 @@ public:
 	// Other usages are GL_STREAM_DRAW_ARB, GL_STREAM_READ_ARB, GL_STREAM_COPY_ARB,
 	// GL_STATIC_DRAW_ARB, GL_STATIC_READ_ARB, GL_STATIC_COPY_ARB,
 	// GL_DYNAMIC_DRAW_ARB, GL_DYNAMIC_READ_ARB, GL_DYNAMIC_COPY_ARB.
-	void setNormals(const GLfloat* normal, GLenum usage);
+	void setNormals(const GLfloat* normal, int size, GLenum usage);
 	//if textures of this VBOMesh is 0 (no VBO is generated for textures)
 	//then generate a VBO using texture and usage, hasTexture will be set to true
 	//texID will be set to texid
@@ -53,7 +55,7 @@ public:
 	// Other usages are GL_STREAM_DRAW_ARB, GL_STREAM_READ_ARB, GL_STREAM_COPY_ARB,
 	// GL_STATIC_DRAW_ARB, GL_STATIC_READ_ARB, GL_STATIC_COPY_ARB,
 	// GL_DYNAMIC_DRAW_ARB, GL_DYNAMIC_READ_ARB, GL_DYNAMIC_COPY_ARB.
-	void setTextures(const GLfloat* texture, GLenum usage, GLuint texid);
+	void setTextures(const GLfloat* texture, int size, GLenum usage, GLuint texid);
 	//set the material of this VBOMesh.
 	//hasMaterial will be set to true and
 	//ambient,diffuse,specular,emission,shininess will be set
@@ -66,17 +68,47 @@ public:
 	//GL_WRITE_ONLY_ARB will be set as the map state
 	//if vertices equals 0, nothing will happen
 	//if vertex's size doesn't equal to size*3, nothing will happen
-	void updateVertices(const GLfloat* vertex);
+	void updateVertices(const GLfloat* vertex, int size);
 	//update normals VBO to the version of normal
 	//GL_WRITE_ONLY_ARB will be set as the map state
 	//if normals equals 0, nothing will happen
 	//if normal's size doesn't equal to size*3, nothing will happen
-	void updateNormals(const GLfloat* normal);
+	void updateNormals(const GLfloat* normal, int size);
 	//update textures VBO to the version of texture
 	//GL_WRITE_ONLY_ARB will be set as the map state
 	//if textures equals 0, nothing will happen
 	//if texture's size doesn't equal to size*2, nothing will happen
-	void updateTextures(const GLfloat* texture);
+	void updateTextures(const GLfloat* texture, int size);
+
+	//get functions
+	// return hasNormal
+	bool getHasNormal();
+	// return normals
+	GLuint getNormals();
+	// return hasTexture
+	bool getHasTexture();
+	// return textures
+	GLuint getTextures();
+	// return texID
+	GLuint getTexID();
+	// return vertices
+	GLuint getVertices();
+	// return hasMaterial
+	bool getHasMaterial();
+	// return ambient[4]
+	GLfloat* getAmbient();
+	// return diffuse[4]
+	GLfloat* getDiffuse();
+	// return specular[4]
+	GLfloat* getSpecular();
+	// return emission[4]
+	GLfloat* getEmission();
+	// return shininess
+	GLfloat getShininess();
+	// return matrix[16]
+	float* getMatrix();
+	// return size
+	int getSize();
 
 private:
 
@@ -98,6 +130,8 @@ private:
 
 	//the size of vertices and should be the size of normals
 	//textures
+	//size of vertices doesn't mean its length or sizeof, but the number
+	//of dots it represent, i.e. length/3
 	int size;
 
 	//whether this VBOMesh has normals
