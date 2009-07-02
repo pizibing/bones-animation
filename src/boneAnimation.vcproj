@@ -349,6 +349,14 @@
 			Name="model"
 			>
 			<File
+				RelativePath=".\model\corebone.h"
+				>
+			</File>
+			<File
+				RelativePath=".\model\coreskeleton.h"
+				>
+			</File>
+			<File
 				RelativePath=".\model\global.h"
 				>
 			</File>
