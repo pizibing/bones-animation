@@ -345,6 +345,14 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="model"
+			>
+			<File
+				RelativePath=".\model\global.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\ClassDiagram1.cd"
 			>
