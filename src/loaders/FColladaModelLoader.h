@@ -18,6 +18,10 @@
 #include "FCDocument\FCDGeometryPolygonsTools.h"
 #include "FCDocument\FCDGeometryPolygonsInput.h"
 #include "FUtils\FUObject.h" 
+#include "FCDocument\FCDGeometryInstance.h"
+#include "FCDocument\FCDMaterialInstance.h"
+#include "FCDocument\FCDLibrary.h"
+#include "FCDocument\FCDImage.h"
 
 #include "ModelLoader.h"
 #include "../managers/MeshManager.h"
@@ -38,7 +42,11 @@ private:
 	// pointer to dae file that will be opened using fcollada
 	FCDocument* m_document;
 
-	int m_num_geometries;
+	bool m_has_normals;
+	bool m_has_texcoords;
+	Vector3D *m_ptrs_vertices;
+	Vector3D *m_ptrs_normals;
+	Vector3D *m_ptrs_texcoords;
 
 	MeshManager* meshManager;
 };
