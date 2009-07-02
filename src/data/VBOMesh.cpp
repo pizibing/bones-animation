@@ -1,8 +1,25 @@
 #include "VBOMesh.h"
-#include <gl/glext.h>
-#include "VBO.h"
+//#include "VBO.h"
 #include <iostream>
 #include <assert.h>
+
+//functions for VBO
+extern PFNGLGENBUFFERSARBPROC pglGenBuffersARB;                     // VBO Name Generation Procedure
+extern PFNGLBINDBUFFERARBPROC pglBindBufferARB;                     // VBO Bind Procedure
+extern PFNGLBUFFERDATAARBPROC pglBufferDataARB;                     // VBO Data Loading Procedure
+extern PFNGLBUFFERSUBDATAARBPROC pglBufferSubDataARB;               // VBO Sub Data Loading Procedure
+extern PFNGLDELETEBUFFERSARBPROC pglDeleteBuffersARB;               // VBO Deletion Procedure
+extern PFNGLGETBUFFERPARAMETERIVARBPROC pglGetBufferParameterivARB; // return various parameters of VBO
+extern PFNGLMAPBUFFERARBPROC pglMapBufferARB;                       // map VBO procedure
+extern PFNGLUNMAPBUFFERARBPROC pglUnmapBufferARB;                   // unmap VBO procedure
+#define glGenBuffersARB           pglGenBuffersARB
+#define glBindBufferARB           pglBindBufferARB
+#define glBufferDataARB           pglBufferDataARB
+#define glBufferSubDataARB        pglBufferSubDataARB
+#define glDeleteBuffersARB        pglDeleteBuffersARB
+#define glGetBufferParameterivARB pglGetBufferParameterivARB
+#define glMapBufferARB            pglMapBufferARB
+#define glUnmapBufferARB          pglUnmapBufferARB
 
 //constructors
 VBOMesh::VBOMesh(void){
@@ -31,7 +48,7 @@ VBOMesh::VBOMesh(void){
 // Other usages are GL_STREAM_DRAW_ARB, GL_STREAM_READ_ARB, GL_STREAM_COPY_ARB,
 // GL_STATIC_DRAW_ARB, GL_STATIC_READ_ARB, GL_STATIC_COPY_ARB,
 // GL_DYNAMIC_DRAW_ARB, GL_DYNAMIC_READ_ARB, GL_DYNAMIC_COPY_ARB.
-VBOMesh::VBOMesh(const GLfloat* vertex, GLenum usage){
+VBOMesh::VBOMesh(const GLfloat* vertex, int size, GLenum usage){
 	//vertex should not be null
 	assert(vertex != 0);
 
@@ -48,12 +65,12 @@ VBOMesh::VBOMesh(const GLfloat* vertex, GLenum usage){
 	matrix[10] = 1;
 	matrix[15] = 1;
 	//init vertex
-	int remain = sizeof(vertex)%3;
+	int remain = size%3;
 	//check the size of vertex, size should be able to be divided by 3
-	assert(remain != 0);
-	vertices = createVBO(vertex,sizeof(vertex),GL_ARRAY_BUFFER_ARB,usage);
+	assert(remain == 0);
+	vertices = createVBO(vertex,size*sizeof(GLfloat),GL_ARRAY_BUFFER_ARB,usage);
 	//set size
-	size = sizeof(vertex)/3;
+	this->size = size/3;
 }
 
 //destructor
@@ -69,19 +86,19 @@ VBOMesh::~VBOMesh(void){}
 // Other usages are GL_STREAM_DRAW_ARB, GL_STREAM_READ_ARB, GL_STREAM_COPY_ARB,
 // GL_STATIC_DRAW_ARB, GL_STATIC_READ_ARB, GL_STATIC_COPY_ARB,
 // GL_DYNAMIC_DRAW_ARB, GL_DYNAMIC_READ_ARB, GL_DYNAMIC_COPY_ARB.
-void VBOMesh::setVertices(const GLfloat* vertex, GLenum usage){
+void VBOMesh::setVertices(const GLfloat* vertex, int size, GLenum usage){
 	//vertex should not be null
 	assert(vertex != 0);
 	//vertices should be 0
 	assert(vertices == 0);
 
 	//set vertices
-	int remain = sizeof(vertex)%3;
+	int remain = size%3;
 	//check the size of vertex, size should be able to be divided by 3
-	assert(remain != 0);
-	vertices = createVBO(vertex,sizeof(vertex),GL_ARRAY_BUFFER_ARB,usage);
+	assert(remain == 0);
+	vertices = createVBO(vertex,size*sizeof(GLfloat),GL_ARRAY_BUFFER_ARB,usage);
 	//set size
-	size = sizeof(vertex)/3;
+	this->size = size/3;
 }
 
 //if normals of this VBOMesh is 0 (no VBO is generated for normals)
@@ -92,7 +109,7 @@ void VBOMesh::setVertices(const GLfloat* vertex, GLenum usage){
 // Other usages are GL_STREAM_DRAW_ARB, GL_STREAM_READ_ARB, GL_STREAM_COPY_ARB,
 // GL_STATIC_DRAW_ARB, GL_STATIC_READ_ARB, GL_STATIC_COPY_ARB,
 // GL_DYNAMIC_DRAW_ARB, GL_DYNAMIC_READ_ARB, GL_DYNAMIC_COPY_ARB.
-void VBOMesh::setNormals(const GLfloat* normal, GLenum usage){
+void VBOMesh::setNormals(const GLfloat* normal, int size, GLenum usage){
 	//normal should not be null
 	assert(normal);
 	//normals should be 0
@@ -100,9 +117,9 @@ void VBOMesh::setNormals(const GLfloat* normal, GLenum usage){
 
 	//check normal's size
 	//normal's size should equal to size*3
-	assert(sizeof(normal) == size*3);
+	assert(size == this->size*3);
 	//set normals
-	normals = createVBO(normal,size*3,GL_ARRAY_BUFFER_ARB,usage);
+	normals = createVBO(normal,size*sizeof(GLfloat),GL_ARRAY_BUFFER_ARB,usage);
 	//set hasNormal
 	hasNormal = true;
 }
@@ -116,7 +133,7 @@ void VBOMesh::setNormals(const GLfloat* normal, GLenum usage){
 // Other usages are GL_STREAM_DRAW_ARB, GL_STREAM_READ_ARB, GL_STREAM_COPY_ARB,
 // GL_STATIC_DRAW_ARB, GL_STATIC_READ_ARB, GL_STATIC_COPY_ARB,
 // GL_DYNAMIC_DRAW_ARB, GL_DYNAMIC_READ_ARB, GL_DYNAMIC_COPY_ARB.
-void VBOMesh::setTextures(const GLfloat* texture, GLenum usage, GLuint texid){
+void VBOMesh::setTextures(const GLfloat* texture, int size, GLenum usage, GLuint texid){
 	//texture should not be null
 	assert(texture);
 	//normals should be 0
@@ -124,9 +141,9 @@ void VBOMesh::setTextures(const GLfloat* texture, GLenum usage, GLuint texid){
 
 	//check texture's size
 	//texture's size should equal to size*3
-	assert(sizeof(texture) == size*2);
+	assert(size == this->size*2);
 	//set normals
-	textures = createVBO(texture,size*2,GL_ARRAY_BUFFER_ARB,usage);
+	textures = createVBO(texture,size*sizeof(GLfloat),GL_ARRAY_BUFFER_ARB,usage);
 	//set texID
 	texID = texid;
 	//set hasNormal
@@ -161,57 +178,130 @@ void VBOMesh::setMatrix(const float ma[16]){
 //GL_WRITE_ONLY_ARB will be set as the map state
 //if vertices equals 0, nothing will happen
 //if vertex's size doesn't equal to size*3, nothing will happen
-void VBOMesh::updateVertices(const GLfloat* vertex){
+void VBOMesh::updateVertices(const GLfloat* vertex, int size){
 	//vertex should not be null
 	assert(vertex);
 	//check size of vertex
-	assert(sizeof(vertex) == size*3);
+	assert(size == this->size*3);
 	//check vertices
 	assert(vertices != 0);
 
 	//update
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB,vertices);
 	float* vbo = (float*)glMapBufferARB(GL_ARRAY_BUFFER_ARB,GL_WRITE_ONLY_ARB);
-	updateVBO(vbo,(float*)vertex,size*3);
+	updateVBO(vbo,(float*)vertex,size);
 	glUnmapBufferARB(GL_ARRAY_BUFFER_ARB);
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 }
 
 //update normals VBO to the version of normal
 //GL_WRITE_ONLY_ARB will be set as the map state
 //if normals equals 0, nothing will happen
 //if normal's size doesn't equal to size*3, nothing will happen
-void VBOMesh::updateNormals(const GLfloat* normal){
+void VBOMesh::updateNormals(const GLfloat* normal, int size){
 	//normal should not be null
 	assert(normal);
 	//check size of normal
-	assert(sizeof(normal) == size*3);
+	assert(size == this->size*3);
 	//check normals
 	assert(normals != 0);
 
 	//update
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB,normals);
 	float* vbo = (float*)glMapBufferARB(GL_ARRAY_BUFFER_ARB,GL_WRITE_ONLY_ARB);
-	updateVBO(vbo,(float*)normal,size*3);
+	updateVBO(vbo,(float*)normal,size);
 	glUnmapBufferARB(GL_ARRAY_BUFFER_ARB);
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 }
 
 //update textures VBO to the version of texture
 //GL_WRITE_ONLY_ARB will be set as the map state
 //if textures equals 0, nothing will happen
 //if texture's size doesn't equal to size*2, nothing will happen
-void VBOMesh::updateTextures(const GLfloat* texture){
+void VBOMesh::updateTextures(const GLfloat* texture, int size){
 	//texture should not be null
 	assert(texture);
 	//check size of texture
-	assert(sizeof(texture) == size*2);
+	assert(size == this->size*2);
 	//check textures
 	assert(textures != 0);
 
 	//update
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB,textures);
 	float* vbo = (float*)glMapBufferARB(GL_ARRAY_BUFFER_ARB,GL_WRITE_ONLY_ARB);
-	updateVBO(vbo,(float*)texture,size*2);
+	updateVBO(vbo,(float*)texture,size);
 	glUnmapBufferARB(GL_ARRAY_BUFFER_ARB);
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+}
+
+//get functions
+// return hasNormal
+bool VBOMesh::getHasNormal(){
+	return hasNormal;
+}
+
+// return normals
+GLuint VBOMesh::getNormals(){
+	return normals;
+}
+
+// return hasTexture
+bool VBOMesh::getHasTexture(){
+	return hasTexture;
+}
+
+// return textures
+GLuint VBOMesh::getTextures(){
+	return textures;
+}
+
+// return texID
+GLuint VBOMesh::getTexID(){
+	return texID;
+}
+
+// return vertices
+GLuint VBOMesh::getVertices(){
+	return vertices;
+}
+
+// return hasMaterial
+bool VBOMesh::getHasMaterial(){
+	return hasMaterial;
+}
+
+// return ambient[4]
+GLfloat* VBOMesh::getAmbient(){
+	return ambient;
+}
+
+// return diffuse[4]
+GLfloat* VBOMesh::getDiffuse(){
+	return diffuse;
+}
+
+// return specular[4]
+GLfloat* VBOMesh::getSpecular(){
+	return specular;
+}
+
+// return emission[4]
+GLfloat* VBOMesh::getEmission(){
+	return emission;
+}
+
+// return shininess
+GLfloat VBOMesh::getShininess(){
+	return shininess;
+}
+
+// return matrix[16]
+float* VBOMesh::getMatrix(){
+	return matrix;
+}
+
+int VBOMesh::getSize(){
+	return size;
 }
 
 // generate vertex buffer object and bind it with its data

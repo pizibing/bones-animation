@@ -1,5 +1,6 @@
 #pragma once
-#include "meshmanager.h"
+
+class MeshManager;
 
 class SimpleMeshManager :
 	public MeshManager

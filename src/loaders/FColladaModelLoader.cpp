@@ -1,4 +1,6 @@
 #include "FColladaModelLoader.h"
+#include "../data/Mesh.h"
+#include "../managers/MeshManager.h"
 #include "../managers/SimpleMeshManager.h"
 
 FColladaModelLoader::FColladaModelLoader(void){

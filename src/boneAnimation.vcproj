@@ -237,6 +237,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\view\glInfo.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\view\glInfo.h"
+				>
+			</File>
+			<File
 				RelativePath=".\view\main.cpp"
 				>
 			</File>
