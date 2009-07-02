@@ -293,11 +293,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\matrixlib\matrix.h"
+				>
+			</File>
+			<File
 				RelativePath=".\matrixlib\mtxlib.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\matrixlib\mtxlib.h"
+				>
+			</File>
+			<File
+				RelativePath=".\matrixlib\quaternion.h"
 				>
 			</File>
 			<File
@@ -354,6 +362,14 @@
 			</File>
 			<File
 				RelativePath=".\managers\TextureManager.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="model"
+			>
+			<File
+				RelativePath=".\model\global.h"
 				>
 			</File>
 		</Filter>
