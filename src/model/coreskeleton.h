@@ -28,11 +28,14 @@ public:
    **/
   void calculateState();
 
-  CoreBone* getCoreBone(int coreBoneId);
-  CoreBone* getCoreBone(const std::string& name);
-  int getCoreBoneId(const std::string& strName);
+  CoreBone* getCoreBone(int coreBoneId) const;
+  CoreBone* getCoreBone(const std::string& name) const;
+  int getCoreBoneId(const std::string& strName) const;
 
-  bool contains(const std::string& name);
+  std::vector<int>& getRootCoreBoneIds() const;
+  std::vector<CoreBone *>& getCoreBones() const;
+
+  bool contains(const std::string& name) const;
 
   void scale(float factor);
 
@@ -41,7 +44,7 @@ private:
   // the core bones that attached to the core skeleton
   std::vector<CoreBone *> m_coreBones;
   // the map between corebone name and id
-  std::map< std::string, int > m_CoreBoneNamesMap;
+  std::map< std::string, int > m_coreBoneNamesMap;
   // the ids of root core bones (bones that has no prarent)
   std::vector<int> m_rootCoreBoneIdList;
 };
