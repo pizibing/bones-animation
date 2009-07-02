@@ -1,7 +1,8 @@
 #pragma once
 
-#include "MyPolygon.h"
 #include <vector>
+
+class MyPolygon;
 
 class Mesh
 {

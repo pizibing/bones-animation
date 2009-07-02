@@ -1,4 +1,7 @@
 #include "Calculator.h"
+#include "../data/Mesh.h"
+#include "../managers/MeshManager.h"
+#include "../managers/SimpleMeshManager.h"
 
 Calculator::Calculator(void){
 	meshManager = SimpleMeshManager::getInstance();

@@ -1,3 +1,4 @@
+#include "MyPolygon.h"
 #include "Mesh.h"
 
 Mesh::Mesh(void){
