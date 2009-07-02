@@ -1,4 +1,5 @@
 #include "FColladaModelLoader.h"
+#include "../matrixlib/Vector3D.h"
 #include "../data/Mesh.h"
 #include "../managers/MeshManager.h"
 #include "../managers/SimpleMeshManager.h"
