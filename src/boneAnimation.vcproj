@@ -369,6 +369,10 @@
 			Name="model"
 			>
 			<File
+				RelativePath=".\model\bone.h"
+				>
+			</File>
+			<File
 				RelativePath=".\model\corebone.h"
 				>
 			</File>
@@ -378,6 +382,10 @@
 			</File>
 			<File
 				RelativePath=".\model\global.h"
+				>
+			</File>
+			<File
+				RelativePath=".\model\skeleton.h"
 				>
 			</File>
 		</Filter>

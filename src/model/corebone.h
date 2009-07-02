@@ -22,17 +22,17 @@ public:
    **/
   void calculateState();
 
-  std::vector<int>& getChildIdList();
-  const std::string& getName();
-  int getParentId();
-  CoreSkeleton *getCoreSkeleton();
+  std::vector<int>& getChildIdList() const;
+  const std::string& getName() const;
+  int getParentId() const;
+  CoreSkeleton *getCoreSkeleton() const;
 
-  const Quaternion& getRotation();
-  const Quaternion& getAbsoluteRotation();
-  const Quaternion& getBoneSpaceRotation();
-  const Vector3D& getTranslation();
-  const Vector3D& getAbsoluteTranslation();
-  const Vector3D& getBoneSpaceTranslation();
+  const Quaternion& getRotation() const;
+  const Quaternion& getAbsoluteRotation() const;
+  const Quaternion& getBoneSpaceRotation() const;
+  const Vector3D& getTranslation() const;
+  const Vector3D& getAbsoluteTranslation() const;
+  const Vector3D& getBoneSpaceTranslation() const;
   
   void setCoreSkeleton(CoreSkeleton *skeleton);
   void setParentId(int parentId);
