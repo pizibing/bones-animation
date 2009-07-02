@@ -3,9 +3,36 @@
 #include "para.h"
 #include "../commands/Command.h"
 #include <windows.h>	
+#include "glInfo.h"
+#include "gl/glext.h"
+#include <iostream>
 
 #define MSPF 30
 
+// function pointers for VBO Extension
+// Windows needs to get function pointers from ICD OpenGL drivers,
+// because opengl32.dll does not support extensions higher than v1.1.
+#ifdef _WIN32
+PFNGLGENBUFFERSARBPROC pglGenBuffersARB = 0;                     // VBO Name Generation Procedure
+PFNGLBINDBUFFERARBPROC pglBindBufferARB = 0;                     // VBO Bind Procedure
+PFNGLBUFFERDATAARBPROC pglBufferDataARB = 0;                     // VBO Data Loading Procedure
+PFNGLBUFFERSUBDATAARBPROC pglBufferSubDataARB = 0;               // VBO Sub Data Loading Procedure
+PFNGLDELETEBUFFERSARBPROC pglDeleteBuffersARB = 0;               // VBO Deletion Procedure
+PFNGLGETBUFFERPARAMETERIVARBPROC pglGetBufferParameterivARB = 0; // return various parameters of VBO
+PFNGLMAPBUFFERARBPROC pglMapBufferARB = 0;                       // map VBO procedure
+PFNGLUNMAPBUFFERARBPROC pglUnmapBufferARB = 0;                   // unmap VBO procedure
+
+#define glGenBuffersARB           pglGenBuffersARB
+#define glBindBufferARB           pglBindBufferARB
+#define glBufferDataARB           pglBufferDataARB
+#define glBufferSubDataARB        pglBufferSubDataARB
+#define glDeleteBuffersARB        pglDeleteBuffersARB
+#define glGetBufferParameterivARB pglGetBufferParameterivARB
+#define glMapBufferARB            pglMapBufferARB
+#define glUnmapBufferARB          pglUnmapBufferARB
+#endif
+
+//////////////////////////////////////////////////////////////////////
 float xy_aspect;//screen width/height
 int main_window;//main window
 Command* command;//command
@@ -129,7 +156,7 @@ void myGlutReshape( int x, int y )
 	glutPostRedisplay();
 }
 
-//init glut
+//init gl
 void initGL(){
 	glClearDepth(1.0f);
 	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
@@ -138,13 +165,8 @@ void initGL(){
 	glEnable(GL_DEPTH_TEST);
 }
 
-void initScene(){
-	command->loadModel();
-}
-
-/**************************************** main() ********************/
-int main(int argc, char* argv[])
-{
+//init glut
+void initGlut(int argc, char* argv[]){
 	/****************************************/
 	/*   Initialize GLUT and create window  */
 	/****************************************/
@@ -162,12 +184,65 @@ int main(int argc, char* argv[])
 	GLUI_Master.set_glutSpecialFunc( NULL );
 	GLUI_Master.set_glutMouseFunc( myGlutMouse );
 	glutMotionFunc( myGlutMotion );
+}
 
+void initScene(){
+	command->loadModel();
+}
+
+void checkVBO(){
+
+	// get OpenGL info
+	glInfo glInfo;
+	glInfo.getInfo();
+	//glInfo.printSelf();
+
+#ifdef _WIN32
+	// check VBO is supported by your video card
+	if(glInfo.isExtensionSupported("GL_ARB_vertex_buffer_object"))
+	{
+		// get pointers to GL functions
+		glGenBuffersARB = (PFNGLGENBUFFERSARBPROC)wglGetProcAddress("glGenBuffersARB");
+		glBindBufferARB = (PFNGLBINDBUFFERARBPROC)wglGetProcAddress("glBindBufferARB");
+		glBufferDataARB = (PFNGLBUFFERDATAARBPROC)wglGetProcAddress("glBufferDataARB");
+		glBufferSubDataARB = (PFNGLBUFFERSUBDATAARBPROC)wglGetProcAddress("glBufferSubDataARB");
+		glDeleteBuffersARB = (PFNGLDELETEBUFFERSARBPROC)wglGetProcAddress("glDeleteBuffersARB");
+		glGetBufferParameterivARB = (PFNGLGETBUFFERPARAMETERIVARBPROC)wglGetProcAddress("glGetBufferParameterivARB");
+		glMapBufferARB = (PFNGLMAPBUFFERARBPROC)wglGetProcAddress("glMapBufferARB");
+		glUnmapBufferARB = (PFNGLUNMAPBUFFERARBPROC)wglGetProcAddress("glUnmapBufferARB");
+
+		// check once again VBO extension
+		if(glGenBuffersARB && glBindBufferARB && glBufferDataARB && glBufferSubDataARB &&
+			glMapBufferARB && glUnmapBufferARB && glDeleteBuffersARB && glGetBufferParameterivARB)
+		{
+			std::cout << "Video card supports GL_ARB_vertex_buffer_object." << std::endl;
+		}
+		else
+		{
+			std::cout << "Video card does NOT support GL_ARB_vertex_buffer_object." << std::endl;
+			exit(0);
+		}
+	}
+#endif
+}
+
+/**************************************** main() ********************/
+int main(int argc, char* argv[])
+{
+	//init glut
+	initGlut(argc, argv);
+
+	//init gl
 	initGL();
+
+	//check whether user computer support VBO
+	// if not , terminate the software
+	checkVBO();
 
 	//initialize command
 	command = new Command();
 
+	//init scene (load model)
 	initScene();
 
 #if 0

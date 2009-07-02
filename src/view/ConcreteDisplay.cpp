@@ -1,4 +1,16 @@
+#include <gl/glut.h>
+#include <gl/glext.h>
+
+#include "../matrixlib/Vector3D.h"
+#include "../data/MyPolygon.h"
+#include "../data/Mesh.h"
+//#include "../data/VBO.h"
+#include "../data/VBOMesh.h"
+#include "Display.h"
 #include "ConcreteDisplay.h"
+
+extern PFNGLBINDBUFFERARBPROC pglBindBufferARB;
+#define glBindBufferARB    pglBindBufferARB
 
 ConcreteDisplay::ConcreteDisplay(void){
 }
@@ -6,6 +18,12 @@ ConcreteDisplay::ConcreteDisplay(void){
 ConcreteDisplay::~ConcreteDisplay(void){
 }
 
+/*
+* para: toDisplay: the point to a list of Mesh* to be displayed
+*       isWire: true:wire, false:solid
+* func: draw all the meshes in the openGL world space in wire/solid model
+* return: void
+*/
 void ConcreteDisplay::display(bool isWire,const std::vector<Mesh*>* toDisplay){
 	
 	//draw wire model
@@ -18,6 +36,8 @@ void ConcreteDisplay::display(bool isWire,const std::vector<Mesh*>* toDisplay){
 	}
 }
 
+// used by void display(bool isWire,const std::vector<Mesh*>* toDisplay);
+// display Mesh in wire model
 void ConcreteDisplay::displayWire(const std::vector<Mesh*>* toDisplay){
 	//each mesh
 	glDisable(GL_TEXTURE);
@@ -41,6 +61,8 @@ void ConcreteDisplay::displayWire(const std::vector<Mesh*>* toDisplay){
 	}
 }
 
+// used by void display(bool isWire,const std::vector<Mesh*>* toDisplay);
+// display Mesh in solid model
 void ConcreteDisplay::displaySolid(const std::vector<Mesh*>* toDisplay){
 	//each mesh
 	for(int i = 0; i < (signed int)toDisplay->size(); i++){
@@ -86,5 +108,70 @@ void ConcreteDisplay::displaySolid(const std::vector<Mesh*>* toDisplay){
 			glDisable(GL_LIGHTING);
 		}
 		glPopMatrix();
+	}
+}
+
+
+// display a set of VBOMesh
+// toDisplay specify the VBOMeshes to display
+// num is the number of VBOMesh to display
+// isWire specify whether to display in wire model or solid model
+// vertices in VBOMesh will be treated as triangles
+void ConcreteDisplay::display(bool isWire,const VBOMesh* toDisplay,int num){
+	
+	//wire model
+	if(isWire){
+
+	}
+	//solid model
+	else{
+		//for each VBOMesh
+		for(int i = 0; i < num; i++){
+			glPushMatrix();
+
+			VBOMesh vbomesh= toDisplay[i];
+			//set matrix
+			glMultMatrixf(vbomesh.getMatrix());
+			//if has material, set material
+			if(vbomesh.getHasMaterial()){
+				//set ambient
+				glMaterialfv(GL_FRONT,GL_AMBIENT,vbomesh.getAmbient());
+				// set diffuse
+				glMaterialfv(GL_FRONT,GL_DIFFUSE,vbomesh.getDiffuse());
+				// set specular
+				glMaterialfv(GL_FRONT,GL_SPECULAR,vbomesh.getSpecular());
+				// set emission
+				glMaterialfv(GL_FRONT,GL_EMISSION,vbomesh.getEmission());
+				// set shininess
+				glMaterialf(GL_FRONT,GL_SHININESS,vbomesh.getShininess());
+			}
+			//set vertices
+			glBindBufferARB(GL_ARRAY_BUFFER_ARB,vbomesh.getVertices());
+			glVertexPointer(3,GL_FLOAT,0,0);
+			glEnableClientState(GL_VERTEX_ARRAY);
+			//if has texture, set texture
+			if(vbomesh.getHasTexture()){
+				glBindTexture(GL_TEXTURE_2D,vbomesh.getTexID());
+				glBindBufferARB(GL_ARRAY_BUFFER_ARB,vbomesh.getTextures());
+				glTexCoordPointer(2,GL_FLOAT,0,0);
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			}
+			//if has normal, set normal
+			if(vbomesh.getHasNormal()){
+				glBindBufferARB(GL_ARRAY_BUFFER_ARB,vbomesh.getNormals());
+				glNormalPointer(GL_FLOAT,0,0);
+				glEnableClientState(GL_NORMAL_ARRAY);
+			}
+			// draw element
+			glDrawArrays(GL_TRIANGLES, 0, vbomesh.getSize());
+			// release bind buffer
+			glBindBufferARB(GL_ARRAY_BUFFER_ARB,0);
+			// set back client state
+			glDisableClientState( GL_VERTEX_ARRAY );	
+			glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+			glDisable(GL_NORMAL_ARRAY);
+
+			glPopMatrix();
+		}
 	}
 }

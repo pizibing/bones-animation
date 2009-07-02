@@ -1,8 +1,9 @@
 #pragma once
 
-#include "../matrixlib/Vector3D.h"
 #include <vector>
 #include <GL/glui.h>
+
+class Vector3D;
 
 class MyPolygon
 {

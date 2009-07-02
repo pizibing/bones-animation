@@ -237,6 +237,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\view\glInfo.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\view\glInfo.h"
+				>
+			</File>
+			<File
 				RelativePath=".\view\main.cpp"
 				>
 			</File>
@@ -262,6 +270,18 @@
 			</File>
 			<File
 				RelativePath=".\data\MyPolygon.h"
+				>
+			</File>
+			<File
+				RelativePath=".\data\VBO.h"
+				>
+			</File>
+			<File
+				RelativePath=".\data\VBOMesh.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\data\VBOMesh.h"
 				>
 			</File>
 		</Filter>
