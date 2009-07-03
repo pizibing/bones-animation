@@ -57,8 +57,8 @@ bool FColladaModelLoader::loadModel(int kind, char* szPathName){
 
 	// copy all geometry objects from fcollada to my structures
 	FCDGeometry* geo;
-	for (int i=0; i<(int) geolib->GetEntityCount(); i++) { // REWVISAR hacer algo como m_num_meshse
-		geo = geolib->GetEntity(i);
+	for (int j=0; j<(int) geolib->GetEntityCount(); j++) { // REWVISAR hacer algo como m_num_meshse
+		geo = geolib->GetEntity(j);
 
 		// there are 3 types of geometries, nurbs, splines and meshes
 		// at the moment JUST meshes, neither nurbs nor splines
@@ -75,7 +75,7 @@ bool FColladaModelLoader::loadModel(int kind, char* szPathName){
 			// create my own polygons
 			int m_num_polygons=(int) mesh->GetPolygonsCount();
 
-			for (i=0;i<m_num_polygons;i++) {
+			for (int i=0;i<m_num_polygons;i++) {
 				FCDGeometryPolygons* ptr_polygons = mesh->GetPolygons(i);
 				FCDGeometrySource* source;
 				FCDGeometryPolygonsInput* geometrypolygonsinput;
