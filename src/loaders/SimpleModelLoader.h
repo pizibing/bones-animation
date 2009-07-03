@@ -1,6 +1,7 @@
 #pragma once
-#include "modelloader.h"
-#include "../managers/MeshManager.h"
+
+class ModelLoader;
+class MeshManager;
 
 class SimpleModelLoader :
 	public ModelLoader

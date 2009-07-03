@@ -1,7 +1,14 @@
 #include "Command.h"
+#include "../data/VBOMesh.h"
+#include "../view/Display.h"
 #include "../view/ConcreteDisplay.h"
-#include "../loaders/SimpleModelLoader.h"
+#include "../managers/CameraManager.h"
+#include "../managers/MeshManager.h"
 #include "../managers/SimpleMeshManager.h"
+#include "../managers/LightManager.h"
+#include "../calculation/Calculator.h"
+#include "../loaders/ModelLoader.h"
+#include "../loaders/SimpleModelLoader.h"
 #include <gl/glut.h>
 
 Command::Command(void){
@@ -22,14 +29,18 @@ Command::~Command(void){
 
 void Command::drawScene(){
 	//calculate
-	calculator->rotate(1,AXIS_X);
+	//calculator->rotate(1,AXIS_X);
 	//light
 	GLfloat* position = lightManager->getPosition(0);
 	position[1] = 6;
 	glEnable(GL_LIGHT0);
 	//draw
 	cameraManager->look();
-	display->display(false,meshManager->getMeshes(MESH_KIND_CHARACTER));
+	//display->display(false,meshManager->getMeshes(MESH_KIND_CHARACTER));
+	//test for vbomesh
+	GLfloat vertices[] = {0.5,0.5,0.5,0.5,0.5,-0.5,-0.5,0.5,-0.5};
+	VBOMesh* vbomesh = new VBOMesh(vertices,9,GL_DYNAMIC_DRAW);
+	display->display(false,vbomesh,1);
 }
 
 bool Command::loadModel(){
