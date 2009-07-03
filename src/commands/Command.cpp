@@ -1,5 +1,6 @@
 #include "Command.h"
 #include "../data/VBOMesh.h"
+#include "../data/VBOObject.h"
 #include "../view/Display.h"
 #include "../view/ConcreteDisplay.h"
 #include "../managers/CameraManager.h"
@@ -7,12 +8,12 @@
 #include "../managers/LightManager.h"
 #include "../calculation/Calculator.h"
 #include "../loaders/ModelLoader.h"
-#include "../loaders/SimpleModelLoader.h"
+#include "../loaders/FColladaModelLoader.h"
 #include <gl/glut.h>
 
 Command::Command(void){
 	display = new ConcreteDisplay();
-	modelLoader = new SimpleModelLoader();
+	modelLoader = new FColladaModelLoader();
 	calculator = new Calculator();
 	objectManager = ObjectManager::getInstance();
 	cameraManager = new CameraManager();
@@ -40,8 +41,12 @@ void Command::drawScene(){
 	/*GLfloat vertices[] = {0.5,0.5,0.5,0.5,0.5,-0.5,-0.5,0.5,-0.5};
 	VBOMesh* vbomesh = new VBOMesh(vertices,9,GL_DYNAMIC_DRAW);
 	display->display(false,vbomesh,1);*/
+	VBOObject* vboobject = objectManager->getVBOObject(2, 1);
+	int num = 0;
+	VBOMesh* vbomesh = vboobject->representInVBOMesh(&num);
+	display->display(false, vbomesh, num); 
 }
 
 bool Command::loadModel(){
-	return modelLoader->loadModel(0,"");
+	return modelLoader->loadModel(0,"knight.dae");
 }

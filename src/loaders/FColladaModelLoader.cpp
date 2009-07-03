@@ -1,8 +1,12 @@
-#include "FColladaModelLoader.h"
+#include <olectl.h>	
 #include "../matrixlib/Vector3D.h"
-#include "../data/Mesh.h"
-#include "../managers/MeshManager.h"
-#include "../managers/SimpleMeshManager.h"
+#include "../data/VBOMesh.h"
+#include "../data/VBOObject.h"
+#include "../data/static/StaticObject.h"
+#include "../managers/ObjectManager.h"
+#include "ModelLoader.h"
+#include "../managers/TextureManager.h"
+#include "FColladaModelLoader.h"
 
 FColladaModelLoader::FColladaModelLoader(void){
 	FCollada::Initialize(); 
@@ -15,7 +19,7 @@ FColladaModelLoader::~FColladaModelLoader(void){
 
 bool FColladaModelLoader::loadModel(int kind, char* szPathName){
 
-	meshManager = SimpleMeshManager::getInstance();
+	meshManager = ObjectManager::getInstance();
 
 	// new dae file
 	m_document = FCollada::NewTopDocument();
@@ -67,7 +71,6 @@ bool FColladaModelLoader::loadModel(int kind, char* szPathName){
 		// at the moment JUST meshes, neither nurbs nor splines
 		// meshes
 		if (geo->IsMesh()) {
-			Mesh* meshes = new Mesh();
 			FCDGeometryMesh* mesh=geo->GetMesh();
 			// triangulate this mesh if it was not triangulated
 			if (!mesh->IsTriangles()) 
@@ -178,7 +181,16 @@ bool FColladaModelLoader::loadModel(int kind, char* szPathName){
 						}
 					}
 				}
+				GLfloat * m_vbo_vertices= new GLfloat[m_num_vertices * 3];
+				for(int i=0; i <  m_num_vertices; i++)
+				{
+					m_vbo_vertices[3*i] = (m_ptrs_vertices+i)->x;
+					m_vbo_vertices[3*i+1] = (m_ptrs_vertices+i)->y;
+					m_vbo_vertices[3*i+2] = (m_ptrs_vertices+i)->z;
+				}
 
+				VBOObject* meshes = new StaticObject(m_vbo_vertices, m_num_vertices * 3);
+/*
 				for (int i=0; i<m_num_vertices; i+=3) {
 					MyPolygon* myPolygon = new MyPolygon();
 					myPolygon->vertices->push_back(m_ptrs_vertices+i);
@@ -200,8 +212,10 @@ bool FColladaModelLoader::loadModel(int kind, char* szPathName){
 					}
 					meshes->polygons->push_back(myPolygon);
 				}
-			}
-			meshManager->addMesh(0,meshes);		
+				*/
+				meshManager->addVBOObject(meshes);
+				delete[] m_vbo_vertices;
+			}	
 		}
 	}
 	return true;
