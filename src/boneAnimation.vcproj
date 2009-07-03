@@ -284,6 +284,10 @@
 				RelativePath=".\data\VBOMesh.h"
 				>
 			</File>
+			<File
+				RelativePath=".\data\VBOObject.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="matrixlib"
@@ -338,6 +342,14 @@
 			</File>
 			<File
 				RelativePath=".\managers\MeshManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\managers\ObjectManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\managers\ObjectManager.h"
 				>
 			</File>
 			<File
