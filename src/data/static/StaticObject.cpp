@@ -49,7 +49,7 @@ void StaticObject::setMatrix(const float ma[16]){
 // list and num will be changed to the size of the list
 VBOMesh* StaticObject::representInVBOMesh(int* num){
 	// set num to 0
-	*num = 0;
+	*num = 1;
 	return vbomesh;
 }
 
