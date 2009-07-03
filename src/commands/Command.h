@@ -2,7 +2,7 @@
 
 class Calculator;
 class Display;
-class MeshManager;
+class ObjectManager;
 class ModelLoader;
 class CameraManager;
 class LightManager;
@@ -23,7 +23,7 @@ private:
 	Display* display;
 	ModelLoader* modelLoader;
 	Calculator* calculator;
-	MeshManager* meshManager;
+	ObjectManager* objectManager;
 	CameraManager* cameraManager;
 	LightManager* lightManager;
 };
