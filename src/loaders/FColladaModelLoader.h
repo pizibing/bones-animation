@@ -23,9 +23,10 @@
 #include "FCDocument\FCDLibrary.h"
 #include "FCDocument\FCDImage.h"
 
-#include "ModelLoader.h"
-#include "../managers/MeshManager.h"
-#include "../data/MyPolygon.h"
+class ModelLoader;
+class ObjectManager;
+class MyPolygon;
+class Vector3D;
 
 class FColladaModelLoader :
 	public ModelLoader
@@ -48,5 +49,5 @@ private:
 	Vector3D *m_ptrs_normals;
 	Vector3D *m_ptrs_texcoords;
 
-	MeshManager* meshManager;
+	ObjectManager* meshManager;
 };
