@@ -3,8 +3,7 @@
 #include "../view/Display.h"
 #include "../view/ConcreteDisplay.h"
 #include "../managers/CameraManager.h"
-#include "../managers/MeshManager.h"
-#include "../managers/SimpleMeshManager.h"
+#include "../managers/ObjectManager.h"
 #include "../managers/LightManager.h"
 #include "../calculation/Calculator.h"
 #include "../loaders/ModelLoader.h"
@@ -15,7 +14,7 @@ Command::Command(void){
 	display = new ConcreteDisplay();
 	modelLoader = new SimpleModelLoader();
 	calculator = new Calculator();
-	meshManager = SimpleMeshManager::getInstance();
+	objectManager = ObjectManager::getInstance();
 	cameraManager = new CameraManager();
 	lightManager = LightManager::getInstance();
 }
@@ -38,9 +37,9 @@ void Command::drawScene(){
 	cameraManager->look();
 	//display->display(false,meshManager->getMeshes(MESH_KIND_CHARACTER));
 	//test for vbomesh
-	GLfloat vertices[] = {0.5,0.5,0.5,0.5,0.5,-0.5,-0.5,0.5,-0.5};
+	/*GLfloat vertices[] = {0.5,0.5,0.5,0.5,0.5,-0.5,-0.5,0.5,-0.5};
 	VBOMesh* vbomesh = new VBOMesh(vertices,9,GL_DYNAMIC_DRAW);
-	display->display(false,vbomesh,1);
+	display->display(false,vbomesh,1);*/
 }
 
 bool Command::loadModel(){

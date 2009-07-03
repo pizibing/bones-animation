@@ -288,6 +288,18 @@
 				RelativePath=".\data\VBOObject.h"
 				>
 			</File>
+			<Filter
+				Name="static"
+				>
+				<File
+					RelativePath=".\data\static\StaticObject.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\data\static\StaticObject.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="matrixlib"
