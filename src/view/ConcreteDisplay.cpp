@@ -151,6 +151,7 @@ void ConcreteDisplay::display(bool isWire,const VBOMesh* toDisplay,int num){
 			glEnableClientState(GL_VERTEX_ARRAY);
 			//if has texture, set texture
 			if(vbomesh.getHasTexture()){
+				glEnable(GL_TEXTURE_2D);
 				glBindTexture(GL_TEXTURE_2D,vbomesh.getTexID());
 				glBindBufferARB(GL_ARRAY_BUFFER_ARB,vbomesh.getTextures());
 				glTexCoordPointer(2,GL_FLOAT,0,0);
@@ -158,6 +159,7 @@ void ConcreteDisplay::display(bool isWire,const VBOMesh* toDisplay,int num){
 			}
 			//if has normal, set normal
 			if(vbomesh.getHasNormal()){
+				glEnable(GL_LIGHTING);
 				glBindBufferARB(GL_ARRAY_BUFFER_ARB,vbomesh.getNormals());
 				glNormalPointer(GL_FLOAT,0,0);
 				glEnableClientState(GL_NORMAL_ARRAY);
@@ -170,6 +172,9 @@ void ConcreteDisplay::display(bool isWire,const VBOMesh* toDisplay,int num){
 			glDisableClientState( GL_VERTEX_ARRAY );	
 			glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 			glDisable(GL_NORMAL_ARRAY);
+			//back to default
+			glDisable(GL_TEXTURE_2D);
+			glDisable(GL_LIGHTING);
 
 			glPopMatrix();
 		}
