@@ -237,6 +237,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\view\glInfo.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\view\glInfo.h"
+				>
+			</File>
+			<File
 				RelativePath=".\view\main.cpp"
 				>
 			</File>
@@ -262,6 +270,18 @@
 			</File>
 			<File
 				RelativePath=".\data\MyPolygon.h"
+				>
+			</File>
+			<File
+				RelativePath=".\data\VBO.h"
+				>
+			</File>
+			<File
+				RelativePath=".\data\VBOMesh.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\data\VBOMesh.h"
 				>
 			</File>
 		</Filter>
@@ -349,6 +369,10 @@
 			Name="model"
 			>
 			<File
+				RelativePath=".\model\bone.h"
+				>
+			</File>
+			<File
 				RelativePath=".\model\corebone.h"
 				>
 			</File>
@@ -358,6 +382,10 @@
 			</File>
 			<File
 				RelativePath=".\model\global.h"
+				>
+			</File>
+			<File
+				RelativePath=".\model\skeleton.h"
 				>
 			</File>
 		</Filter>

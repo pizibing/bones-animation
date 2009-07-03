@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../calculation/Calculator.h"
-#include "../view/Display.h"
-#include "../managers/MeshManager.h"
-#include "../loaders/ModelLoader.h"
-#include "../managers/CameraManager.h"
-#include "../managers/LightManager.h"
+class Calculator;
+class Display;
+class MeshManager;
+class ModelLoader;
+class CameraManager;
+class LightManager;
 
 class Command
 {

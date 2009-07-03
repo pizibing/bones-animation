@@ -1,11 +1,13 @@
 #pragma once
 
-#include "../data/Mesh.h"
+#include <vector>
 
 #define MESH_KIND_NUM 10
 #define MESH_KIND_CHARACTER 0
 #define MESH_KIND_TERRAIN 1
 #define MESH_KIND_STATIC_OBJECT 2
+
+class Mesh;
 
 class MeshManager
 {

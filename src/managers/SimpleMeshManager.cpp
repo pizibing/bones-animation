@@ -1,4 +1,6 @@
+#include "MeshManager.h"
 #include "SimpleMeshManager.h"
+#include "../data/Mesh.h"
 
 SimpleMeshManager* SimpleMeshManager::singleton = NULL;
 
