@@ -19,15 +19,18 @@
 #include "FCDocument\FCDGeometryPolygonsInput.h"
 #include "FUtils\FUObject.h" 
 #include "FCDocument\FCDGeometryInstance.h"
+#include "FCDocument\FCDMaterial.h" 
 #include "FCDocument\FCDMaterialInstance.h"
+#include "FCDocument\FCDEffect.h"
+#include "FCDocument\FCDEffectProfile.h"
+#include "FCDocument\FCDEffectStandard.h"
 #include "FCDocument\FCDLibrary.h"
 #include "FCDocument\FCDImage.h"
 
 class ModelLoader;
 class ObjectManager;
-class MyPolygon;
-class Vector3D;
 
+//it contains the fuction to load from the fcollada data file
 class FColladaModelLoader :
 	public ModelLoader
 {
@@ -35,7 +38,21 @@ public:
 	FColladaModelLoader(void);
 	~FColladaModelLoader(void);
 
+	//load the model from a path of a fcollada file
+	//return ture if load success
+	//set the document value while load the model
+	//it also contain three methed storeVertices, storeTexture, storeMaterials. which
+	//store the vertices, texture, materials to my own structure 
 	bool loadModel(int kind, char* path);
+
+	//store the vertices, normals, texturecoords and create staticobjects to display
+	void storeVertices(FCDocument* m_document);
+
+	//store all the textures that contains in the document
+	void storeTexture(FCDocument* m_document);
+
+	//store all the materials that contains in the document
+	void storeMaterials(FCDocument* m_document);
 
 private:
 	bool m_is_file_opened; 
@@ -43,11 +60,12 @@ private:
 	// pointer to dae file that will be opened using fcollada
 	FCDocument* m_document;
 
-	bool m_has_normals;
-	bool m_has_texcoords;
-	Vector3D *m_ptrs_vertices;
-	Vector3D *m_ptrs_normals;
-	Vector3D *m_ptrs_texcoords;
+	//numbeer of textures
+	int m_num_textures;
 
-	ObjectManager* meshManager;
+	//number of materials
+	int m_num_materials;
+
+	//objectmanage
+	ObjectManager* objectManager;
 };
