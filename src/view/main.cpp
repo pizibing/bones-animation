@@ -7,7 +7,10 @@
 #include "gl/glext.h"
 #include <iostream>
 
-#define MSPF 30
+// this main.cpp is the main class of the whole system
+// it contains all the UIs
+// it contains the basic flow of glut
+// custormized parameters such as window's height and width etc are stored in para.h
 
 // function pointers for VBO Extension
 // Windows needs to get function pointers from ICD OpenGL drivers,
@@ -34,8 +37,8 @@ PFNGLUNMAPBUFFERARBPROC pglUnmapBufferARB = 0;                   // unmap VBO pr
 
 //////////////////////////////////////////////////////////////////////
 float xy_aspect;//screen width/height
-int main_window;//main window
-Command* command;//command
+int main_window;//id of main window
+Command* command;//command that handles all events
 
 /** These are the live variables passed into GLUI ***/
 
@@ -43,16 +46,16 @@ Command* command;//command
 /** Pointers to the windows and some of the controls we'll create **/
 
 
-/********** Miscellaneous global variables **********/
-
 /**************************************** control_cb() *******************/
 /* GLUI control callback                                                 */
-
+// this function is the callback of the UI
+// control tells which event has been sprung
+// all control's possible values are defined in para.h
 void control_cb( int control ){
 }
 
 /***************************************** myGlutDisplay() *****************/
-
+// display function of glut
 void myGlutDisplay( void )
 {
 	glClearColor( 0,0,0,1 );

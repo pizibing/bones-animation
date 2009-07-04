@@ -1,5 +1,8 @@
 #pragma once
 
+// ModelLoader is a interface that should be implemented by
+// all ModelLoaders. 
+// it defines the load function of ModelLoader
 class ModelLoader
 {
 public:

@@ -4,7 +4,7 @@
 
 // define the number of types of VBOObject
 // this number should not be little than the biggest VBOObject typeNum defined
-#define OBJECT_TYPE_NUM 3
+const int OBJECT_TYPE_NUM = 3;
 
 class VBOObject;
 

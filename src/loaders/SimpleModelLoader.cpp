@@ -1,8 +1,7 @@
 #include "ModelLoader.h"
 #include "SimpleModelLoader.h"
 #include "../data/VBOMesh.h"
-#include "../managers/MeshManager.h"
-#include "../managers/SimpleMeshManager.h"
+#include "../managers/ObjectManager.h"
 #include "../managers/TextureManager.h"
 
 SimpleModelLoader::SimpleModelLoader(void){
@@ -12,7 +11,7 @@ SimpleModelLoader::~SimpleModelLoader(void){
 }
 
 bool SimpleModelLoader::loadModel(int kind, char* path){
-	meshManager = SimpleMeshManager::getInstance();
+	objectManager = ObjectManager::getInstance();
 
 	//texture
 	TextureManager* textureManager = TextureManager::getInstance();

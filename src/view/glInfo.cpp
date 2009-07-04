@@ -7,11 +7,6 @@
 // To get valid OpenGL infos, OpenGL rendering context (RC) must be opened 
 // before calling glInfo::getInfo(). Otherwise it returns false.
 //
-//  AUTHOR: Song Ho Ahn (song.ahn@gmail.com)
-// CREATED: 2005-10-04
-// UPDATED: 2006-12-14
-//
-// Copyright (c) 2005 Song Ho Ahn
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <GL/glut.h>

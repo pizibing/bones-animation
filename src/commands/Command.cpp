@@ -11,6 +11,7 @@
 #include "../loaders/FColladaModelLoader.h"
 #include <gl/glut.h>
 
+//constructor
 Command::Command(void){
 	display = new ConcreteDisplay();
 	modelLoader = new FColladaModelLoader();
@@ -20,6 +21,7 @@ Command::Command(void){
 	lightManager = LightManager::getInstance();
 }
 
+//destructor
 Command::~Command(void){
 	delete display;
 	delete modelLoader;

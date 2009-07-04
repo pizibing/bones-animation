@@ -257,26 +257,6 @@
 			Name="data"
 			>
 			<File
-				RelativePath=".\data\Mesh.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\data\Mesh.h"
-				>
-			</File>
-			<File
-				RelativePath=".\data\MyPolygon.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\data\MyPolygon.h"
-				>
-			</File>
-			<File
-				RelativePath=".\data\VBO.h"
-				>
-			</File>
-			<File
 				RelativePath=".\data\VBOMesh.cpp"
 				>
 			</File>
@@ -353,23 +333,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\managers\MeshManager.h"
-				>
-			</File>
-			<File
 				RelativePath=".\managers\ObjectManager.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\managers\ObjectManager.h"
-				>
-			</File>
-			<File
-				RelativePath=".\managers\SimpleMeshManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\managers\SimpleMeshManager.h"
 				>
 			</File>
 			<File

@@ -12,10 +12,10 @@ typedef struct													// 建立一个结构体
 	GLuint	texID;												// 纹理ID
 } TextureTga;
 
-// 载入BMP,JPG,GIF等文件
-bool BuildTexture(char *szPathName, GLuint &texid);
+// load bmp, jpg, files
+bool BuildTexture(const char *szPathName, GLuint &texid);
 
-// 载入TGA文件
-bool BuildTexture(char *filename, TextureTga *texture);
+// load tga file
+bool BuildTexture(const char *filename, TextureTga *texture);
 
 #endif
