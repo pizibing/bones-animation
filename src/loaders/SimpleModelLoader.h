@@ -1,7 +1,7 @@
 #pragma once
 
 class ModelLoader;
-class MeshManager;
+class ObjectManager;
 
 class SimpleModelLoader :
 	public ModelLoader
@@ -13,5 +13,5 @@ public:
 	bool loadModel(int kind, char* path);
 
 private:
-	MeshManager* meshManager;
+	ObjectManager* objectManager;
 };

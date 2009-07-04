@@ -1,9 +1,9 @@
 #pragma once
 
 // define type 
-#define OBJECT_TYPE_CHARACTER 0 // character VBOObject
-#define OBJECT_TYPE_TERRAIN 1  // terrain VBOObject
-#define OBJECT_TYPE_STATIC 2 // static VBOObject
+const int OBJECT_TYPE_CHARACTER = 0; // character VBOObject
+const int OBJECT_TYPE_TERRAIN = 1;  // terrain VBOObject
+const int OBJECT_TYPE_STATIC = 2; // static VBOObject
 
 // VBOObject is a object that can be represented by a list of 
 // VBOMeshes.
