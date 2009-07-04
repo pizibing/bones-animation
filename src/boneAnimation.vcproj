@@ -185,6 +185,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\loaders\FCVector4D.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\loaders\FCVector4D.h"
+				>
+			</File>
+			<File
 				RelativePath=".\loaders\ModelLoader.h"
 				>
 			</File>

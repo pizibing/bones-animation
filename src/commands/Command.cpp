@@ -50,5 +50,5 @@ void Command::drawScene(){
 }
 
 bool Command::loadModel(){
-	return modelLoader->loadModel(0,"knight.dae");
+	return modelLoader->loadModel(0,"dragon.dae");
 }
