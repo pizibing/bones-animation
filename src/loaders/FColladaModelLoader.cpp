@@ -1,4 +1,5 @@
 #include <olectl.h>	
+#include <assert.h>
 #include "../matrixlib/Vector3D.h"
 #include "../data/VBOMesh.h"
 #include "../data/VBOObject.h"
@@ -16,7 +17,6 @@ FColladaModelLoader::FColladaModelLoader(void){
 	FCollada::Initialize(); 
 
 	//initialize the values
-	m_is_file_opened=false;
 	m_document=NULL;
 }
 
@@ -72,13 +72,7 @@ bool FColladaModelLoader::loadModel(int kind, char* szPathName){
 	//load the document from the file. return true, if success
 	bool ret=FCollada::LoadDocumentFromFile(m_document, fpath);	
 
-	if (ret==false || m_document==NULL) {
-		m_is_file_opened=false;
-		return false;
-	} else {
-		// here, file was opened sucusefully
-		m_is_file_opened=true;
-	}
+	assert(ret);
 
 	//store the vertices, normals, texturecoords and create staticobjects to display
 	storeVertices(m_document);

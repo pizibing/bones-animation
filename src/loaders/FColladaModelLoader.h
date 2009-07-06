@@ -55,8 +55,6 @@ public:
 	void storeMaterials(FCDocument* m_document);
 
 private:
-	bool m_is_file_opened; 
-
 	// pointer to dae file that will be opened using fcollada
 	FCDocument* m_document;
 
