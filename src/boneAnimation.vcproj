@@ -288,6 +288,38 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="model"
+				>
+				<File
+					RelativePath=".\data\model\bone.h"
+					>
+				</File>
+				<File
+					RelativePath=".\data\model\corebone.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\data\model\corebone.h"
+					>
+				</File>
+				<File
+					RelativePath=".\data\model\coreskeleton.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\data\model\coreskeleton.h"
+					>
+				</File>
+				<File
+					RelativePath=".\data\model\global.h"
+					>
+				</File>
+				<File
+					RelativePath=".\data\model\skeleton.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="matrixlib"
@@ -362,30 +394,6 @@
 			</File>
 			<File
 				RelativePath=".\managers\TextureManager.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="model"
-			>
-			<File
-				RelativePath=".\model\bone.h"
-				>
-			</File>
-			<File
-				RelativePath=".\model\corebone.h"
-				>
-			</File>
-			<File
-				RelativePath=".\model\coreskeleton.h"
-				>
-			</File>
-			<File
-				RelativePath=".\model\global.h"
-				>
-			</File>
-			<File
-				RelativePath=".\model\skeleton.h"
 				>
 			</File>
 		</Filter>
