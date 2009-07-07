@@ -288,6 +288,58 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="character"
+				>
+				<File
+					RelativePath=".\data\character\ChAnimation.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChAnimation.h"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\CharacterObject.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\CharacterObject.h"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChBone.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChBone.h"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChKeyFrame.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChKeyFrame.h"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChSkeleton.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChSkeleton.h"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChTrack.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChTrack.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="matrixlib"
