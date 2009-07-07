@@ -11,3 +11,5 @@ const float EYE_SIGHT = 1000; //the range can be seen
 const int MSPF = 30;
 
 /* here defines possible values of control*/
+const int OPEN_FILE_DOWN = 0; // push choose model button
+const int OPEN_FILE = 1; // choose a file to open

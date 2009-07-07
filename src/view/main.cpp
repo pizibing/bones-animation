@@ -37,13 +37,15 @@ PFNGLUNMAPBUFFERARBPROC pglUnmapBufferARB = 0;                   // unmap VBO pr
 
 //////////////////////////////////////////////////////////////////////
 float xy_aspect;//screen width/height
-int main_window;//id of main window
 Command* command;//command that handles all events
 
 /** These are the live variables passed into GLUI ***/
 
 
 /** Pointers to the windows and some of the controls we'll create **/
+int main_window;//id of main window
+//GLUI_FileBrowser *fb; // file browser
+GLUI *control; // control panel that contains all controller
 
 
 /**************************************** control_cb() *******************/
@@ -52,6 +54,17 @@ Command* command;//command that handles all events
 // control tells which event has been sprung
 // all control's possible values are defined in para.h
 void control_cb( int control ){
+	switch(control){
+		//// choose a file to open
+		//case OPEN_FILE:
+		//	command->loadModel(fb->get_file());
+		//	break;
+		//// push down the choose model button
+		//case OPEN_FILE_DOWN:
+		//	GLUI* openfile = GLUI_Master.create_glui( "open file..",0,950,100);
+		//	fb = new GLUI_FileBrowser(openfile,"", false,OPEN_FILE,control_cb);
+		//	break;
+	}
 }
 
 /***************************************** myGlutDisplay() *****************/
@@ -189,10 +202,13 @@ void initGlut(int argc, char* argv[]){
 	glutMotionFunc( myGlutMotion );
 }
 
+// init the scene
 void initScene(){
 	command->loadModel();
 }
 
+// check whether user computer support VBO
+// if not , terminate the system
 void checkVBO(){
 
 	// get OpenGL info
@@ -229,6 +245,16 @@ void checkVBO(){
 #endif
 }
 
+
+// create UI using glui
+void createUI(){
+	// create a outer panel, set its position
+	control = GLUI_Master.create_glui( "demo control",0,850,50);
+	//// open file button
+	//GLUI_Button* openFile = 
+	//	control->add_button("choose model",OPEN_FILE_DOWN,control_cb);
+}
+
 /**************************************** main() ********************/
 int main(int argc, char* argv[])
 {
@@ -239,7 +265,7 @@ int main(int argc, char* argv[])
 	initGL();
 
 	//check whether user computer support VBO
-	// if not , terminate the software
+	// if not , terminate the system
 	checkVBO();
 
 	//initialize command
@@ -247,6 +273,9 @@ int main(int argc, char* argv[])
 
 	//init scene (load model)
 	initScene();
+
+	// create UI
+	createUI();
 
 #if 0
 	/**** We register the idle callback with GLUI, *not* with GLUT ****/

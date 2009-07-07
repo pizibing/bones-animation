@@ -6,6 +6,7 @@
 #include "../managers/CameraManager.h"
 #include "../managers/ObjectManager.h"
 #include "../managers/LightManager.h"
+#include "../managers/DisplayManager.h"
 #include "../calculation/Calculator.h"
 #include "../loaders/ModelLoader.h"
 #include "../loaders/FColladaModelLoader.h"
@@ -19,6 +20,7 @@ Command::Command(void){
 	objectManager = ObjectManager::getInstance();
 	cameraManager = new CameraManager();
 	lightManager = LightManager::getInstance();
+	displayManager = new DisplayManager();
 }
 
 //destructor
@@ -29,6 +31,8 @@ Command::~Command(void){
 	delete cameraManager;
 }
 
+// draw all the objects that should be displayed in the
+// scene right now
 void Command::drawScene(){
 	//calculate
 	//calculator->rotate(1,AXIS_X);
@@ -38,17 +42,30 @@ void Command::drawScene(){
 	glEnable(GL_LIGHT0);
 	//draw
 	cameraManager->look();
-	//display->display(false,meshManager->getMeshes(MESH_KIND_CHARACTER));
-	//test for vbomesh
-	/*GLfloat vertices[] = {0.5,0.5,0.5,0.5,0.5,-0.5,-0.5,0.5,-0.5};
-	VBOMesh* vbomesh = new VBOMesh(vertices,9,GL_DYNAMIC_DRAW);
-	display->display(false,vbomesh,1);*/
-	VBOObject* vboobject = objectManager->getVBOObject(2, 1);
+	// get objects to display
+	std::vector<VBOObject*>* objects = displayManager->getDisplayedObjectsAll();
+	// draw each object
+	for(int i = 0; i < (signed int)objects->size(); i++){
+		VBOObject* vboobject = (*objects)[i];
+		int num = 0;
+		VBOMesh* vbomesh = vboobject->representInVBOMesh(&num);
+		display->display(false, vbomesh, num); 
+	}
+	delete objects;
+	/*VBOObject* vboobject = objectManager->getVBOObject(2,4);
+	if(!vboobject) return;
 	int num = 0;
 	VBOMesh* vbomesh = vboobject->representInVBOMesh(&num);
-	display->display(false, vbomesh, num); 
+	display->display(false, vbomesh, num); */
 }
 
+//load all default models
 bool Command::loadModel(){
+	modelLoader->loadModel(0,"cube.dae");
 	return modelLoader->loadModel(0,"dragon.dae");
+}
+
+// load a model with the given path
+bool Command::loadModel(const char* path){
+	return modelLoader->loadModel(0,path);
 }

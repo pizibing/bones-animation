@@ -6,6 +6,7 @@ class ObjectManager;
 class ModelLoader;
 class CameraManager;
 class LightManager;
+class DisplayManager;
 
 // Command is used as the conning tower of this system
 // it is used by main.cpp to do tasks
@@ -23,6 +24,9 @@ public:
 	//load all default models
 	bool loadModel();
 
+	// load a model with the given path
+	bool loadModel(const char* path);
+
 private:
 	// all managers
 	Display* display;
@@ -31,4 +35,5 @@ private:
 	ObjectManager* objectManager;
 	CameraManager* cameraManager;
 	LightManager* lightManager;
+	DisplayManager* displayManager;
 };
