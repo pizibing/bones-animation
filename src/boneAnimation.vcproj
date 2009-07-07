@@ -288,6 +288,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="character"
+				>
+				<File
+					RelativePath=".\data\character\CharacterObject.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\CharacterObject.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="matrixlib"
