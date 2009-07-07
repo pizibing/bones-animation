@@ -12,5 +12,5 @@ public:
 	 * function: load the model with the given path and set it in the ObjectManager
 	 * return: true when model is successfully loaded, vice versa
 	 */
-	virtual bool loadModel(int kind, char* path) = 0;
+	virtual bool loadModel(int kind, const char* path) = 0;
 };

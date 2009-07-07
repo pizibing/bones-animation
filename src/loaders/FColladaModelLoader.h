@@ -43,7 +43,7 @@ public:
 	//set the document value while load the model
 	//it also contain three methed storeVertices, storeTexture, storeMaterials. which
 	//store the vertices, texture, materials to my own structure 
-	bool loadModel(int kind, char* path);
+	bool loadModel(int kind,const char* path);
 
 	//store the vertices, normals, texturecoords and create staticobjects to display
 	void storeVertices(FCDocument* m_document);

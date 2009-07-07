@@ -31,7 +31,7 @@ FColladaModelLoader::~FColladaModelLoader(void){
 //it also contain three methed storeVertices, storeTexture, storeMaterials. which
 //store the vertices, texture, materials to my own structure 
 
-bool FColladaModelLoader::loadModel(int kind, char* szPathName){
+bool FColladaModelLoader::loadModel(int kind,const char* szPathName){
 
 	//it is a class value, which administrate the 
 	objectManager = ObjectManager::getInstance();

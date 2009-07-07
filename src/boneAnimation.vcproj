@@ -365,6 +365,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\managers\DisplayManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\managers\DisplayManager.h"
+				>
+			</File>
+			<File
 				RelativePath=".\managers\LightManager.cpp"
 				>
 			</File>
