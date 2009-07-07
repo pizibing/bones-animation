@@ -316,6 +316,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\data\character\ChBoneInstance.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChBoneInstance.h"
+					>
+				</File>
+				<File
 					RelativePath=".\data\character\ChKeyFrame.cpp"
 					>
 				</File>
@@ -332,11 +340,35 @@
 					>
 				</File>
 				<File
+					RelativePath=".\data\character\ChSkin.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChSkin.h"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChSkinInstance.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChSkinInstance.h"
+					>
+				</File>
+				<File
 					RelativePath=".\data\character\ChTrack.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\data\character\ChTrack.h"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChVertex.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChVertex.h"
 					>
 				</File>
 			</Filter>
