@@ -288,18 +288,6 @@
 					>
 				</File>
 			</Filter>
-			<Filter
-				Name="character"
-				>
-				<File
-					RelativePath=".\data\character\CharacterObject.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\data\character\CharacterObject.h"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="matrixlib"
@@ -385,6 +373,22 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\ChBoneInstance.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\ChBoneInstance.h"
+			>
+		</File>
+		<File
+			RelativePath=".\ChSkinInstance.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\ChSkinInstance.h"
+			>
+		</File>
 		<File
 			RelativePath=".\ClassDiagram1.cd"
 			>
