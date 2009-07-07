@@ -54,15 +54,25 @@ public:
 	//store all the materials that contains in the document
 	void storeMaterials(FCDocument* m_document);
 
+	void buildScene(FCDSceneNode* ptr_root);
+
+	int getFCMaterial(FCDGeometryInstance* geometry_instance, FCDGeometryMesh* mesh);
+
+	void setFCMaterial(int j, int target);
+
 private:
 	// pointer to dae file that will be opened using fcollada
 	FCDocument* m_document;
 
 	//numbeer of textures
 	int m_num_textures;
+	std::vector<FCDImage*> m_ptrs_textures;
 
-	//number of materials
+	std::vector<FCDGeometryMesh*> m_ptrs_geometries;
+
+	// materials
 	int m_num_materials;
+	std::vector<FCDMaterial*> m_ptrs_materials;
 
 	//objectmanage
 	ObjectManager* objectManager;

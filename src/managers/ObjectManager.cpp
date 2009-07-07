@@ -105,7 +105,7 @@ std::vector<VBOObject*>* ObjectManager::getVBOObjects(int type){
 int ObjectManager::generateID(){
 
 	// initialize id
-	static int id = 0;
+	static int id = -1;
 	// id should be unique
 	id++;
 
