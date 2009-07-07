@@ -289,34 +289,54 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="model"
+				Name="character"
 				>
 				<File
-					RelativePath=".\data\model\bone.h"
+					RelativePath=".\data\character\ChAnimation.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\data\model\corebone.cpp"
+					RelativePath=".\data\character\ChAnimation.h"
 					>
 				</File>
 				<File
-					RelativePath=".\data\model\corebone.h"
+					RelativePath=".\data\character\CharacterObject.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\data\model\coreskeleton.cpp"
+					RelativePath=".\data\character\CharacterObject.h"
 					>
 				</File>
 				<File
-					RelativePath=".\data\model\coreskeleton.h"
+					RelativePath=".\data\character\ChBone.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\data\model\global.h"
+					RelativePath=".\data\character\ChBone.h"
 					>
 				</File>
 				<File
-					RelativePath=".\data\model\skeleton.h"
+					RelativePath=".\data\character\ChKeyFrame.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChKeyFrame.h"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChSkeleton.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChSkeleton.h"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChTrack.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChTrack.h"
 					>
 				</File>
 			</Filter>
@@ -405,6 +425,22 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\ChBoneInstance.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\ChBoneInstance.h"
+			>
+		</File>
+		<File
+			RelativePath=".\ChSkinInstance.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\ChSkinInstance.h"
+			>
+		</File>
 		<File
 			RelativePath=".\ClassDiagram1.cd"
 			>
