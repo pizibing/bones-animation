@@ -37,8 +37,10 @@ private:
 	// they should be updated every frame according to the matrixInstance,
 	// chBoneInstance, chSkinInstance
 	VBOMesh* vbomeshes;
+	// the length of the array vbomeshes
+	int meshSize;
 	// matrix instance that may be changed every frame
-	float chMatrixInstance[];
+	float chMatrixInstance[16];
 	// bone instance that may be changed every frame
 	ChBoneInstance* chBoneInstance;
 	// skin instance that may be changed every frame
