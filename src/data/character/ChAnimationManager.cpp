@@ -13,7 +13,7 @@ ChAnimationManager::~ChAnimationManager(void){
 // @param name the name of the animation 
 // @return the pointer of animation with the name
 //         if no animation has the name, create a new animation
-ChAnimation * ChAnimationManager::getAnimation(std::string name){
+ChAnimation * ChAnimationManager::getAnimation(const std::string &name){
 	return NULL;
 }
 
