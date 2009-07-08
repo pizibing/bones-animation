@@ -300,6 +300,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\data\character\ChAnimationManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChAnimationManager.h"
+					>
+				</File>
+				<File
 					RelativePath=".\data\character\CharacterObject.cpp"
 					>
 				</File>
