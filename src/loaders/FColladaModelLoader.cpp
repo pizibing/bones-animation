@@ -189,7 +189,6 @@ void FColladaModelLoader::storeVertices(FCDocument* m_document)
 				source = ptr_polygons->GetParent()->FindSourceByType(FUDaeGeometryInput::NORMAL);
 				bool m_has_normals;
 				Vector3D *m_ptrs_normals;
-				// maybe they are not present
 				if (source==NULL) {
 					m_has_normals=false;
 				} else {
@@ -260,22 +259,25 @@ void FColladaModelLoader::storeVertices(FCDocument* m_document)
 					m_vbo_vertices[3*i+1] = (m_ptrs_vertices+i-vbo_vertexs_count)->y;
 					m_vbo_vertices[3*i+2] = (m_ptrs_vertices+i-vbo_vertexs_count)->z;
 				}
-
-				//convert the Vector3D normals data to my structures 
-				for(int i=vbo_vertexs_count; i <  vbo_vertexs_count+m_num_vertices; i++)
+				if(m_has_normals == true)
 				{
-					m_vbo_normals[3*i] = (m_ptrs_normals+i-vbo_vertexs_count)->x;
-					m_vbo_normals[3*i+1] = (m_ptrs_normals+i-vbo_vertexs_count)->y;
-					m_vbo_normals[3*i+2] = (m_ptrs_normals+i-vbo_vertexs_count)->z;
+					//convert the Vector3D normals data to my structures 
+					for(int i=vbo_vertexs_count; i <  vbo_vertexs_count+m_num_vertices; i++)
+					{
+						m_vbo_normals[3*i] = (m_ptrs_normals+i-vbo_vertexs_count)->x;
+						m_vbo_normals[3*i+1] = (m_ptrs_normals+i-vbo_vertexs_count)->y;
+						m_vbo_normals[3*i+2] = (m_ptrs_normals+i-vbo_vertexs_count)->z;
+					}
 				}
-
-				//convert the Vector3D texcoords data to my structures 
-				for(int i=vbo_vertexs_count; i <  vbo_vertexs_count+m_num_vertices; i++)
+				if(m_has_texcoords == true)
 				{
-					m_vbo_texcoords[2*i] = (m_ptrs_texcoords+i-vbo_vertexs_count)->x;
-					m_vbo_texcoords[2*i+1] = (m_ptrs_texcoords+i-vbo_vertexs_count)->y;
+					//convert the Vector3D texcoords data to my structures 
+					for(int i=vbo_vertexs_count; i <  vbo_vertexs_count+m_num_vertices; i++)
+					{
+						m_vbo_texcoords[2*i] = (m_ptrs_texcoords+i-vbo_vertexs_count)->x;
+						m_vbo_texcoords[2*i+1] = (m_ptrs_texcoords+i-vbo_vertexs_count)->y;
+					}
 				}
-
 				//reflash the counter
 				vbo_vertexs_count+=m_num_vertices;
 			}
@@ -358,7 +360,10 @@ void FColladaModelLoader::buildScene(FCDSceneNode* node_origin)
 				FCDGeometryInstance* geometry_instance=dynamic_cast<FCDGeometryInstance*>(instance);
 				FCDGeometryMesh* mesh=dynamic_cast<FCDGeometryMesh*>(m_ptrs_geometries[j]);
 				target = getFCMaterial(geometry_instance, mesh);
-				setFCMaterial(j, target);
+				if(target != -1)
+				{
+					setFCMaterial(j, target);
+				}
 				flag_found=true;
 				break;
 			}
