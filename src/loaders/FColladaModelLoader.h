@@ -26,6 +26,7 @@
 #include "FCDocument\FCDEffectStandard.h"
 #include "FCDocument\FCDLibrary.h"
 #include "FCDocument\FCDImage.h"
+#include "FCDocument\FCDTexture.h"
 
 class ModelLoader;
 class ObjectManager;
@@ -46,19 +47,25 @@ public:
 	bool loadModel(int kind,const char* path);
 
 	//store the vertices, normals, texturecoords and create staticobjects to display
-	void storeVertices(FCDocument* m_document);
+	void storeVertices();
 
 	//store all the textures that contains in the document
-	void storeTexture(FCDocument* m_document);
+	void storeTexture();
 
 	//store all the materials that contains in the document
-	void storeMaterials(FCDocument* m_document);
+	void storeMaterials();
 
+	//build the scene include the material of the polygons, the texture of the polygons and the matrix of the bone.
 	void buildScene(FCDSceneNode* ptr_root);
 
-	int getFCMaterial(FCDGeometryInstance* geometry_instance, FCDGeometryMesh* mesh);
+	//set the material of the mesh
+	void setMeshFCMaterial(FCDGeometryInstance* geometry_instance, FCDGeometryMesh* mesh, int meshIndex);
 
+	//set the target material to the polygon
 	void setFCMaterial(int j, int target);
+
+	//search the texture in the texture lib by texture id
+	FCDImage *FColladaModelLoader::SearchTextureByName(fm::string textureid);
 
 private:
 	// pointer to dae file that will be opened using fcollada
@@ -67,6 +74,8 @@ private:
 	//numbeer of textures
 	int m_num_textures;
 	std::vector<FCDImage*> m_ptrs_textures;
+	std::vector<GLfloat*> m_total_texcoords;
+	std::vector<int> m_size_texcoords;
 
 	std::vector<FCDGeometryMesh*> m_ptrs_geometries;
 
