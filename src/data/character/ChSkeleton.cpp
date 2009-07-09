@@ -1,3 +1,4 @@
+#include "../matrixlib/matrix.h"
 #include "ChSkeleton.h"
 #include "ChBone.h"
 
@@ -9,9 +10,11 @@ ChSkeleton::ChSkeleton(void){
 ChSkeleton::~ChSkeleton(void){
 }
 
-// calculate absolute transform for each bone
-void ChSkeleton::calculateState(){
-}
+// calculate absolute transform for all bones
+void calculateAbsoluteTransform(){}
+
+// set original transform matrix of all bones
+void SetOriginalTransform(){}
 
 // get bone by name
 // @param name the name for the bone

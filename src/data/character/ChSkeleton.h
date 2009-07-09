@@ -15,9 +15,6 @@ public:
 	ChSkeleton(void);
 	// destructor
 	~ChSkeleton(void);
-	
-	// calculate absolute transform for each bone
-	void calculateState();
 
 	// get bone by name
 	// @param name the name for the bone
