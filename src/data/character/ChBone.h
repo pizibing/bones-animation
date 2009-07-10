@@ -18,10 +18,25 @@ public:
 	// destructor
 	~ChBone(void);
 
+	// the name for the bone
 	const std::string& getName()const;
+	
+	// @return the index in skeleton
+	int getId() const;
+	// set the index in skeleton
+	void setId(int id);
 
+	// @return the pointer of the parent bone
 	ChBone * getParentBone()const;
+	
+	// set the parent bone
 	void SetParentBone(ChBone * parent);
+
+	// get the array of child bone pointers
+	ChBone** getAllChildBones()const;
+
+	// @return the number of child bones
+	int getChildBoneNum();
 
 	// add a child bone 
 	// @return false if no room for new child bone
@@ -30,6 +45,7 @@ public:
 	// get the original relative transform matrix
 	const Matrix& getOriginalTransformMatrix()const;
 
+	// set the original relative transform matrix
 	void setOriginalTransformMatrix(const Matrix &m);
 
 	// initialize this bone with child_num child bones
@@ -38,6 +54,8 @@ public:
 	bool init(int child_num);
 
 private:
+	// index in skeleton
+	int m_id;
 	// string name for the bone
 	std::string m_name;
 	// child bone number

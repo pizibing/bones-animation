@@ -1,5 +1,11 @@
 #pragma once
 
+#include <map>
+
+class ChBone;
+class ChSkeleton;
+class ChTrack;
+
 // animation for a character,such as walk,run etc.
 // must set skeleton bone number when create a new Animation
 // has the same number of tracks with skeleton's bones
@@ -7,6 +13,46 @@
 class ChAnimation
 {
 public:
+	// constructor
 	ChAnimation(void);
+
+	// destructor
 	~ChAnimation(void);
+
+	// set skeleton and init the animation
+	// and initialize track of bone
+	void setSkeleton(ChSkeleton *skeleton);
+
+	// @return the track with the bonename
+	ChTrack * getTrack(std::string bonename);
+
+	// @return the track with the boneId
+	ChTrack * getTrack(int boneId);
+
+	// calculate the transform matrix for the bone
+	// @param time_ms the time in million second from the beginning of the
+	//        animation
+	// @param boneId the index for the blending bone
+	// @return the transform matrix for the bone
+	Matrix blendBone(int time_ms,int boneId);
+
+	// @return the total time of the animation;
+	int getAnimationTime();
+
+private:
+	// initialize the track array
+	bool init(int track_num);
+
+private:
+	int m_frame_time;
+	// total animation time
+	int m_key_frame_num;
+	// number of track, the same with skeleton bone number
+	int m_track_num;
+	// skeleton to animate
+	ChSkeleton *m_skeleton;
+
+	// track pointer array
+	ChTrack **m_tracks; 
+
 };
