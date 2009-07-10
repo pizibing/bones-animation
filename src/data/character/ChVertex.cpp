@@ -1,6 +1,6 @@
 #include "ChVertex.h"
 
-ChVertex::ChVertex(void)
+ChVertex::ChVertex(float px, float py, float pz)
 {
 }
 
