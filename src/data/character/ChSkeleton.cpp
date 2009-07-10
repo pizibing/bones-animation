@@ -10,24 +10,43 @@ ChSkeleton::ChSkeleton(void){
 ChSkeleton::~ChSkeleton(void){
 }
 
-// calculate absolute transform for all bones
-void calculateAbsoluteTransform(){}
-
-// set original transform matrix of all bones
-void SetOriginalTransform(){}
-
 // get bone by name
 // @param name the name for the bone
 // @return the pointer for the bone with the name
 //         if no bone has the name, create a new bone
-ChBone* ChSkeleton::getBone(const std::string &name){
+ChBone* ChSkeleton::getBone(const std::string &name)const{
 	return NULL;
 }
 
-ChBone* ChSkeleton::getRootBone(){
+// get bone by index
+// @param boneId the index for the bone
+// @return the pointer for the bone with the index
+//         if no bone has the index return NULL
+ChBone* ChSkeleton::getBone(int boneId){
+	return NULL;
+}
+
+// get the index of bone with the name
+// @param name the name for the bone
+// @return the index of the bone 
+int ChSkeleton::getBoneId(const std::string &name){
+	return m_boneMap[name];
+}
+
+ChBone** ChSkeleton::getAllBones()const{
+	return m_bones;
+}
+
+int ChSkeleton::getBoneNum()const{
+	return m_bone_num;
+}
+
+// @return the root bone pointer
+ChBone* ChSkeleton::getRootBone()const{
 	return m_rootBone;
 }
 
+// get the array of all bones
 void ChSkeleton::setRootBone(ChBone *bone){
 	m_rootBone = bone;
 }
