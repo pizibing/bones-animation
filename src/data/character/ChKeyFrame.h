@@ -18,28 +18,29 @@ public:
 
 	// constructor
 	// @param matrix the transform matrix
-	ChKeyFrame(const Matrix &matrix, int frame_time);
+	// @param frame_time the start time(sec) of the frame
+	ChKeyFrame(const Matrix &matrix, float frame_time);
 
 	// destructor
 	~ChKeyFrame(void);
 
 	// @return the transform matrix
-	inline const Matrix & getTransformMatrix()const;
+	const Matrix & getTransformMatrix()const;
 
 	// set the transform matrix
-	inline void setTransformMatrix(const Matrix & matrix);
+	void setTransformMatrix(const Matrix & matrix);
 
-	// @return the start time(ms) of the frame
-	inline int getTime();
+	// @return the start time(sec) of the frame
+	float getTime();
 
-	// set the start time(ms) of the frame
-	inline void setTime(int time);
+	// set the start time(sec) of the frame
+	inline void setTime(float time);
 
 private:
 	// relative transform matrix in parent bone space
 	Matrix m_transformMatrix;
 
-	// the start time(ms) of the frame
-	int m_time;
+	// the start time(sec) of the frame
+	float m_time;
 
 };

@@ -83,26 +83,26 @@ bool ChAnimationManager::init(int animation_num){
 }
 
 // calculate the transform matrix for the bone with the animation
-// @param time_ms the time in million second from the beginning of the
+// @param animatetime the time in second from the beginning of the
 //        animation
 // @param animation the name for the blending animation
 // @param bone the name for the blending bone
 // @return the transform matrix for the bone
-Matrix ChAnimationManager::blendAnimationBone(int time_ms,const std::string &animation,const std::string &bone){
+Matrix ChAnimationManager::blendAnimationBone(float animatetime,const std::string &animation,const std::string &bone){
 	int animationId = m_animationMap[animation];
 	int boneId = m_skeleton->getBoneId(bone);
 	if(animationId>=0&&animationId<=m_animation_num){
-		return m_animations[animationId]->blendBone(time_ms,boneId);
+		return m_animations[animationId]->blendBone(animatetime,boneId);
 	}
 	return Matrix();
 }
 
 // calculate the transform matrix for the bone with the animation
-// @param time_ms the time in million second from the beginning of the
+// @param animatetime the time in second from the beginning of the
 //        animation
 // @param animationId the index for the blending animation
 // @param boneId the index for the blending bone
 // @return the transform matrix for the bone
-Matrix ChAnimationManager::blendAnimationBone(int time_ms,int animationId,int boneId){
-	return m_animations[animationId]->blendBone(time_ms,boneId);
+Matrix ChAnimationManager::blendAnimationBone(float animatetime,int animationId,int boneId){
+	return m_animations[animationId]->blendBone(animatetime,boneId);
 }
