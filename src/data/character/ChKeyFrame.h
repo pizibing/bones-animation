@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef Matrix
+#define Matrix matrix44
+#endif
+
 class Matrix;
 
 // key frame for a bone animation

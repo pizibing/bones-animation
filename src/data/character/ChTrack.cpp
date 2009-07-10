@@ -1,4 +1,5 @@
-#include "../matrixlib/matrix.h"
+#include "../matrixlib/mtxlib.h"
+//#include "../matrixlib/matrix.h"
 #include "ChTrack.h"
 #include "ChBone.h"
 #include "ChKeyFrame.h"
@@ -10,7 +11,7 @@ ChTrack::~ChTrack(void){}
 // @param animate_time
 // @return the relative transform matrix for the bone
 const Matrix& ChTrack::getTransformMatrix(int animate_time)const{
-	return Matrix();
+	return m_currentMatrix;
 }
 
 // @return the bone of the track

@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef Matrix
+#define Matrix matrix44
+#endif
+
 class Matrix;
 class ChBone;
 class ChKeyFrame;
@@ -43,4 +47,6 @@ private:
 	ChKeyFrame **m_keyframes;
 	// bone to animate
 	ChBone * m_bone;
+	// current transform matrix
+	Matrix m_currentMatrix;
 };

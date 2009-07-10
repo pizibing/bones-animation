@@ -2,6 +2,8 @@
 
 #include <map>
 
+#define Matrix matrix44
+
 class ChBone;
 class ChSkeleton;
 class ChTrack;
@@ -34,7 +36,7 @@ public:
 	//        animation
 	// @param boneId the index for the blending bone
 	// @return the transform matrix for the bone
-	Matrix blendBone(int time_ms,int boneId);
+	const Matrix& blendBone(int time_ms,int boneId);
 
 	// @return the total time of the animation;
 	int getAnimationTime();
