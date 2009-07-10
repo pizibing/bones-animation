@@ -466,22 +466,6 @@
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\ChBoneInstance.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\ChBoneInstance.h"
-			>
-		</File>
-		<File
-			RelativePath=".\ChSkinInstance.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\ChSkinInstance.h"
-			>
-		</File>
-		<File
 			RelativePath=".\ClassDiagram1.cd"
 			>
 		</File>
