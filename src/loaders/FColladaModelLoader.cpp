@@ -1,5 +1,6 @@
 #include <olectl.h>	
 #include <assert.h>
+#include <string>
 #include "../matrixlib/Vector3D.h"
 #include "../data/VBOMesh.h"
 #include "../data/VBOObject.h"
@@ -75,13 +76,13 @@ bool FColladaModelLoader::loadModel(int kind,const char* szPathName){
 	assert(ret);
 
 	//store the vertices, normals, texturecoords and create staticobjects to display
-	storeVertices(m_document);
+	storeVertices();
 
 	//store all the textures that contains in the document
-	storeTexture(m_document);
+	storeTexture();
 
 	//store all the materials that contains in the document
-	storeMaterials(m_document);
+	storeMaterials();
 
 	//build the scene
 	FCDSceneNode* ptr_root=m_document->GetVisualSceneRoot();
@@ -95,7 +96,7 @@ bool FColladaModelLoader::loadModel(int kind,const char* szPathName){
 
 
 //store the vertices, normals, texturecoords and create staticobjects to display
-void FColladaModelLoader::storeVertices(FCDocument* m_document)
+void FColladaModelLoader::storeVertices()
 {
 	// how many geometries there are?
 	FCDGeometryLibrary* geolib=m_document->GetGeometryLibrary();
@@ -130,26 +131,6 @@ void FColladaModelLoader::storeVertices(FCDocument* m_document)
 
 			// create my own polygons
 			int m_num_polygons=(int) mesh->GetPolygonsCount();
-
-			// count the total number of vertexs
-			int vbo_vertexs_count=0;
-
-			//get the total number of vertexs
-			for (int i=0;i<m_num_polygons;i++) {
-				FCDGeometryPolygons* ptr_polygons = mesh->GetPolygons(i);
-				FCDGeometryPolygonsInput* geometrypolygonsinput;
-				geometrypolygonsinput=ptr_polygons->FindInput(FUDaeGeometryInput::POSITION);
-				int m_num_vertices=(int) geometrypolygonsinput->GetIndexCount();
-				vbo_vertexs_count+=m_num_vertices;
-			}
-
-			//init the total data of the vertexs and normals
-			GLfloat * m_vbo_vertices = new GLfloat[vbo_vertexs_count * 3];
-			GLfloat * m_vbo_normals = new GLfloat[vbo_vertexs_count * 3];
-			GLfloat * m_vbo_texcoords = new GLfloat[vbo_vertexs_count * 3];
-
-			//reset the counter 
-			vbo_vertexs_count=0;
 
 			for (int p=0;p<m_num_polygons;p++) {
 				FCDGeometryPolygons* ptr_polygons = mesh->GetPolygons(p);
@@ -252,50 +233,52 @@ void FColladaModelLoader::storeVertices(FCDocument* m_document)
 					}
 				}
 
+				//init the total data of the vertexs and normals
+				GLfloat * m_vbo_vertices = new GLfloat[m_num_vertices * 3];
+				GLfloat * m_vbo_normals = new GLfloat[m_num_vertices * 3];
+				GLfloat * m_vbo_texcoords = new GLfloat[m_num_vertices * 2];
+
 				//convert the Vector3D vertexs data to my structures 
-				for(int i=vbo_vertexs_count; i <  vbo_vertexs_count+m_num_vertices; i++)
+				for(int i=0; i<m_num_vertices; i++)
 				{
-					m_vbo_vertices[3*i] = (m_ptrs_vertices+i-vbo_vertexs_count)->x;
-					m_vbo_vertices[3*i+1] = (m_ptrs_vertices+i-vbo_vertexs_count)->y;
-					m_vbo_vertices[3*i+2] = (m_ptrs_vertices+i-vbo_vertexs_count)->z;
+					m_vbo_vertices[3*i] = (m_ptrs_vertices+i)->x;
+					m_vbo_vertices[3*i+1] = (m_ptrs_vertices+i)->y;
+					m_vbo_vertices[3*i+2] = (m_ptrs_vertices+i)->z;
 				}
 				if(m_has_normals == true)
 				{
 					//convert the Vector3D normals data to my structures 
-					for(int i=vbo_vertexs_count; i <  vbo_vertexs_count+m_num_vertices; i++)
+					for(int i=0; i<m_num_vertices; i++)
 					{
-						m_vbo_normals[3*i] = (m_ptrs_normals+i-vbo_vertexs_count)->x;
-						m_vbo_normals[3*i+1] = (m_ptrs_normals+i-vbo_vertexs_count)->y;
-						m_vbo_normals[3*i+2] = (m_ptrs_normals+i-vbo_vertexs_count)->z;
+						m_vbo_normals[3*i] = (m_ptrs_normals+i)->x;
+						m_vbo_normals[3*i+1] = (m_ptrs_normals+i)->y;
+						m_vbo_normals[3*i+2] = (m_ptrs_normals+i)->z;
 					}
 				}
 				if(m_has_texcoords == true)
 				{
 					//convert the Vector3D texcoords data to my structures 
-					for(int i=vbo_vertexs_count; i <  vbo_vertexs_count+m_num_vertices; i++)
+					for(int i=0; i<m_num_vertices; i++)
 					{
-						m_vbo_texcoords[2*i] = (m_ptrs_texcoords+i-vbo_vertexs_count)->x;
-						m_vbo_texcoords[2*i+1] = (m_ptrs_texcoords+i-vbo_vertexs_count)->y;
+						m_vbo_texcoords[2*i] = (m_ptrs_texcoords+i)->x;
+						m_vbo_texcoords[2*i+1] = (m_ptrs_texcoords+i)->y;
 					}
 				}
-				//reflash the counter
-				vbo_vertexs_count+=m_num_vertices;
+
+				//create the staticobject with vertexs
+				StaticObject* objects = new StaticObject(m_vbo_vertices, m_num_vertices * 3);
+
+				//set the normals of the staticobject
+				objects->setNormals(m_vbo_normals, m_num_vertices * 3);
+
+				//set the texcoords of the staticobject
+				m_total_texcoords.push_back(m_vbo_texcoords);
+
+				m_size_texcoords.push_back(m_num_vertices * 2);
+
+				//add the objects to objectmanage
+				objectManager->addVBOObject(objects);
 			}
-
-			//create the staticobject with vertexs
-			StaticObject* objects = new StaticObject(m_vbo_vertices, vbo_vertexs_count * 3);
-
-			//set the normals of the staticobject
-			objects->setNormals(m_vbo_normals, vbo_vertexs_count * 3);
-
-			TextureManager* textureManager = TextureManager::getInstance();
-			GLuint tex = textureManager->getTextureId("resource/leaf2.jpg");
-			//set the texcoords of the staticobject
-			objects->setTextures(m_vbo_texcoords, vbo_vertexs_count * 2, tex);
-
-			//add the objects to objectmanage
-			objectManager->addVBOObject(objects);
-
 			m_ptrs_geometries.push_back(mesh);
 		}
 	}
@@ -305,23 +288,21 @@ void FColladaModelLoader::storeVertices(FCDocument* m_document)
 
 
 //store all the textures that contains in the document
-void FColladaModelLoader::storeTexture(FCDocument* m_document){
+void FColladaModelLoader::storeTexture(){
 	//get the image from the document
 	FCDImageLibrary* imagelib=m_document->GetImageLibrary();
 	//get the number of the image
 	m_num_textures=(int) imagelib->GetEntityCount();
 	// copy textures to my structures
 	FCDImage* image;
-	TextureManager* textureManager = TextureManager::getInstance();
 	for (int i=0; i<m_num_textures; i++) {
 		image = imagelib->GetEntity(i);
 		m_ptrs_textures.push_back(image);
-		//GLuint tex = textureManager->getTextureId(image->GetFilename().c_str());
 	}
 }
 
 //store all the materials that contains in the document
-void FColladaModelLoader::storeMaterials(FCDocument* m_document){
+void FColladaModelLoader::storeMaterials(){
 	//get the material from the document
 	FCDMaterialLibrary* materiallib=m_document->GetMaterialLibrary();
 	//get the number of the material
@@ -337,33 +318,46 @@ void FColladaModelLoader::storeMaterials(FCDocument* m_document){
 	}
 }
 
+//build the scene include the material of the polygons, the texture of the polygons and the matrix of the bone.
 void FColladaModelLoader::buildScene(FCDSceneNode* node_origin)
 {
+	//child scene node
 	FCDSceneNode* child_origin;
 
 	// copy node instances
 	FCDEntityInstance* instance;
+
+	//the entity of the instance, and the name of the entity
 	FCDEntity* entity;
 	std::string name;
 
+	//instance flag to check which the instance id found in the library
 	bool flag_found;
+
+	//look through the instance
 	for (int i=0; i<(int)node_origin->GetInstanceCount(); i++) {
 
+		//set or reset the parameter
 		flag_found=false;
 		instance=node_origin->GetInstance(i);
 		entity=instance->GetEntity();
 		name=entity->GetDaeId().c_str();
+
 		// look for this name in geo library
 		for (int j=0; j<(int)m_ptrs_geometries.size(); j++) {
-			int target;
 			if (m_ptrs_geometries[j]->GetDaeId().c_str()==name) {
+				//get the Geo instance
 				FCDGeometryInstance* geometry_instance=dynamic_cast<FCDGeometryInstance*>(instance);
-				FCDGeometryMesh* mesh=dynamic_cast<FCDGeometryMesh*>(m_ptrs_geometries[j]);
-				target = getFCMaterial(geometry_instance, mesh);
-				if(target != -1)
+				//get the mesh
+				FCDGeometryMesh* mesh=m_ptrs_geometries[j];
+				//get the polygon index
+				int meshIndex=0;
+				for(int p=0; p<j; p++)
 				{
-					setFCMaterial(j, target);
+					meshIndex+=(int)m_ptrs_geometries[p]->GetPolygonsCount();
 				}
+				//get the material
+				setMeshFCMaterial(geometry_instance, mesh, meshIndex);
 				flag_found=true;
 				break;
 			}
@@ -376,40 +370,65 @@ void FColladaModelLoader::buildScene(FCDSceneNode* node_origin)
 	}
 }
 
-int FColladaModelLoader::getFCMaterial(FCDGeometryInstance* geometry_instance, FCDGeometryMesh* mesh)
+//set the material of the mesh
+void FColladaModelLoader::setMeshFCMaterial(FCDGeometryInstance* geometry_instance, FCDGeometryMesh* mesh, int meshIndex)
 {
 	// fill this mesh instance with polygons instances
+
+	//the id of the pointed material
 	std::string id_material;
+
+	//material and material instance
 	FCDMaterial* material;
 	FCDMaterialInstance* materialinstance;
 
+	//look through the mesh
 	for (int i=0; i<(int)mesh->GetPolygonsCount(); i++) {
 
 		material=NULL;
 		// look for this material_semantic in geometry_instance
 		for (int k=0; k<(int)geometry_instance->GetMaterialInstanceCount(); k++) {
-			// look for this material in my material lib, so I store a pointer
+			// look for this material in my material lib
+
+			//get the material instance from the geo instance
 			materialinstance=geometry_instance->GetMaterialInstance(k);
+
+			//check whether the semantic of the material instance is equals to the semantic of the polygon 
 			if (materialinstance->GetSemantic()==mesh->GetPolygons(i)->GetMaterialSemantic()) {
+				//get the material id of the pointed material
 				id_material=materialinstance->GetMaterial()->GetDaeId().c_str();
 
-				// look for a pointer for that material in my database
+				// look for a pointer for that material in my material lib
 				for (int j=0; j<m_num_materials; j++){
 					if (m_ptrs_materials[j]->GetDaeId().c_str()==id_material) {
-						return j;
+						//set the material of the polygon
+						setFCMaterial(j, meshIndex+i);
 					}
 				}
 			}
 		}
-
 	}
-	return -1;
 }
 
-void FColladaModelLoader::setFCMaterial(int j, int target)
+//set the target material to the polygon
+void FColladaModelLoader::setFCMaterial(int target, int index)
 {
+	//target material
 	FCDMaterial* material = m_ptrs_materials[target];
-	// if common profile does not exist, the set as a default materiqal
+
+	// pointer to diffuse texture
+	FCDImage* m_texture_diffuse;
+	bool m_has_diffuse_texture;
+
+	// pointer to texture reflective
+	FCDImage* m_texture_reflective;
+	bool m_has_reflective_texture;
+
+	// pointer to texture transparent
+	FCDImage* m_texture_transparent;
+	bool m_has_transparent_texture;
+
+	// get the material effect and the profile
 	FCDEffect* fx = material->GetEffect();
 	FCDEffectProfile* profile = fx->FindProfile(FUDaeProfileType::COMMON);
 
@@ -474,10 +493,149 @@ void FColladaModelLoader::setFCMaterial(int j, int target)
 			);
 	}
 
+	//store the data to my structure
 	GLfloat am[4] = {m_ambient.GetX(), m_ambient.GetY(), m_ambient.GetZ(), m_ambient.GetW()};
 	GLfloat di[4] = {m_diffuse.GetX(), m_diffuse.GetY(), m_diffuse.GetZ(), m_diffuse.GetW()};
 	GLfloat sp[4] = {m_specular.GetX(), m_specular.GetY(), m_specular.GetZ(), m_specular.GetW()};
 	GLfloat em[4] = {m_emission.GetX(), m_emission.GetY(), m_emission.GetZ(), m_emission.GetW()};
 	GLfloat sh = (GLfloat)m_shininess;
-	((StaticObject *) objectManager->getVBOObject(2,j))->setMaterial(am, di, sp, em, sh);
+
+	/*texture*/
+	// textures
+	FCDTexture* texture;
+	FCDImage *image;
+
+	// diffusse textures
+	m_has_diffuse_texture=false;
+	m_texture_diffuse=NULL;
+	image=NULL;
+
+	// diffuse texture
+	if (standardProfile->GetTextureCount(FUDaeTextureChannel::DIFFUSE)>0) {
+		texture=standardProfile->GetTexture(FUDaeTextureChannel::DIFFUSE,0);
+		if (texture!=NULL) {
+			image=texture->GetImage();
+			if (image!=NULL) {
+				m_texture_diffuse=SearchTextureByName(image->GetDaeId());
+				if (m_texture_diffuse!=NULL)
+					m_has_diffuse_texture=true;
+			}
+		}
+	}	
+
+	// reflective texture
+	m_has_reflective_texture=false;
+	m_texture_reflective=NULL;
+	image=NULL;
+
+	// reflective texture
+	if (standardProfile->GetTextureCount(FUDaeTextureChannel::REFLECTION)>0) {
+		texture=standardProfile->GetTexture(FUDaeTextureChannel::REFLECTION,0);
+		if (texture!=NULL) {
+			image=texture->GetImage();
+			if (image!=NULL) {
+				m_texture_reflective=SearchTextureByName(image->GetDaeId());
+				if (m_texture_reflective!=NULL)
+					m_has_reflective_texture=true;
+			}
+		}
+	}
+
+	// transparent textures
+	m_has_transparent_texture=false;
+	m_texture_transparent=NULL;
+	image=NULL;
+
+	// transparent texture
+	if (standardProfile->GetTextureCount(FUDaeTextureChannel::TRANSPARENT)>0) {
+		texture=standardProfile->GetTexture(FUDaeTextureChannel::TRANSPARENT,0);
+		if (texture!=NULL) {
+			image=texture->GetImage();
+			if (image!=NULL) {
+				m_texture_transparent=SearchTextureByName(image->GetDaeId());
+				if (m_texture_transparent!=NULL)
+					m_has_transparent_texture=true;
+			}
+		}
+	}
+
+	//create the texture manage
+	TextureManager* textureManager = TextureManager::getInstance();
+
+	GLuint tex = NULL;
+
+	//diffuse texture
+	if(m_texture_diffuse!=NULL)
+	{
+		//the absolute file path
+		char szPath[512];
+		//convert unicode to string
+		WideCharToMultiByte(CP_ACP, 0, m_texture_diffuse->GetFilename().c_str(), -1, szPath, MAX_PATH, NULL, NULL);	
+		//temp path 
+		char		tempPath[MAX_PATH+1];		
+		// get the current path
+		GetCurrentDirectoryA(MAX_PATH, tempPath);		
+		//convert char* to string
+		std::string tempDir=tempPath;
+		//get the size of the string
+		int szDirSize = tempDir.size();
+		//convert char* to string
+		std::string szFile=szPath;
+		//get the relative file path
+		szFile = szFile.substr(szDirSize);
+		//get the texture from the relatave path
+		tex = textureManager->getTextureId(szFile.c_str());
+	}
+
+	//reflective texture
+	if(m_texture_reflective!=NULL)
+	{
+		//the absolute file path
+		char szPath[512];
+		//convert unicode to string
+		WideCharToMultiByte(CP_ACP, 0, m_texture_reflective->GetFilename().c_str(), -1, szPath, MAX_PATH, NULL, NULL);	
+		//temp path 
+		char		tempPath[MAX_PATH+1];		
+		// get the current path
+		GetCurrentDirectoryA(MAX_PATH, tempPath);		
+		//convert char* to string
+		std::string tempDir=tempPath;
+		//get the size of the string
+		int szDirSize = tempDir.size();
+		//convert char* to string
+		std::string szFile=szPath;
+		//get the relative file path
+		szFile = szFile.substr(szDirSize);
+		//get the texture from the relatave path
+		tex = textureManager->getTextureId(szFile.c_str());
+	}
+
+	//transparent texture
+	if(m_texture_transparent!=NULL)
+	{
+	}
+
+	//if has texture, set the texture
+	if(tex != NULL)
+	{
+	((StaticObject *) objectManager->getVBOObject(2,index))->setTextures(m_total_texcoords[index], m_size_texcoords[index], tex);
+	}
+
+	//set the material
+	((StaticObject *) objectManager->getVBOObject(2,index))->setMaterial(am, di, sp, em, sh);
+}
+
+//search the texture in the texture lib by texture id
+FCDImage *FColladaModelLoader::SearchTextureByName(fm::string textureid){
+
+	// look for this texture
+	for (int i=0; i<m_num_textures; i++)
+	{
+		if (m_ptrs_textures[i]->GetDaeId()==textureid) 
+		{
+			return m_ptrs_textures[i];
+		}
+	}
+	// if fail, null
+	return NULL;
 }
