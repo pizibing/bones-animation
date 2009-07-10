@@ -12,7 +12,7 @@ public:
 	// destructor
 	~ChSkin(void);
 
-	// initialize vertices
+	// initialize vertices and verticeSize
 	// if vertices has never been initialized, a new array
 	// of ChVertex will be created whose length is num
 	// else nothing will happen
@@ -26,7 +26,15 @@ public:
 	// get function of vertices
 	ChVertex** getVertices() const;
 
+	// get function of verticeSize
+	int getVerticeSize();
+
+	// return the vertex with the given id
+	ChVertex* getVertex(int id);
+
 private:
 	// a pointer to an array that stores all the vertices
 	ChVertex** vertices;
+	// length of vertices
+	int verticeSize;
 };

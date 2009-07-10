@@ -9,7 +9,7 @@ struct VBpair{
     // the related bone's id
 	int boneId;
 	// the relative position of this vertex to the bone
-	matrix44* matrix;
+	matrix44 matrix;
 	// this bone's power to the vertex
 	float power;
 };
@@ -42,7 +42,7 @@ public:
 	// matrix should be a float[16]
 	// boneId, matrix, power will be set to the corresponding properties
 	// in VBpair
-	void initPair(int pairNum, int boneId, const float* matrix, float power);
+	void initPair(int pairNum, int boneId, float* matrix, float power);
 
 	// set id of this vertex to id
 	void setId(int id);
@@ -51,10 +51,27 @@ public:
 	// id is -1
 	int getId();
 
+	// get function of position
+	float* getPosition();
+
+	// get function of normal
+	float* getNormal();
+
+	// get function of hasNormal
+	bool getHasNormal();
+
+	// get function of pairs
+	VBpair* getPairs();
+
+	// get function of pairNum
+	int getPairNum();
+
 private:
 	// a pointer to an array that stores all the VBpairs of a
 	// vertex
 	VBpair* pairs;
+	// length of pairs
+	int pairNum;
 	// default position of the vertex to the root of the 
 	// CharacterObject
 	float position[3];

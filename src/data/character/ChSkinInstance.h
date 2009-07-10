@@ -20,9 +20,11 @@ public:
 
 	// calculate all the vertex instance according to the given
 	// skeleton instance
-	void calSkinInstance(ChSkeletonInstance* skeletonInstance);
+	void calSkinInstance(ChSkeletonInstance* skeletonInstance, ChSkin* skin);
 
 private:
 	// all the ChVertexInstances
 	ChVertexInstance** vertices;
+	// size of vertices
+	int verticeSize;
 };

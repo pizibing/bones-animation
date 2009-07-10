@@ -380,6 +380,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\data\character\ChVBOMesh.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChVBOMesh.h"
+					>
+				</File>
+				<File
 					RelativePath=".\data\character\ChVertex.cpp"
 					>
 				</File>
