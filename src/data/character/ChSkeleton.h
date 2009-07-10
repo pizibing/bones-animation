@@ -20,7 +20,7 @@ public:
 	// @param name the name for the bone
 	// @return the pointer for the bone with the name
 	//         if no bone has the name, create a new bone
-	ChBone* getBone(const std::string &name)const;
+	ChBone* getBone(const std::string &name);
 
 	// get bone by index
 	// @param boneId the index for the bone

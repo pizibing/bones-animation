@@ -4,18 +4,36 @@
 #include "ChBone.h"
 
 // constructor
-ChSkeleton::ChSkeleton(void){
+ChSkeleton::ChSkeleton(void)
+: m_bones(NULL),m_rootBone(NULL),m_bone_num(0)
+{
 }
 
 // destructor
 ChSkeleton::~ChSkeleton(void){
+	for(int i=0;i<m_bone_num;i++){
+		delete m_bones[i];
+	}
+	if(m_bones)
+		delete []m_bones;
+	m_bones = NULL;
 }
 
 // get bone by name
 // @param name the name for the bone
 // @return the pointer for the bone with the name
 //         if no bone has the name, create a new bone
-ChBone* ChSkeleton::getBone(const std::string &name)const{
+ChBone* ChSkeleton::getBone(const std::string &name){
+	int id = m_boneMap[name];
+	if(id>=0&&id<m_bone_num){
+		return m_bones[id];
+	}
+	id = m_boneMap.size();
+	if(id<m_bone_num){
+		m_bones[id] = new ChBone(name);
+		m_boneMap[name] = id;
+		return m_bones[id];
+	}
 	return NULL;
 }
 
@@ -24,6 +42,9 @@ ChBone* ChSkeleton::getBone(const std::string &name)const{
 // @return the pointer for the bone with the index
 //         if no bone has the index return NULL
 ChBone* ChSkeleton::getBone(int boneId){
+	if(boneId>=0&&boneId<m_bone_num){
+		return m_bones[boneId];
+	}
 	return NULL;
 }
 
@@ -57,5 +78,13 @@ void ChSkeleton::setRootBone(ChBone *bone){
 // @param bone_num the number of bones
 // @return true if successful 
 bool ChSkeleton::init(int bone_num){
+	if(m_bones)return false;
+
+	m_bones = new ChBone*[bone_num];
+	if(!m_bones)return false;
+	for(int i=0;i<bone_num;i++){
+		m_bones[i] = NULL;
+	}
+	m_bone_num = bone_num;
 	return false;
 }

@@ -55,6 +55,7 @@ public:
 	// initialize this bone with child_num child bones
 	// @param child_num child bone number
 	// @return true if successful
+	//		   false if reinitialized or no more memory
 	bool init(int child_num);
 
 private:
@@ -68,6 +69,9 @@ private:
 	ChBone * m_parentbone;
 	// child bone pointers
 	ChBone ** m_childbones;
+
+	// current child bone number
+	int m_current_child_num;
 	
 	// relative transformation to form original skeleton
 	Matrix m_originalTransformMatrix;
