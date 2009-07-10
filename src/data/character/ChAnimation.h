@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <string>
 
 #define Matrix matrix44
 
@@ -16,10 +17,16 @@ class ChAnimation
 {
 public:
 	// constructor
-	ChAnimation(void);
+	ChAnimation();
 
 	// destructor
 	~ChAnimation(void);
+
+	// @return the name for the animation
+	const std::string& getName();
+
+	// set the name of the animation
+	void setName(const std::string &name);
 
 	// set skeleton and init the animation
 	// and initialize track of bone
@@ -46,6 +53,7 @@ private:
 	bool init(int track_num);
 
 private:
+	std::string m_name;
 	int m_frame_time;
 	// total animation time
 	int m_key_frame_num;

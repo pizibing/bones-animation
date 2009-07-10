@@ -5,9 +5,23 @@
 #include "ChSkeleton.h"
 #include "ChTrack.h"
 
-ChAnimation::ChAnimation(void){}
+// constructor
+ChAnimation::ChAnimation(void)
+: m_tracks(NULL),m_key_frame_num(0)
+{}
 
+// destructor
 ChAnimation::~ChAnimation(void){}
+
+// @return the name for the animation
+const std::string& ChAnimation::getName(){
+	return m_name;
+}
+
+// set the name of the animation
+void ChAnimation::setName(const std::string &name){
+	m_name = name;
+}
 
 // set skeleton and init the animation
 // and initialize track of bone
@@ -18,11 +32,14 @@ void ChAnimation::setSkeleton(ChSkeleton * skeleton){
 
 // @return the track with the bonename
 ChTrack * ChAnimation::getTrack(std::string bonename){
+	int id = m_skeleton->getBoneId(bonename);
+	if(id>=0&&id<m_track_num)return m_tracks[id];
 	return NULL;
 }
 
 // @return the track with the boneId
 ChTrack * ChAnimation::getTrack(int boneId){
+	if(boneId>=0&&boneId<m_track_num)return m_tracks[boneId];
 	return NULL;
 }
 // initialize the track array

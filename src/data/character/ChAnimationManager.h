@@ -8,6 +8,7 @@
 #endif
 
 class ChAnimation;
+class ChSkeleton;
 class Matrix;
 
 // ChAnimationManager manages all the animations and generate
@@ -22,6 +23,12 @@ public:
 	// destructor
 	~ChAnimationManager(void);
 
+	// @return the skeleton to animate
+	ChSkeleton * getSkeleton();
+	
+	// set the skeleton to animate
+	void setSkeleton(ChSkeleton * skeleton);
+
 	// @param name the name of the animation 
 	// @return the pointer of animation with the name
 	//         if no animation has the name, create a new animation
@@ -29,13 +36,14 @@ public:
 
 	// @param animationId the index of the animation 
 	// @return the pointer of animation with the name
-	//         if no animation has the name, create a new animation
+	//         if no animation has the index, create a new animation
 	ChAnimation * getAnimation(int animationId);
 
 	// init the pointer array for animations
 	// manager can be initialized only once
 	// @param animation_num the number of animations
-	// @return true if successful 
+	// @return true if successful
+	//         false if reinitialized or no memory
 	bool init(int animation_num);
 
 	// calculate the transform matrix for the bone with the animation
@@ -55,6 +63,8 @@ public:
 	Matrix blendAnimationBone(int time_ms,int animationId,int boneId);
 
 private:
+	// the skeleton to animate
+	ChSkeleton * m_skeleton;
 	// the number of animations
 	int m_animation_num;
 	// pointer array for animations
