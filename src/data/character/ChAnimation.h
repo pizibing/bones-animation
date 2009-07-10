@@ -39,14 +39,14 @@ public:
 	ChTrack * getTrack(int boneId);
 
 	// calculate the transform matrix for the bone
-	// @param time_ms the time in million second from the beginning of the
+	// @param animatetime the time in second from the beginning of the
 	//        animation
 	// @param boneId the index for the blending bone
 	// @return the transform matrix for the bone
-	const Matrix& blendBone(int time_ms,int boneId);
+	const Matrix& blendBone(float animatetime,int boneId);
 
 	// @return the total time of the animation;
-	int getAnimationTime();
+	float getAnimationTime();
 
 private:
 	// initialize the track array
