@@ -2,6 +2,10 @@
 
 #include <string>
 
+#ifndef Matrix
+#define Matrix matrix44
+#endif
+
 class Matrix;
 
 // bone for a character,such as head,hand,foot etc.

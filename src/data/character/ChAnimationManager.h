@@ -3,6 +3,10 @@
 #include <string>
 #include <map>
 
+#ifndef Matrix
+#define Matrix matrix44
+#endif
+
 class ChAnimation;
 class Matrix;
 

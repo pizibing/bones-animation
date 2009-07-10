@@ -1,4 +1,5 @@
-#include "../matrixlib/matrix.h"
+#include "../matrixlib/mtxlib.h"
+//#include "../matrixlib/matrix.h"
 #include "ChSkeleton.h"
 #include "ChBone.h"
 

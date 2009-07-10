@@ -1,4 +1,5 @@
-#include "../matrixlib/matrix.h"
+#include "../matrixlib/mtxlib.h"
+//#include "../matrixlib/matrix.h"
 #include "ChAnimation.h"
 #include "ChBone.h"
 #include "ChSkeleton.h"
@@ -34,8 +35,8 @@ bool ChAnimation::init(int track_num){
 //        animation
 // @param boneId the index for the blending bone
 // @return the transform matrix for the bone
-Matrix ChAnimation::blendBone(int time_ms,int boneId){
-	return Matrix();
+const Matrix& ChAnimation::blendBone(int time_ms,int boneId){
+	return m_tracks[boneId]->getTransformMatrix(time_ms);
 }
 
 // @return the total time of the animation;

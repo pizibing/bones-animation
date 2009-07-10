@@ -1,6 +1,7 @@
+#include "../matrixlib/mtxlib.h"
 #include "ChAnimationManager.h"
 #include "ChAnimation.h"
-#include "../matrixlib/matrix.h"
+//#include "../matrixlib/matrix.h"
 
 // constructor
 ChAnimationManager::ChAnimationManager(void){
