@@ -31,6 +31,7 @@ ChBone* ChSkeleton::getBone(const std::string &name){
 	id = m_boneMap.size();
 	if(id<m_bone_num){
 		m_bones[id] = new ChBone(name);
+		m_bones[id]->setId(id);
 		m_boneMap[name] = id;
 		return m_bones[id];
 	}

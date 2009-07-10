@@ -16,10 +16,10 @@ public:
 	~ChBoneInstance(void);
 
 	// set function of matrix
-	void setMatrix(matrix44* matrix);
+	void setMatrix(const matrix44 &matrix);
 
 	// get function of matrix
-	matrix44* getMatrix();
+	const matrix44 & getMatrix();
 
 	// get function of id
 	int getId();
@@ -50,7 +50,7 @@ private:
 	int id;
 	// a matrix describes the current position of this bone instance
 	// the position is its relative position to the root
-	matrix44* matrix;
+	matrix44 matrix;
 	// the id of this bone instance's father, root's fatherId is set
 	// to -1
 	int fatherId;
