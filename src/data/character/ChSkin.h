@@ -23,6 +23,9 @@ public:
 	// vertex's id will be set to verNum
 	void initVertice(int verNum, ChVertex* vertex);
 
+	// get function of vertices
+	ChVertex** getVertices() const;
+
 private:
 	// a pointer to an array that stores all the vertices
 	ChVertex** vertices;

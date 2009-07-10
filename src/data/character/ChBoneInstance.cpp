@@ -1,6 +1,6 @@
 #include "ChBoneInstance.h"
 
-ChBoneInstance::ChBoneInstance(void)
+ChBoneInstance::ChBoneInstance(int id)
 {
 }
 

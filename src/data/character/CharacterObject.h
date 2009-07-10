@@ -98,6 +98,9 @@ public:
 	void setVBOMaterial(const GLfloat am[4], const GLfloat di[4], const GLfloat sp[4],
 		const GLfloat em[4], GLfloat sh, const int vmsNum);
 
+	// set the chMatrixInstance, the default matrix is an identity 4*4 matrix
+	void setMatrix(float* matrix);
+
 private:
 	/* display */
 	// a pointer to an array that stores all the VBOMeshes of this 

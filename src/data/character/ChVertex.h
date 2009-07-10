@@ -1,5 +1,7 @@
 #pragma once
 
+class matrix44;
+
 // vertex and bone pair
 // it tells which bone is related to, transforming matrix of 
 // this bone and the power of this bone
@@ -7,7 +9,7 @@ struct VBpair{
     // the related bone's id
 	int boneId;
 	// the relative position of this vertex to the bone
-	float matrix[16];
+	matrix44* matrix;
 	// this bone's power to the vertex
 	float power;
 };
