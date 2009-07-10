@@ -348,6 +348,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\data\character\ChSkeletonInstance.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChSkeletonInstance.h"
+					>
+				</File>
+				<File
 					RelativePath=".\data\character\ChSkin.cpp"
 					>
 				</File>
@@ -465,22 +473,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath=".\ChBoneInstance.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\ChBoneInstance.h"
-			>
-		</File>
-		<File
-			RelativePath=".\ChSkinInstance.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\ChSkinInstance.h"
-			>
-		</File>
 		<File
 			RelativePath=".\ClassDiagram1.cd"
 			>
