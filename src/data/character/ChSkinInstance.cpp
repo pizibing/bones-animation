@@ -1,6 +1,6 @@
 #include "ChSkinInstance.h"
 
-ChSkinInstance::ChSkinInstance(void)
+ChSkinInstance::ChSkinInstance(ChSkin* skin)
 {
 }
 
