@@ -20,6 +20,7 @@ class ChVertex
 public:
 	// constructor
 	// initialize the default position by the given px,py,pz
+	// set default id to -1
 	ChVertex(float px, float py, float pz);
 	// destructor
 	~ChVertex(void);
@@ -41,6 +42,13 @@ public:
 	// in VBpair
 	void initPair(int pairNum, int boneId, const float* matrix, float power);
 
+	// set id of this vertex to id
+	void setId(int id);
+
+	// get the id of this vertex, if id has not been set , the default 
+	// id is -1
+	int getId();
+
 private:
 	// a pointer to an array that stores all the VBpairs of a
 	// vertex
@@ -52,4 +60,6 @@ private:
 	bool hasNormal;
 	// default normal of the vertex in world space
 	float normal[3];
+	// id of this vertex
+	int id;
 };
