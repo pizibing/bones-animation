@@ -1,6 +1,7 @@
 #pragma once
 
 class VBOMesh;
+class ChVBOMesh;
 class VBOObject;
 class ChSkeletonInstance;
 class ChSkinInstance;
@@ -108,6 +109,8 @@ private:
 	// they should be updated every frame according to the matrixInstance,
 	// chBoneInstance, chSkinInstance
 	VBOMesh* vbomeshes;
+	// ChVBOMesh
+	ChVBOMesh** chvbomeshes;
 	// the length of the array vbomeshes
 	int meshSize;
 
