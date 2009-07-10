@@ -387,6 +387,14 @@
 					RelativePath=".\data\character\ChVertex.h"
 					>
 				</File>
+				<File
+					RelativePath=".\data\character\ChVertexInstance.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\data\character\ChVertexInstance.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

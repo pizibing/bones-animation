@@ -1,6 +1,6 @@
 #include "ChSkeletonInstance.h"
 
-ChSkeletonInstance::ChSkeletonInstance(void)
+ChSkeletonInstance::ChSkeletonInstance(const ChSkeleton* skeleton)
 {
 }
 
