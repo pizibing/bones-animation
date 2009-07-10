@@ -1,6 +1,7 @@
 #pragma once
 
 class VBOMesh;
+class ChVBOMesh;
 class VBOObject;
 class ChSkeletonInstance;
 class ChSkinInstance;
@@ -101,6 +102,11 @@ public:
 	// set the chMatrixInstance, the default matrix is an identity 4*4 matrix
 	void setMatrix(float* matrix);
 
+	// set the current gesture of the character
+	// animation is the name of the animation to use
+	// time_ms is the play time in millisecond of the animation
+	void setGesture(const char* animation, int time_ms);
+
 private:
 	/* display */
 	// a pointer to an array that stores all the VBOMeshes of this 
@@ -108,6 +114,8 @@ private:
 	// they should be updated every frame according to the matrixInstance,
 	// chBoneInstance, chSkinInstance
 	VBOMesh* vbomeshes;
+	// ChVBOMesh
+	ChVBOMesh** chvbomeshes;
 	// the length of the array vbomeshes
 	int meshSize;
 
