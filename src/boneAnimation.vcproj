@@ -440,6 +440,14 @@
 				RelativePath=".\matrixlib\Vector3D.h"
 				>
 			</File>
+			<File
+				RelativePath=".\matrixlib\Vector4D.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\matrixlib\Vector4D.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="managers"
