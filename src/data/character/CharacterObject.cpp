@@ -65,7 +65,7 @@ int CharacterObject::getID(){
 
 // return the line array that this object represent
 // num will be changed into the length of the line array
-Line* CharacterObject::representInLine(int* num){
+SimpleLine* CharacterObject::representInLine(int* num){
 	return NULL;
 }
 
@@ -213,6 +213,8 @@ void CharacterObject::setMatrix(float* matrix){
 void CharacterObject::setGesture(const char* animation, int time_ms){
 	// calculate skeleton instance
 	chSkeletonInstance->calSkeletonInstance(animations,time_ms,animation);
+	// use return change matrix to change matrix instance
+
 	// calculate skin instance
 	chSkinInstance->calSkinInstance(chSkeletonInstance,skin);
 	// update chvbomeshes

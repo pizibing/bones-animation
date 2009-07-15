@@ -273,6 +273,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\data\SimpleLine.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\data\SimpleLine.h"
+				>
+			</File>
+			<File
 				RelativePath=".\data\VBOMesh.cpp"
 				>
 			</File>
