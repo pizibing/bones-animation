@@ -27,6 +27,9 @@ public:
 	// relates to.
 	void updateVBO(ChSkinInstance* skin);
 
+	// update the matrix of the VBOMesh to the given matrix
+	void updateVBO(float* matrix);
+
 private:
 	// the VBOMesh this class packed
 	VBOMesh* vbomesh;
