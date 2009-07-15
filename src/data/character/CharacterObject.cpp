@@ -198,11 +198,13 @@ void CharacterObject::setGesture(const char* animation, int time_ms){
 	chSkeletonInstance->calSkeletonInstance(animations,time_ms,animation);
 	// calculate skin instance
 	chSkinInstance->calSkinInstance(chSkeletonInstance,skin);
-	// update chvbomeshes according to vertex instance
+	// update chvbomeshes
 	for(int i = 0; i < meshSize; i++){
+		// update chvbomeshes according to vertex instance
 		chvbomeshes[i]->updateVBO(chSkinInstance);
+		// update chvbomeshes according to matrix instance
+		chvbomeshes[i]->updateVBO(this->chMatrixInstance);
 	}
-	// update chvbomeshes according to matrix instance
 	// update vbomeshes according to chvbomeshes
 	for(int i = 0; i < meshSize; i++){
 		vbomeshes[i] = *chvbomeshes[i]->getVBOMesh();

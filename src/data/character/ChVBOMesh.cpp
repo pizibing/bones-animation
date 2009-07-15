@@ -106,3 +106,11 @@ void ChVBOMesh::updateVBO(ChSkinInstance* skin){
 	vbomesh->updateVertices(vertices,size);
 	if(hasNormal) vbomesh->updateNormals(normals,size);
 }
+
+// update the matrix of the VBOMesh to the given matrix
+void ChVBOMesh::updateVBO(float* matrix){
+	// matrix should not be null
+	assert(matrix);
+
+	vbomesh->setMatrix(matrix);
+}
