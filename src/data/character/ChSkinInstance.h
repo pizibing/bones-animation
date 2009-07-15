@@ -22,6 +22,8 @@ public:
 	// skeleton instance
 	void calSkinInstance(ChSkeletonInstance* skeletonInstance, ChSkin* skin);
 
+	// get the vertex instance with the given id
+	ChVertexInstance* getVertex(int id);
 private:
 	// all the ChVertexInstances
 	ChVertexInstance** vertices;

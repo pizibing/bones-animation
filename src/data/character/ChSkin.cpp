@@ -37,7 +37,7 @@ void ChSkin::initVertice(int verNum, ChVertex* vertex){
 }
 
 // get function of vertices
-ChVertex** ChSkin::getVertices() const{
+ChVertex** ChSkin::getVertices(){
 	return vertices;
 }
 
