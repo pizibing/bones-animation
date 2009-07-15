@@ -265,6 +265,14 @@
 			Name="data"
 			>
 			<File
+				RelativePath=".\data\LineObject.h"
+				>
+			</File>
+			<File
+				RelativePath=".\data\MoveSelfObject.h"
+				>
+			</File>
+			<File
 				RelativePath=".\data\VBOMesh.cpp"
 				>
 			</File>

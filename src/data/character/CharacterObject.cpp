@@ -1,4 +1,6 @@
 #include <assert.h>
+#include "../data/MoveSelfObject.h"
+#include "../data/LineObject.h"
 #include "../data/VBOMesh.h"
 #include "../data/VBOObject.h"
 #include "../data/character/ChVBOMesh.h"
@@ -200,6 +202,7 @@ void CharacterObject::setGesture(const char* animation, int time_ms){
 	for(int i = 0; i < meshSize; i++){
 		chvbomeshes[i]->updateVBO(chSkinInstance);
 	}
+	// update chvbomeshes according to matrix instance
 	// update vbomeshes according to chvbomeshes
 	for(int i = 0; i < meshSize; i++){
 		vbomeshes[i] = *chvbomeshes[i]->getVBOMesh();

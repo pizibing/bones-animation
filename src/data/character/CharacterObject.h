@@ -1,5 +1,8 @@
 #pragma once
 
+class Line;
+class MoveSelfObject;
+class LineObject;
 class VBOMesh;
 class ChVBOMesh;
 class VBOObject;
@@ -25,7 +28,7 @@ class ChSkin;
 // 5. initVBOs();
 // 6. for each VBO{ initVBO(); setVBOTexture(); setVBOMaterail();(the last two
 //                  function is optional)}
-class CharacterObject : public VBOObject
+class CharacterObject : public VBOObject, LineObject, MoveSelfObject
 {
 public:
 	// constructor
@@ -43,6 +46,14 @@ public:
 
 	// return the id of this object
 	int getID();
+
+	// return the line array that this object represent
+	// num will be changed into the length of the line array
+	Line* representInLine(int* num);
+
+	// this function change the position matrix of the 
+	// class by multiplying change
+	void moveSelf(matrix44 change);
 
 	// this function is the factory function of skeleton
 	// user should use the return pointer to initialize the skeleton
