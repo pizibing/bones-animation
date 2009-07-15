@@ -153,8 +153,8 @@ void CharacterObject::initVBO(const int* vertices, const int vSize, const int vm
 	int remain = vSize % 3;
 	assert(remain == 0);
 
-	//
-	chvbomeshes[vmsNum] = new ChVBOMesh(vertices,vSize);
+	// initialize chvbomeshes and vbomeshes
+	chvbomeshes[vmsNum] = new ChVBOMesh(vertices,vSize,skin);
 	vbomeshes[vmsNum] = *chvbomeshes[vmsNum]->getVBOMesh();
 }
 
@@ -186,4 +186,22 @@ void CharacterObject::setVBOMaterial(const GLfloat am[4], const GLfloat di[4], c
 void CharacterObject::setMatrix(float* matrix){
 	for(int i = 0; i < 16; i++)
 		chMatrixInstance[i] = matrix[i];
+}
+
+// set the current gesture of the character
+// animation is the name of the animation to use
+// time_ms is the play time in millisecond of the animation
+void CharacterObject::setGesture(const char* animation, int time_ms){
+	// calculate skeleton instance
+	chSkeletonInstance->calSkeletonInstance(animations,time_ms,animation);
+	// calculate skin instance
+	chSkinInstance->calSkinInstance(chSkeletonInstance,skin);
+	// update chvbomeshes according to vertex instance
+	for(int i = 0; i < meshSize; i++){
+		chvbomeshes[i]->updateVBO(chSkinInstance);
+	}
+	// update vbomeshes according to chvbomeshes
+	for(int i = 0; i < meshSize; i++){
+		vbomeshes[i] = *chvbomeshes[i]->getVBOMesh();
+	}
 }
