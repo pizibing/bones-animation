@@ -72,17 +72,11 @@ bool ChAnimation::init(int track_num){
 //        animation
 // @param boneId the index for the blending bone
 // @return the transform matrix for the bone
-const Matrix& ChAnimation::blendBone(float animatetime,int boneId){
+const Matrix& ChAnimation::blendBone(int animatetime,int boneId){
 	return m_tracks[boneId]->getTransformMatrix(animatetime);
 }
 
 // @return the total time of the animation;
-float ChAnimation::getAnimationTime(){
-	float time=0;
-	float t=0;
-	for(int i=0;i<m_track_num;i++){
-		t = m_tracks[i]->getAnimationTime();
-		if(t>time)time = t;
-	}
-	return time;
+int ChAnimation::getAnimationTime(){
+	return m_tracks[0]->getAnimationTime();
 }

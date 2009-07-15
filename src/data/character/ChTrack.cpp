@@ -21,15 +21,23 @@ ChTrack::~ChTrack(void){
 
 // @param animate_time
 // @return the relative transform matrix for the bone
-const Matrix& ChTrack::getTransformMatrix(float animate_time){
+const Matrix& ChTrack::getTransformMatrix(int animate_time){
 	int i = 0;
+	// calculate the actual animation time
+	animate_time = animate_time % getAnimationTime();
+
 	while(animate_time>m_keyframes[i]->getTime()&&i<m_keyframe_num)i++;
 	if(i==m_keyframe_num)return m_keyframes[i-1]->getTransformMatrix();
 	ChKeyFrame *keyFrame1 = m_keyframes[i-1];
 	ChKeyFrame *keyFrame2 = m_keyframes[i];
-	float factor = (animate_time - keyFrame1->getTime())/(keyFrame2->getTime()-keyFrame1->getTime());
+	float factor = ((float)animate_time - keyFrame1->getTime())/(keyFrame2->getTime()-keyFrame1->getTime());
 	m_currentMatrix = keyFrame1->getTransformMatrix()*(1-factor)+keyFrame2->getTransformMatrix()*factor;
 	return m_currentMatrix;
+}
+
+// @return the relative transform matrix of the last frame
+const Matrix& ChTrack::getLastTransformMatrix(){
+	return m_keyframes[m_keyframe_num - 1]->getTransformMatrix();
 }
 
 // @return the bone of the track
@@ -45,7 +53,7 @@ void ChTrack::setBone(ChBone * bone){
 // add a new key frame
 // @param matrix the transform matrix for the frame
 // @param frame_time the start time(sec) of the frame
-bool ChTrack::addKeyFrame(const Matrix &matrix,float frame_time){
+bool ChTrack::addKeyFrame(const Matrix &matrix,int frame_time){
 	if(m_current_keyframe<m_keyframe_num){
 		m_keyframes[m_current_keyframe]=new ChKeyFrame(matrix,frame_time);
 		m_current_keyframe++;
@@ -54,7 +62,7 @@ bool ChTrack::addKeyFrame(const Matrix &matrix,float frame_time){
 }
 
 // @return the total animation time of the track
-float ChTrack::getAnimationTime(){
+int ChTrack::getAnimationTime(){
 	return m_keyframes[m_keyframe_num-1]->getTime();
 }
 

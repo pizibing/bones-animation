@@ -43,10 +43,10 @@ public:
 	//        animation
 	// @param boneId the index for the blending bone
 	// @return the transform matrix for the bone
-	const Matrix& blendBone(float animatetime,int boneId);
+	const Matrix& blendBone(int animatetime,int boneId);
 
 	// @return the total time of the animation;
-	float getAnimationTime();
+	int getAnimationTime();
 
 private:
 	// initialize the track array

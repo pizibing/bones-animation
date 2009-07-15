@@ -9,7 +9,7 @@ ChKeyFrame::ChKeyFrame(void)
 
 // constructor
 // @param matrix the transform matrix
-ChKeyFrame::ChKeyFrame(const Matrix &matrix, float frame_time)
+ChKeyFrame::ChKeyFrame(const Matrix &matrix, int frame_time)
 :m_transformMatrix(matrix),m_time(frame_time)
 {
 }
@@ -28,12 +28,12 @@ void ChKeyFrame::setTransformMatrix(const Matrix & matrix){
 }
 
 // @return the start time(sec) of the frame
-float ChKeyFrame::getTime(){
+int ChKeyFrame::getTime(){
 	return m_time;
 }
 
 // set the total time(sec) of the frame
-inline void ChKeyFrame::setTime(float time){
+inline void ChKeyFrame::setTime(int time){
 	m_time = time;
 }
 

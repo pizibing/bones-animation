@@ -52,7 +52,7 @@ public:
 	// @param animation the name for the blending animation
 	// @param bone the name for the blending bone
 	// @return the transform matrix for the bone
-	Matrix blendAnimationBone(float animatetime,const std::string &animation,const std::string &bone);
+	Matrix blendAnimationBone(int animatetime,const std::string &animation,const std::string &bone);
 
 	// calculate the transform matrix for the bone with the animation
 	// @param animatetime the time in second from the beginning of the
@@ -60,7 +60,17 @@ public:
 	// @param animationId the index for the blending animation
 	// @param boneId the index for the blending bone
 	// @return the transform matrix for the bone
-	Matrix blendAnimationBone(float animatetime,int animationId,int boneId);
+	Matrix blendAnimationBone(int animatetime,int animationId,int boneId);
+
+	// return the  root bone's transform matrix at animatetime
+	// the result returned is from the second frame to the last frame
+	// the first frame will not be returned for first frame equals last frame
+	Matrix getCurrentRootMatrix(int animatetime, const char* animation);
+
+	// return the root bone's transform matrix one frame before animatetime
+	// the result returned is from the first frame to the last frame but one
+	// the last frame will not be returned for first frame equals last frame
+	Matrix getLastRootMatrix(int animatetime, const char* animation);
 
 private:
 	// the skeleton to animate

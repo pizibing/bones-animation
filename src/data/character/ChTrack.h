@@ -22,7 +22,10 @@ public:
 
 	// @param animate_time
 	// @return the relative transform matrix for the bone
-	const Matrix& getTransformMatrix(float animate_time);
+	const Matrix& getTransformMatrix(int animate_time);
+
+	// @return the relative transform matrix of the last frame
+	const Matrix& getLastTransformMatrix();
 
 	// @return the bone of the track
 	ChBone * getBone()const;
@@ -33,10 +36,10 @@ public:
 	// add a new key frame
 	// @param matrix the transform matrix for the frame
 	// @param frame_time the start time(sec) of the frame
-	bool addKeyFrame(const Matrix &matrix,float frame_time);
+	bool addKeyFrame(const Matrix &matrix, int frame_time);
 
 	// @return the total animation time of the track
-	float getAnimationTime();
+	int getAnimationTime();
 
 	// initialized the key frame array
 	// @param frame_num the array size
