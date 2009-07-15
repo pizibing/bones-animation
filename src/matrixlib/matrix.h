@@ -29,6 +29,11 @@ public:
 			m[i] = matrix.m[i];
 	}
 
+	inline Matrix(float *mv)	{
+		for(int i=0;i<16;i++)m[i] = mv[i];
+	}
+
+
 	inline ~Matrix(){}
 
 	// member functions	
@@ -58,6 +63,16 @@ public:
 	inline void set(const Quaternion rotation);
 	// set the matrix with the given translation, rotation will not be changed
 	inline void set(Vector3D translation);
+
+	// set the matrix with a float array
+	inline void set(float *mv){
+		for(int i=0;i<16;i++) m[i]=mv[i];
+	}
+
+	// the float array of the matrix
+	inline float * get(){
+		return m;
+	}
 
 	// @return the rotation of the matrix
 	inline Quaternion getRotation() const;
