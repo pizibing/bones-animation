@@ -62,3 +62,8 @@ void ChSkinInstance::calSkinInstance(ChSkeletonInstance* skeletonInstance, ChSki
 		vertexInstance->setNormal(normal);
 	}
 }
+
+// get the vertex instance with the given id
+ChVertexInstance* ChSkinInstance::getVertex(int id){
+	return vertices[id];
+}

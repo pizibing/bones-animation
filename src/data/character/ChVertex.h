@@ -8,7 +8,7 @@ class matrix44;
 struct VBpair{
     // the related bone's id
 	int boneId;
-	// the relative position of this vertex to the bone
+	// the default bone position matrix's inverse matrix
 	matrix44 matrix;
 	// this bone's power to the vertex
 	float power;

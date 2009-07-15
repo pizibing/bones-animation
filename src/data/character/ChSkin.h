@@ -24,7 +24,7 @@ public:
 	void initVertice(int verNum, ChVertex* vertex);
 
 	// get function of vertices
-	ChVertex** getVertices() const;
+	ChVertex** getVertices();
 
 	// get function of verticeSize
 	int getVerticeSize();
