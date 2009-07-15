@@ -1,8 +1,8 @@
 #include "../matrixlib/mtxlib.h"
-#include "ChAnimationManager.h"
-#include "ChAnimation.h"
+#include "ChTrack.h"
 #include "ChSkeleton.h"
-//#include "../matrixlib/matrix.h"
+#include "ChAnimation.h"
+#include "ChAnimationManager.h"
 
 // constructor
 ChAnimationManager::ChAnimationManager(void)
@@ -88,7 +88,7 @@ bool ChAnimationManager::init(int animation_num){
 // @param animation the name for the blending animation
 // @param bone the name for the blending bone
 // @return the transform matrix for the bone
-Matrix ChAnimationManager::blendAnimationBone(float animatetime,const std::string &animation,const std::string &bone){
+Matrix ChAnimationManager::blendAnimationBone(int animatetime,const std::string &animation,const std::string &bone){
 	int animationId = m_animationMap[animation];
 	int boneId = m_skeleton->getBoneId(bone);
 	if(animationId>=0&&animationId<=m_animation_num){
@@ -103,6 +103,42 @@ Matrix ChAnimationManager::blendAnimationBone(float animatetime,const std::strin
 // @param animationId the index for the blending animation
 // @param boneId the index for the blending bone
 // @return the transform matrix for the bone
-Matrix ChAnimationManager::blendAnimationBone(float animatetime,int animationId,int boneId){
+Matrix ChAnimationManager::blendAnimationBone(int animatetime,int animationId,int boneId){
 	return m_animations[animationId]->blendBone(animatetime,boneId);
+}
+
+
+// return the  root bone's transform matrix at animatetime
+// the result returned is from the second frame to the last frame
+// the first frame will not be returned for first frame equals last frame
+Matrix ChAnimationManager::getCurrentRootMatrix(int animatetime, const char* animation){
+
+	// animatetime should not be smaller than 0
+	assert(animatetime >= 0);
+	
+	int animationId = m_animationMap[animation];
+	// check whether animatetime can be exactly divided by total animation time
+	int remain = animatetime % m_animations[animationId]->getAnimationTime();
+	// if remain is 0, then animatetime is the last frame's time
+	if(remain == 0)
+		return m_animations[animationId]->getTrack(0)->getLastTransformMatrix();
+	// else blend bone as usual
+	else
+		return m_animations[animationId]->blendBone(animatetime,0);
+	
+}
+
+// return the root bone's transform matrix one frame before animatetime
+// the result returned is from the first frame to the last frame but one
+// the last frame will not be returned for first frame equals last frame
+Matrix ChAnimationManager::getLastRootMatrix(int animatetime, const char* animation){
+
+	// animatetime should not be smaller than 0
+	assert(animatetime >= 0);
+
+	int animationId = m_animationMap[animation];
+	// to avoid -1, set animatetime to next loop's corresponding value
+	if(animatetime == 0) animatetime = m_animations[animationId]->getAnimationTime();
+	// return last frame, root bone's matrix
+	return m_animations[animationId]->blendBone(animatetime - 1,0);
 }

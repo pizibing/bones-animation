@@ -34,29 +34,58 @@ ChBoneInstance* ChSkeletonInstance::getRoot(){
 
 // this function will calculate the current position of all the bone
 // instance of this skeleton.
+// this function will return a matrix that describes the way the character
+// should change in world space.(this matrix is produced by the move of 
+// root bone)
 // animanager where you can get all animation
 // animation is the name of the animation to use, aimationtime is the 
 // current play time in animation
-void ChSkeletonInstance::calSkeletonInstance(ChAnimationManager * animanager, float aimationtime, const char* animation){
-	for(int i=0;i<m_skeleton->getBoneNum();i++){
+matrix44 ChSkeletonInstance::calSkeletonInstance(ChAnimationManager * animanager, int aimationtime, const char* animation){
+	// set root bone's matrix to identity matrix
+	bones[0]->setMatrix(matrix44());
+	// for all bones except root bone, set matrix to relative matrix this animation time
+	for(int i=1;i<m_skeleton->getBoneNum();i++){
 		bones[i]->setMatrix(animanager->blendAnimationBone(aimationtime,animation,m_skeleton->getBone(i)->getName()));
 	}
 	calculateAbsoluteTransform(m_skeleton->getRootBone()->getId());
+
+	// use getCurrentRootMatrix and getLastRootMatrix to calculate
+	// the return matrix44
+	return matrix44();
 }
 
 // this function will calculate the current position of all the bone
 // instance of this skeleton.
+// this function will return a matrix that describes the way the character
+// should change in world space.(this matrix is produced by the move of 
+// root bone)
 // animanager where you can get all animation
 // animation1 and animation2 are the names of the animation to use,
 // this function will blend these two animations
-//  time_ms is the current play time in animation
-void ChSkeletonInstance::calSkeletonInstance(ChAnimationManager * animanager, float aimationtime, const char* animation1, const char* animation2){
-	for(int i=0;i<m_skeleton->getBoneNum();i++){
-		matrix44 m1 = animanager->blendAnimationBone(aimationtime,animation1,m_skeleton->getBone(i)->getName());
-		matrix44 m2 = animanager->blendAnimationBone(aimationtime,animation2,m_skeleton->getBone(i)->getName());
-		bones[i]->setMatrix(m1*0.5+m2*0.5);
+// animationtime1 and animationtime2 are the current play time of animation1
+// and animation2
+// power1 is the power of animation1 in this blend, it should be 0 to 1
+// power of animation2 is of cause 1 minus power1
+matrix44 ChSkeletonInstance::calSkeletonInstance(ChAnimationManager * animanager, int animationtime1,
+												 int animationtime2, const char* animation1, const char* animation2
+												 , float power1){
+	// power1 should be 0 to 1
+    assert(power1 > 0);
+	assert(power1 < 1);
+
+	for(int i=1;i<m_skeleton->getBoneNum();i++){
+		// set root bone's matrix to identity matrix
+		bones[0]->setMatrix(matrix44());
+		// for all bones except root bone, set matrix to relative matrix this animation time
+		matrix44 m1 = animanager->blendAnimationBone(animationtime1,animation1,m_skeleton->getBone(i)->getName());
+		matrix44 m2 = animanager->blendAnimationBone(animationtime2,animation2,m_skeleton->getBone(i)->getName());
+		bones[i]->setMatrix(m1*power1+m2*(1-power1));
 	}
 	calculateAbsoluteTransform(m_skeleton->getRootBone()->getId());
+
+	// use getCurrentRootMatrix and getLastRootMatrix to calculate
+	// the return matrix44
+	return matrix44();
 }
 
 // get a bone instance from the bones whose id equals to the given id

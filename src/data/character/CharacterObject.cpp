@@ -1,4 +1,5 @@
 #include <assert.h>
+#include "../matrixlib/mtxlib.h"
 #include "../data/MoveSelfObject.h"
 #include "../data/LineObject.h"
 #include "../data/VBOMesh.h"
@@ -61,6 +62,16 @@ int CharacterObject::getType(){
 int CharacterObject::getID(){
 	return id;
 }
+
+// return the line array that this object represent
+// num will be changed into the length of the line array
+Line* CharacterObject::representInLine(int* num){
+	return NULL;
+}
+
+// this function change the position matrix of the 
+// class by multiplying change
+void CharacterObject::moveSelf(matrix44 change){}
 
 // this function is the factory function of skeleton
 // user should use the return pointer to initialize the skeleton
@@ -186,8 +197,14 @@ void CharacterObject::setVBOMaterial(const GLfloat am[4], const GLfloat di[4], c
 
 // set the chMatrixInstance, the default matrix is an identity 4*4 matrix
 void CharacterObject::setMatrix(float* matrix){
+	// set matrix
 	for(int i = 0; i < 16; i++)
 		chMatrixInstance[i] = matrix[i];
+	// update chvbomeshes
+	for(int i = 0; i < meshSize; i++){
+		// update chvbomeshes according to matrix instance
+		chvbomeshes[i]->updateVBO(chMatrixInstance);
+	}
 }
 
 // set the current gesture of the character
@@ -203,7 +220,7 @@ void CharacterObject::setGesture(const char* animation, int time_ms){
 		// update chvbomeshes according to vertex instance
 		chvbomeshes[i]->updateVBO(chSkinInstance);
 		// update chvbomeshes according to matrix instance
-		chvbomeshes[i]->updateVBO(this->chMatrixInstance);
+		chvbomeshes[i]->updateVBO(chMatrixInstance);
 	}
 	// update vbomeshes according to chvbomeshes
 	for(int i = 0; i < meshSize; i++){
