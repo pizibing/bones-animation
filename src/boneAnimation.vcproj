@@ -413,6 +413,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\matrixlib\matrix.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\matrixlib\matrix.h"
 				>
 			</File>
