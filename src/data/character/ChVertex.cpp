@@ -48,15 +48,13 @@ void ChVertex::initPairs(int num){
 // matrix should be a float[16]
 // boneId, matrix, power will be set to the corresponding properties
 // in VBpair
-void ChVertex::initPair(int pairNum, int boneId, float* matrix, float power){
+void ChVertex::initPair(int pairNum, char* boneName, float power){
 	// pairNum should be smaller than pairNum
 	assert(pairNum < this->pairNum);
 
 	// init pair
-	pairs[pairNum].boneId = boneId;
+	pairs[pairNum].boneId = boneName;
 	pairs[pairNum].power = power;
-	matrix44 m = matrix44(matrix);
-	pairs[pairNum].matrix = m;
 }
 
 // set id of this vertex to id
