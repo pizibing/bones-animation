@@ -1,6 +1,18 @@
 #include "ModelLoader.h"
 #include "SimpleModelLoader.h"
+#include "../matrixlib/mtxlib.h"
 #include "../data/VBOMesh.h"
+#include "../data/VBOObject.h"
+#include "../data/LineObject.h"
+#include "../data/MoveSelfObject.h"
+#include "../data/character/ChSkin.h"
+#include "../data/character/ChBone.h"
+#include "../data/character/ChSkeleton.h"
+#include "../data/character/ChKeyFrame.h"
+#include "../data/character/ChTrack.h"
+#include "../data/character/ChAnimation.h"
+#include "../data/character/ChAnimationManager.h"
+#include "../data/character/CharacterObject.h"
 #include "../managers/ObjectManager.h"
 #include "../managers/TextureManager.h"
 
@@ -13,125 +25,95 @@ SimpleModelLoader::~SimpleModelLoader(void){
 bool SimpleModelLoader::loadModel(int kind, char* path){
 	objectManager = ObjectManager::getInstance();
 
-	//texture
-	TextureManager* textureManager = TextureManager::getInstance();
-	GLuint tex1 = textureManager->getTextureId("resource/leaf2.jpg");
-	GLuint tex2 = textureManager->getTextureId("resource/Reflection.jpg");
+	/** following is the demo initial of CharacterObject **/
 
-	//GLfloat vertices[] = {0.5,0.5,0.5,0.5,0.5,-0.5,-0.5,0.5,-0.5};
-	//VBOMesh* vbomesh = new VBOMesh(vertices,9,GL_DYNAMIC_DRAW);
+	// create a new CharacterObject
+	CharacterObject* character = new CharacterObject();
 
-	//Mesh* mesh = new Mesh();
-	////upper face
-	//MyPolygon* polygon = new MyPolygon();
-	//polygon->vertices->push_back(new Vector3D(0.5,0.5,0.5));
-	//polygon->vertices->push_back(new Vector3D(0.5,0.5,-0.5));
-	//polygon->vertices->push_back(new Vector3D(-0.5,0.5,-0.5));
-	//polygon->vertices->push_back(new Vector3D(-0.5,0.5,0.5));
-	//polygon->hasTexture = true;
-	//polygon->texID = tex1;
-	//polygon->verticeTexCoords->push_back(new Vector3D(0,0,0));
-	//polygon->verticeTexCoords->push_back(new Vector3D(0,1,0));
-	//polygon->verticeTexCoords->push_back(new Vector3D(1,1,0));
-	//polygon->verticeTexCoords->push_back(new Vector3D(1,0,0));
-	//polygon->hasNormals = true;
-	//polygon->verticeNormals->push_back(new Vector3D(0,1,0));
-	//polygon->verticeNormals->push_back(new Vector3D(0,1,0));
-	//polygon->verticeNormals->push_back(new Vector3D(0,1,0));
-	//polygon->verticeNormals->push_back(new Vector3D(0,1,0));
-	//mesh->polygons->push_back(polygon);
-	////down face
-	//polygon = new MyPolygon();
-	//polygon->vertices->push_back(new Vector3D(0.5,-0.5,0.5));
-	//polygon->vertices->push_back(new Vector3D(0.5,-0.5,-0.5));
-	//polygon->vertices->push_back(new Vector3D(-0.5,-0.5,-0.5));
-	//polygon->vertices->push_back(new Vector3D(-0.5,-0.5,0.5));
-	//polygon->hasTexture = true;
-	//polygon->texID = tex1;
-	//polygon->verticeTexCoords->push_back(new Vector3D(0,0,0));
-	//polygon->verticeTexCoords->push_back(new Vector3D(0,1,0));
-	//polygon->verticeTexCoords->push_back(new Vector3D(1,1,0));
-	//polygon->verticeTexCoords->push_back(new Vector3D(1,0,0));
-	//polygon->hasNormals = true;
-	//polygon->verticeNormals->push_back(new Vector3D(0,-1,0));
-	//polygon->verticeNormals->push_back(new Vector3D(0,-1,0));
-	//polygon->verticeNormals->push_back(new Vector3D(0,-1,0));
-	//polygon->verticeNormals->push_back(new Vector3D(0,-1,0));
-	//mesh->polygons->push_back(polygon);
-	////left
-	//polygon = new MyPolygon();
-	//polygon->vertices->push_back(new Vector3D(-0.5,0.5,0.5));
-	//polygon->vertices->push_back(new Vector3D(-0.5,0.5,-0.5));
-	//polygon->vertices->push_back(new Vector3D(-0.5,-0.5,-0.5));
-	//polygon->vertices->push_back(new Vector3D(-0.5,-0.5,0.5));
-	//polygon->hasTexture = true;
-	//polygon->texID = tex1;
-	//polygon->verticeTexCoords->push_back(new Vector3D(0,0,0));
-	//polygon->verticeTexCoords->push_back(new Vector3D(0,1,0));
-	//polygon->verticeTexCoords->push_back(new Vector3D(1,1,0));
-	//polygon->verticeTexCoords->push_back(new Vector3D(1,0,0));
-	//polygon->hasNormals = true;
-	//polygon->verticeNormals->push_back(new Vector3D(-1,0,0));
-	//polygon->verticeNormals->push_back(new Vector3D(-1,0,0));
-	//polygon->verticeNormals->push_back(new Vector3D(-1,0,0));
-	//polygon->verticeNormals->push_back(new Vector3D(-1,0,0));
-	//mesh->polygons->push_back(polygon);
-	////right
-	//polygon = new MyPolygon();
-	//polygon->vertices->push_back(new Vector3D(0.5,0.5,0.5));
-	//polygon->vertices->push_back(new Vector3D(0.5,0.5,-0.5));
-	//polygon->vertices->push_back(new Vector3D(0.5,-0.5,-0.5));
-	//polygon->vertices->push_back(new Vector3D(0.5,-0.5,0.5));
-	//polygon->hasTexture = true;
-	//polygon->texID = tex1;
-	//polygon->verticeTexCoords->push_back(new Vector3D(0,0,0));
-	//polygon->verticeTexCoords->push_back(new Vector3D(0,1,0));
-	//polygon->verticeTexCoords->push_back(new Vector3D(1,1,0));
-	//polygon->verticeTexCoords->push_back(new Vector3D(1,0,0));
-	//polygon->hasNormals = true;
-	//polygon->verticeNormals->push_back(new Vector3D(1,0,0));
-	//polygon->verticeNormals->push_back(new Vector3D(1,0,0));
-	//polygon->verticeNormals->push_back(new Vector3D(1,0,0));
-	//polygon->verticeNormals->push_back(new Vector3D(1,0,0));
-	//mesh->polygons->push_back(polygon);
-	////front
-	//polygon = new MyPolygon();
-	//polygon->vertices->push_back(new Vector3D(0.5,0.5,0.5));
-	//polygon->vertices->push_back(new Vector3D(0.5,-0.5,0.5));
-	//polygon->vertices->push_back(new Vector3D(-0.5,-0.5,0.5));
-	//polygon->vertices->push_back(new Vector3D(-0.5,0.5,0.5));
-	//polygon->hasTexture = true;
-	//polygon->texID = tex1;
-	//polygon->verticeTexCoords->push_back(new Vector3D(0,0,0));
-	//polygon->verticeTexCoords->push_back(new Vector3D(0,1,0));
-	//polygon->verticeTexCoords->push_back(new Vector3D(1,1,0));
-	//polygon->verticeTexCoords->push_back(new Vector3D(1,0,0));
-	//polygon->hasNormals = true;
-	//polygon->verticeNormals->push_back(new Vector3D(0,0,1));
-	//polygon->verticeNormals->push_back(new Vector3D(0,0,1));
-	//polygon->verticeNormals->push_back(new Vector3D(0,0,1));
-	//polygon->verticeNormals->push_back(new Vector3D(0,0,1));
-	//mesh->polygons->push_back(polygon);
-	////back
-	//polygon = new MyPolygon();
-	//polygon->vertices->push_back(new Vector3D(0.5,0.5,-0.5));
-	//polygon->vertices->push_back(new Vector3D(0.5,-0.5,-0.5));
-	//polygon->vertices->push_back(new Vector3D(-0.5,-0.5,-0.5));
-	//polygon->vertices->push_back(new Vector3D(-0.5,0.5,-0.5));
-	//polygon->hasTexture = true;
-	//polygon->texID = tex1;
-	//polygon->verticeTexCoords->push_back(new Vector3D(0,0,0));
-	//polygon->verticeTexCoords->push_back(new Vector3D(0,1,0));
-	//polygon->verticeTexCoords->push_back(new Vector3D(1,1,0));
-	//polygon->verticeTexCoords->push_back(new Vector3D(1,0,0));
-	//polygon->hasNormals = true;
-	//polygon->verticeNormals->push_back(new Vector3D(0,0,-1));
-	//polygon->verticeNormals->push_back(new Vector3D(0,0,-1));
-	//polygon->verticeNormals->push_back(new Vector3D(0,0,-1));
-	//polygon->verticeNormals->push_back(new Vector3D(0,0,-1));
-	//mesh->polygons->push_back(polygon);
+	/* step1: initialize skeleton */
+	// create a new ChSkeleton
+	ChSkeleton* skeleton = character->getSkeleton();
+	// get bone number of the skeleton from Fcollada
+	int bone_num = 0;
+	// set bone number to skeleton
+	skeleton->init(bone_num);
+	// for each bone
+	for(int i = 0; i < bone_num; i++){
+		/* create a new ChBone, the name of the bone is necessary */
+		// get bone name from Fcollada
+		std::string name = "";
+		ChBone* bone = skeleton->getBone(name);
+		/* initialize the bone */
+		// get relative transform matrix of the bone from Fcollada
+		Matrix matrix = Matrix();
+		// set bone's relative transform matrix 
+		bone->setOriginalTransformMatrix(matrix);
+		// get parent's name
+		std::string parentName = "";
+		// get parent's pointer
+		ChBone* parent = skeleton->getBone(parentName);
+		// set parent
+		bone->SetParentBone(parent);
+		// get child number from Fcollada
+		int child_num = 0;
+		// set child number
+		bone->init(child_num);
+		// for each child
+		for(int j = 0; j < child_num; j++){
+			// get child's name from Fcollada
+			std::string childName = "";
+			// get child's pointer
+			ChBone* child = skeleton->getBone(childName);
+			// set child
+			bone->addChildBone(child);
+		}
+	}
+	// get root bone's name from Fcollada
+	std::string rootName = "";
+	// get root's pointer
+	ChBone* root = skeleton->getBone(rootName);
+	// set root
+	skeleton->setRootBone(root);
 
-	//meshManager->addMesh(0,mesh);
+	/* step2: initialize animations */
+	// create a new animation manager
+	ChAnimationManager* animations = character->getAnimations();
+	// get animation number of this CharacterObject from Fcollada
+	int animation_num = 0;
+	// set animation number
+	animations->init(animation_num);
+	// for each animation
+	for(int i = 0; i < animation_num; i++){
+		// create a new animation, the name of the animation is necessary
+		// get name of the animation from Fcollada
+		std::string animationName = "";
+		ChAnimation* animation = animations->getAnimation(animationName);
+		/* each bone of the skeleton has one corresponding ChTrack in one
+		   animation which records the movement of the bone */
+		// for each bone (how to go through all the bones is your choice)
+		for(;;){
+			// get bone's name
+			std::string boneName = "";
+			// get bone's relative ChTrack
+			ChTrack* track = animation->getTrack(boneName);
+			/* initialize the track */
+			// get key frame number of this track from Fcollada
+			int frame_num = 0;
+			// set key frame number
+			track->init(frame_num);
+			// for each key frame
+			for(;;){
+				// get relative change matrix of the bone in this key frame
+				// from Fcollada
+				Matrix matrix = Matrix();
+				// get this key frame's frame number in the whole animation
+				// from Fcollada
+				int frame_time = 0;
+				// add the key frame into the track
+				track->addKeyFrame(matrix,frame_time);
+			}
+		}
+	}
 
 	return true;
 }
