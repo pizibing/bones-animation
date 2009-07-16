@@ -5,6 +5,7 @@
 #include "../data/VBOObject.h"
 #include "../data/LineObject.h"
 #include "../data/MoveSelfObject.h"
+#include "../data/character/ChVertex.h"
 #include "../data/character/ChSkin.h"
 #include "../data/character/ChBone.h"
 #include "../data/character/ChSkeleton.h"
@@ -114,6 +115,85 @@ bool SimpleModelLoader::loadModel(int kind, char* path){
 			}
 		}
 	}
+
+	/* step3: initialize skin */
+	// create new ChSkin
+	ChSkin* skin = character->getSkin();
+	// get vertex number of the skin from Fcollada
+	int vertexNum = 0;
+	// set vertex number(no duplicated vertex is allowed)
+	skin->initVertices(vertexNum);
+	// initialize each vertex in the skin
+	for(int i = 0; i < vertexNum; i++){
+		// get position of the vertex to be added from Fcollada
+		float px,py,pz;
+		// create a new vertex
+		ChVertex* vertex = new ChVertex(px,py,pz);
+		// get normal of the vertex from Fcollada
+		float nx,ny,nz;
+		// set normal
+		vertex->setDefaultNormal(nx,ny,nz);
+		// get number of bones this vertex relates to from Fcollada
+		int relatedBoneNum = 0;
+		// set related bone number
+		vertex->initPairs(relatedBoneNum);
+		/* pair is a struct that stores the related bones of the
+		  vertex and their power */
+		// for each pair
+		for(int j = 0; j < relatedBoneNum; j++){
+			// get related bone name from Fcollada
+			char* boneName = "";
+			// get power of the bone to this vertex
+			// please notice that the sum of all the powers of a vertex
+			// should be 1
+			float power = 0;
+			// set pair
+			vertex->initPair(j,boneName,power);
+		}
+	}
+
+	/* step4: initialize skeleton and skin instance */
+	// this step is easy, just use the function below
+	character->initInstance();
+
+	/* step5: initialize VBOs(a VBO is a group of triangles that have the
+	   same material and textures) */
+	// get number of VBOs that you need to display this CharacterObject
+	int vboNum = 0;
+	// set vbo number
+	character->initVBOs(vboNum);
+	// for each vbo
+	for(int i = 0; i < vboNum; i++){
+		/* vertices is an array of ids of ChVertex that is contained 
+		   in this VBO, you can get the id of each vertex use getId()
+		   function of ChVertex, perhaps you can generate all vertices'
+		   id information when you built the skin */
+		// generate each vbo's vertices
+		int* vertices = 0;
+		// get the length of vertices
+		int vSize = 0;
+		// initialize i-th vbo
+		character->initVBO(vertices,vSize,i);
+		// get texture coordinates of vertices
+		float* texCoord = 0;
+		// get length of texCoord
+		int tcSize = 0;
+		// get texture id
+		int texId = 0;
+		// set i-th vbo's texture
+		character->setVBOTexture(texCoord,tcSize,texId,i);
+		// get material information of that vbo
+		GLfloat am[4];
+		GLfloat di[4];
+		GLfloat sp[4];
+		GLfloat em[4];
+		GLfloat sh;
+		// set i-th vbo's material
+		character->setVBOMaterial(am,di,sp,em,sh,i);
+	}
+
+	/* step6: add the character to the ObjectManager */
+	objectManager->addVBOObject(character);
 
 	return true;
 }
