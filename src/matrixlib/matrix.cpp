@@ -50,6 +50,11 @@ inline void Matrix::operator *= (float factor){
 // set the matrix with the given rotation and translation
 inline void Matrix::set(const Quaternion rotation, Vector3D translation){
 	rotation.SetToMatrix(*this);
+	// row 3
+	m[12] = translation.x;
+	m[13] = translation.y;
+	m[14] = translation.z;
+	m[15] = 1.0f;
 }
 
 // set the matrix with the given rotation ,translation will not be changed
@@ -60,9 +65,9 @@ inline void Matrix::set(const Quaternion rotation){
 // set the matrix with the given translation, rotation will not be changed
 inline void Matrix::set(Vector3D translation){
 	// row 3
-	m[3] = translation.x;
-	m[7] = translation.y;
-	m[11] = translation.z;
+	m[12] = translation.x;
+	m[13] = translation.y;
+	m[14] = translation.z;
 	m[15] = 1.0f;
 }
 
@@ -73,7 +78,7 @@ inline Quaternion Matrix::getRotation() const{
 
 // @return the translation of the matrix
 inline Vector3D Matrix::getTranslation() const{
-	return Vector3D(m[3],m[7],m[11]);
+	return Vector3D(m[12],m[13],m[14]);
 }
 
 // Code taken and adapted from nVidia's nv_algebra: det2x2, det3x3, invert, multiply
