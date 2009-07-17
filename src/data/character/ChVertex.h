@@ -7,9 +7,7 @@ class Matrix;
 // this bone and the power of this bone
 struct VBpair{
     // the related bone's id
-	int boneId;
-	// the default bone position matrix's inverse matrix
-	Matrix matrix;
+	char* boneId;
 	// this bone's power to the vertex
 	float power;
 };
@@ -42,7 +40,7 @@ public:
 	// matrix should be a float[16]
 	// boneId, matrix, power will be set to the corresponding properties
 	// in VBpair
-	void initPair(int pairNum, int boneId, float* matrix, float power);
+	void initPair(int pairNum, char* boneName, float power);
 
 	// set id of this vertex to id
 	void setId(int id);

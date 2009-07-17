@@ -1,6 +1,8 @@
 #include <gl/glut.h>
 #include <gl/glext.h>
+#include <assert.h>
 
+#include "../data/SimpleLine.h"
 #include "../matrixlib/Vector3D.h"
 #include "../data/VBOMesh.h"
 #include "Display.h"
@@ -84,3 +86,30 @@ void ConcreteDisplay::display(bool isWire,const VBOMesh* toDisplay,int num){
 		}
 	}
 }
+
+// display a group of lines
+// toDisplay specifies the array of lines to display
+// num is the length of this array
+void ConcreteDisplay::display(const SimpleLine* toDisplay, int num){
+	
+	// toDisplay should not be null
+	assert(toDisplay);
+	// num should not be smaller than 0
+	assert(num >= 0);
+
+	// draw lines
+	// set light, texture, color
+	glDisable(GL_LIGHTING);
+	glDisable(GL_TEXTURE_2D);
+	glColor3f(1,1,1);
+	// for each line
+	for(int i = 0; i < num; i++){
+		SimpleLine line = toDisplay[i];
+		// draw line
+		glBegin(GL_LINE);
+		glVertex3fv(line.getDot1());
+		glVertex3fv(line.getDot2());
+		glEnd();
+	}
+}
+

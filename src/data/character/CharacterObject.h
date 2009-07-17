@@ -1,6 +1,6 @@
 #pragma once
 
-class Line;
+class SimpleLine;
 class MoveSelfObject;
 class LineObject;
 class VBOMesh;
@@ -49,7 +49,7 @@ public:
 
 	// return the line array that this object represent
 	// num will be changed into the length of the line array
-	Line* representInLine(int* num);
+	SimpleLine* representInLine(int* num);
 
 	// this function change the position matrix of the 
 	// class by multiplying change

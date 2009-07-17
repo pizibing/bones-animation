@@ -1,6 +1,6 @@
 #pragma once
 
-class Line;
+class SimpleLine;
 
 // LineObject is a kind of object that can be represented
 // by a group of lines
@@ -10,5 +10,5 @@ class LineObject
 public:
 	// return the line array that this object represent
 	// num will be changed into the length of the line array
-	virtual Line* representInLine(int* num) = 0;
+	virtual SimpleLine* representInLine(int* num) = 0;
 };

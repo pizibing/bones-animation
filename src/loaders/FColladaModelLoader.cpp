@@ -78,17 +78,24 @@ bool FColladaModelLoader::loadModel(int kind,const char* szPathName){
 	//store the vertices, normals, texturecoords and create staticobjects to display
 	storeVertices();
 
+	storeLight();
+
 	//store all the textures that contains in the document
 	storeTexture();
 
 	//store all the materials that contains in the document
 	storeMaterials();
 
+	storeCamera();
+
+	storeAnimation();
+
 	//build the scene
 	FCDSceneNode* ptr_root=m_document->GetVisualSceneRoot();
 	if(ptr_root!=NULL)
 	{
 		buildScene(ptr_root);
+		drawLine(ptr_root);
 	}
 
 	return true;
@@ -142,34 +149,33 @@ void FColladaModelLoader::storeVertices()
 				indices = geometrypolygonsinput->GetIndices();
 
 				//m_num_vertices=(int) indices->size();
-				int m_num_vertices=(int) geometrypolygonsinput->GetIndexCount();
+				m_num_vertices=(int) geometrypolygonsinput->GetIndexCount();
 				/*store the vertex*/
 
 				// source of vertex
 				source = ptr_polygons->GetParent()->FindSourceByType(FUDaeGeometryInput::POSITION);
 
 				// allocate memory for triangles and its vertex (a triangle has 3 vertex)
-				Vector3D *m_ptrs_vertices = (Vector3D*)malloc( m_num_vertices * sizeof(Vector3D) );
+				m_ptrs_vertices = (Vector3D*)malloc( m_num_vertices * sizeof(Vector3D) );
 
 				// look for vertices using indices
-				// 3 contiguiusos vertex form a triangle
+				// 3 vertex form a triangle
 
 				for (int i=0; i<m_num_vertices; i++) {
 					// a vertex index
 					int index=(int) indices[i];
 					// a vertex values from it index
 					float *p=&source->GetData()[index*3];
-					m_ptrs_vertices[i].x=p[0]/50;
-					m_ptrs_vertices[i].y=p[1]/50;
-					m_ptrs_vertices[i].z=p[2]/50;
+					m_ptrs_vertices[i].x=p[0];
+					m_ptrs_vertices[i].y=p[1];
+					m_ptrs_vertices[i].z=p[2];
 				}
 
 				/*store the normal*/
 
 				// source of vertex
 				source = ptr_polygons->GetParent()->FindSourceByType(FUDaeGeometryInput::NORMAL);
-				bool m_has_normals;
-				Vector3D *m_ptrs_normals;
+
 				if (source==NULL) {
 					m_has_normals=false;
 				} else {
@@ -197,8 +203,7 @@ void FColladaModelLoader::storeVertices()
 
 				// do the same for texcture coordinates
 				source = ptr_polygons->GetParent()->FindSourceByType(FUDaeGeometryInput::TEXCOORD);
-				bool m_has_texcoords;
-				Vector3D *m_ptrs_texcoords;
+
 				// maybe they are not present
 				if (source==NULL) {
 					m_has_texcoords=false;
@@ -264,7 +269,6 @@ void FColladaModelLoader::storeVertices()
 						m_vbo_texcoords[2*i+1] = (m_ptrs_texcoords+i)->y;
 					}
 				}
-
 				//create the staticobject with vertexs
 				StaticObject* objects = new StaticObject(m_vbo_vertices, m_num_vertices * 3);
 
@@ -286,6 +290,48 @@ void FColladaModelLoader::storeVertices()
 
 
 
+
+
+void FColladaModelLoader::storeLight(){
+	// how many lights there are?
+	FCDLightLibrary* lightlib=m_document->GetLightLibrary();
+	m_num_lights=(int) lightlib->GetEntityCount();
+
+	// copy lights to my structures
+	FCDLight* light;
+
+	for (int i=0; i<m_num_lights; i++) {
+		light = lightlib->GetEntity(i);
+
+		// ambiental light
+		if (light->GetLightType()==FCDLight::AMBIENT) {
+			// add our new light
+			m_ptrs_Ambientlights.push_back(light);
+			continue;
+		}
+
+		// spot light (luz focal)
+		if (light->GetLightType()==FCDLight::SPOT) {
+			// add our new light
+			m_ptrs_Spotlights.push_back(light);
+			continue;
+		}
+
+		// directional  light
+		if (light->GetLightType()==FCDLight::DIRECTIONAL) {
+			// add our new light
+			m_ptrs_Directionallights.push_back(light);
+			continue;
+		}
+
+		// point light
+		if (light->GetLightType()==FCDLight::POINT) {
+			// add our new light
+			m_ptrs_Pointlights.push_back(light);
+			continue;
+		}
+	}
+}
 
 //store all the textures that contains in the document
 void FColladaModelLoader::storeTexture(){
@@ -318,11 +364,181 @@ void FColladaModelLoader::storeMaterials(){
 	}
 }
 
+void FColladaModelLoader::storeCamera(){
+	// copy cameras to my structures
+	// cameras
+	FCDCameraLibrary* cameralib=m_document->GetCameraLibrary();
+	m_num_cameras=(int) cameralib->GetEntityCount();
+
+	FCDCamera* camera;
+	for (int i=0; i<m_num_cameras; i++) {
+		camera = cameralib->GetEntity(i);
+
+		// perspective camera
+		if (camera->IsPerspective()==true) {
+			// add our new camera
+			m_ptrs_Perspectivecameras.push_back(camera);
+			continue;
+		}
+
+		// orthographic camera
+		if (camera->IsOrthographic()==true) {
+			// add our new camera
+			m_ptrs_Orthographiccameras.push_back(camera);
+			continue;
+		}
+	}
+
+}
+
+void FColladaModelLoader::storeAnimation(){
+	// how many animations are there?
+	FCDAnimationLibrary* animationlib=m_document->GetAnimationLibrary();
+	m_num_animations=(int) animationlib->GetEntityCount();
+
+	FCDAnimation* animation;
+	for (int i=0; i<m_num_animations; i++) {
+		animation = animationlib->GetEntity(i);
+		m_ptrs_animation.push_back(animation);
+	}
+}
+
 //build the scene include the material of the polygons, the texture of the polygons and the matrix of the bone.
 void FColladaModelLoader::buildScene(FCDSceneNode* node_origin)
 {
 	//child scene node
 	FCDSceneNode* child_origin;
+
+	FCDTransform*  trans_origin;
+
+	// copy node transformations
+	for (int i=0; i<(int)node_origin->GetTransformCount(); i++) {
+		trans_origin=node_origin->GetTransform(i);
+
+		// rotation
+		if (trans_origin->GetType()== FCDTransform::ROTATION) {
+			FCDTRotation* trans_rot=dynamic_cast<FCDTRotation*>(trans_origin); // casting
+
+			// initialize curves
+			FCDAnimationCurve* m_x_curve=NULL;
+			FCDAnimationCurve* m_y_curve=NULL;
+			FCDAnimationCurve* m_z_curve=NULL;
+			FCDAnimationCurve* m_angle_curve=NULL;
+
+			// is there any animation ?
+			if (trans_rot->IsAnimated()) {
+
+				FCDAnimationCurve* curve;
+
+				// look for x animation
+				curve=trans_rot->GetAnimated()->FindCurve(".X");
+				if (curve!=NULL) {
+
+				}
+
+				// look for y animation
+				curve=trans_rot->GetAnimated()->FindCurve(".Y");
+				if (curve!=NULL){
+
+				}
+
+				// look for z animation
+				curve=trans_rot->GetAnimated()->FindCurve(".Z");
+				if (curve!=NULL){
+
+				}
+
+				// look for angle animation
+				curve=trans_rot->GetAnimated()->FindCurve(".ANGLE");
+				if (curve!=NULL){
+
+				}
+			}
+			continue;
+		}
+
+		// translation
+		if (trans_origin->GetType()== FCDTransform::TRANSLATION) {
+			FCDTTranslation* trans_trans=dynamic_cast<FCDTTranslation*>(trans_origin); // casting
+			// initialize curves
+			FCDAnimationCurve* m_x_curve=NULL;
+			FCDAnimationCurve* m_y_curve=NULL;
+			FCDAnimationCurve* m_z_curve=NULL;
+
+			// is there any animation ?
+			if (trans_trans->IsAnimated()) {
+
+				FCDAnimationCurve* curve;
+
+				// look for x animation
+				curve=trans_trans->GetAnimated()->FindCurve(".X");
+				if (curve!=NULL){
+
+				}
+
+				// look for y animation
+				curve=trans_trans->GetAnimated()->FindCurve(".Y");
+				if (curve!=NULL) {
+
+				}
+
+				// look for z animation
+				curve=trans_trans->GetAnimated()->FindCurve(".Z");
+				if (curve!=NULL) {
+
+				}
+			}	
+			continue;
+		}
+
+		// scale
+		if (trans_origin->GetType()== FCDTransform::SCALE) {
+			FCDTScale* trans_scale=dynamic_cast<FCDTScale*>(trans_origin); // casting 
+			// initialize curves
+			FCDAnimationCurve* m_x_curve=NULL;
+			FCDAnimationCurve* m_y_curve=NULL;
+			FCDAnimationCurve* m_z_curve=NULL;
+
+			// is there any animation ?
+			if (trans_scale->IsAnimated()) {
+
+				FCDAnimationCurve* curve;
+
+				// look for x animation
+				curve=trans_scale->GetAnimated()->FindCurve(".X");
+				if (curve!=NULL) {
+
+				}
+
+				// look for y animation
+				curve=trans_scale->GetAnimated()->FindCurve(".Y");
+				if (curve!=NULL) {
+
+				}
+
+				// look for z animation
+				curve=trans_scale->GetAnimated()->FindCurve(".Z");
+				if (curve!=NULL) {
+
+				}
+			}	
+			continue; // actually, not necessary
+		}
+
+		// matrix
+		if (trans_origin->GetType()== FCDTransform::MATRIX) {
+			FCDTMatrix* trans_matrix=dynamic_cast<FCDTMatrix*>(trans_origin); // casting
+			// animation
+			FCDAnimated* animated;
+			//int num_curves;
+			if (trans_matrix->IsAnimated()) {		
+				animated=trans_matrix->GetAnimated();
+			}
+			continue;
+		}
+
+
+	}
 
 	// copy node instances
 	FCDEntityInstance* instance;
@@ -343,6 +559,81 @@ void FColladaModelLoader::buildScene(FCDSceneNode* node_origin)
 		entity=instance->GetEntity();
 		name=entity->GetDaeId().c_str();
 
+		//check if the instance is controller instance
+		if(instance->GetType()==FCDEntityInstance::CONTROLLER)
+		{
+			//get the controller instance
+			FCDControllerInstance* controllerInstance = dynamic_cast<FCDControllerInstance*>(instance);
+
+			//get the skin controller
+			FCDSkinController* skin = dynamic_cast<FCDController*>(controllerInstance->GetEntity())->GetSkinController();
+
+			// look for this name in geo library
+			for (int j=0; j<(int)m_ptrs_geometries.size(); j++) {
+
+				//get the target geometries
+				if (m_ptrs_geometries[j]->GetDaeId().c_str()==skin->GetTarget()->GetDaeId().c_str()) {
+					
+					//get the polygon index
+					int meshIndex=0;
+					for(int p=0; p<j; p++)
+					{
+						meshIndex+=(int)m_ptrs_geometries[p]->GetPolygonsCount();
+					}
+
+					//get the geometry mesh
+					FCDGeometryMesh* mesh=m_ptrs_geometries[j];
+					FCDMaterial* material;
+
+					//the id of the pointed material
+					std::string id_material;
+
+					//look through the mesh
+					for (int i=0; i<(int)mesh->GetPolygonsCount(); i++) {
+
+						material=NULL;
+						// look for this material_semantic in geometry_instance
+						for (int k=0; k<(int)controllerInstance->GetMaterialInstanceCount(); k++) {
+							// look for this material in my material lib
+
+							FCDMaterialInstance* materialInstance = controllerInstance->GetMaterialInstance(k);
+							//get the material instance from the geo instance
+
+							//check whether the semantic of the material instance is equals to the semantic of the polygon 
+							if (materialInstance->GetSemantic()==mesh->GetPolygons(i)->GetMaterialSemantic()) {
+								//get the material id of the pointed material
+								id_material=materialInstance->GetMaterial()->GetDaeId().c_str();
+
+								// look for a pointer for that material in my material lib
+								for (int j=0; j<m_num_materials; j++){
+									if (m_ptrs_materials[j]->GetDaeId().c_str()==id_material) {
+										//set the material of the polygon
+										setFCMaterial(j, meshIndex+i);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			/*
+			for(int i = 0; i < (int)skin->GetJointCount(); i++)
+			{
+				FCDSkinControllerJoint* joint = skin->GetJoint(i);
+				FMMatrix44 inverse = joint->GetBindPoseInverse() * skin->GetBindShapeTransform();
+			}
+
+			for(int i = 0; i < (int)skin->GetInfluenceCount(); i++)
+			{
+				FCDSkinControllerVertex* influences = skin->GetVertexInfluence(i);
+				for(int j =0; j < (int)influences->GetPairCount(); j++)
+				{
+					FCDJointWeightPair* pairs = influences->GetPair(j);
+				}
+			}
+			*/
+		}
 		// look for this name in geo library
 		for (int j=0; j<(int)m_ptrs_geometries.size(); j++) {
 			if (m_ptrs_geometries[j]->GetDaeId().c_str()==name) {
@@ -364,6 +655,7 @@ void FColladaModelLoader::buildScene(FCDSceneNode* node_origin)
 		}
 		if (flag_found) continue;
 	}
+
 	for (int i=0; i<(int)node_origin->GetChildrenCount(); i++) {
 		child_origin=node_origin->GetChild(i);
 		buildScene(child_origin);
@@ -505,7 +797,7 @@ void FColladaModelLoader::setFCMaterial(int target, int index)
 	FCDTexture* texture;
 	FCDImage *image;
 
-	// diffusse textures
+	// diffuse textures
 	m_has_diffuse_texture=false;
 	m_texture_diffuse=NULL;
 	image=NULL;
@@ -582,8 +874,9 @@ void FColladaModelLoader::setFCMaterial(int target, int index)
 		//convert char* to string
 		std::string szFile=szPath;
 		//get the relative file path
-		szFile = szFile.substr(szDirSize);
-		//get the texture from the relatave path
+		szFile = szFile.substr(szDirSize+1);
+
+		//get the texture from the relative path
 		tex = textureManager->getTextureId(szFile.c_str());
 	}
 
@@ -605,20 +898,39 @@ void FColladaModelLoader::setFCMaterial(int target, int index)
 		//convert char* to string
 		std::string szFile=szPath;
 		//get the relative file path
-		szFile = szFile.substr(szDirSize);
-		//get the texture from the relatave path
+		szFile = szFile.substr(szDirSize+1);
+
+		//get the texture from the relative path
 		tex = textureManager->getTextureId(szFile.c_str());
 	}
 
 	//transparent texture
 	if(m_texture_transparent!=NULL)
 	{
+		//the absolute file path
+		char szPath[512];
+		//convert unicode to string
+		WideCharToMultiByte(CP_ACP, 0, m_texture_transparent->GetFilename().c_str(), -1, szPath, MAX_PATH, NULL, NULL);	
+		//temp path 
+		char		tempPath[MAX_PATH+1];		
+		// get the current path
+		GetCurrentDirectoryA(MAX_PATH, tempPath);		
+		//convert char* to string
+		std::string tempDir=tempPath;
+		//get the size of the string
+		int szDirSize = tempDir.size();
+		//convert char* to string
+		std::string szFile=szPath;
+		//get the relative file path
+		szFile = szFile.substr(szDirSize+1);
+		//get the texture from the relative path
+		tex = textureManager->getTextureId(szFile.c_str());
 	}
 
 	//if has texture, set the texture
 	if(tex != NULL)
 	{
-	((StaticObject *) objectManager->getVBOObject(2,index))->setTextures(m_total_texcoords[index], m_size_texcoords[index], tex);
+		((StaticObject *) objectManager->getVBOObject(2,index))->setTextures(m_total_texcoords[index], m_size_texcoords[index], tex);
 	}
 
 	//set the material
@@ -638,4 +950,53 @@ FCDImage *FColladaModelLoader::SearchTextureByName(fm::string textureid){
 	}
 	// if fail, null
 	return NULL;
+}
+
+
+
+
+
+void FColladaModelLoader::drawLine(FCDSceneNode* node_origin)
+{
+	bool flag_found = false;
+
+	flag_found = checkBone(node_origin);
+
+	if(flag_found == true){
+		FMVector3 v = node_origin->CalculateWorldTransform().GetTranslation();
+	}
+	for (int i=0; i<(int)node_origin->GetChildrenCount(); i++) {
+		FCDSceneNode* child_origin=node_origin->GetChild(i);
+		drawLine(child_origin);
+	}
+}
+
+bool FColladaModelLoader::checkBone(FCDSceneNode* node_origin)
+{
+	FCDEntityInstance* instance;
+
+	//the entity of the instance, and the name of the entity
+	FCDEntity* entity;
+	std::string name;
+
+	//instance flag to check which the instance id found in the library
+	bool flag_found = false;
+
+	//look through the instance
+	for (int i=0; i<(int)node_origin->GetInstanceCount(); i++) {
+
+		//set or reset the parameter
+		flag_found=false;
+		instance=node_origin->GetInstance(i);
+		entity=instance->GetEntity();
+		name=entity->GetDaeId().c_str();
+
+		// look for this name in geo library
+		for (int j=0; j<(int)m_ptrs_geometries.size(); j++) {
+			if (m_ptrs_geometries[j]->GetDaeId().c_str()==name) {
+				flag_found = true;
+			}
+		}
+	}
+	return flag_found;
 }

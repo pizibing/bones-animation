@@ -1,3 +1,4 @@
+#include <string.h>
 #include "TextureManager.h"
 #include "Texture.h"
 
@@ -31,9 +32,20 @@ TextureManager::~TextureManager(void){
 GLuint TextureManager::getTextureId(const char* path){
     GLuint id;
 	TextureMap::iterator it = textures->find(path);
-	//haven't built this texture , build a new one
+	// haven't built this texture , build a new one
 	if(it == textures->end()){
-		BuildTexture(path,id);
+		// get suffix of the path
+		std::string spath = std::string(path);
+		std::string suffix = spath.substr(spath.length() - 3, 3);
+		// if suffix is tga
+		if(suffix == "tga"){
+			TextureTga texture;
+			BuildTexture(path, &texture);
+			id = texture.texID;
+		}
+		// else
+		else
+		    BuildTexture(path,id);
 		std::pair<std::string,GLuint> p;
 		p.first = path;
 		p.second = id;
