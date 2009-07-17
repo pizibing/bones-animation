@@ -1,6 +1,6 @@
 #pragma once
 
-class matrix44;
+class Matrix;
 
 // ChBoneInstance is a class that stores the current instance
 // of a character's bone.
@@ -15,11 +15,35 @@ public:
 	// destructor
 	~ChBoneInstance(void);
 
+	// set function of rotation
+	void setRotation(const Quaternion &q);
+
+	// get function of rotation
+	const Quaternion & getRotation();
+
+	// set function of translation
+	void setTranslation(const Vector3D &v);
+
+	// get function of translation
+	const Vector3D & getTranslation();
+
+	// set function of absolute rotation
+	void setAbsoluteRotation(const Quaternion &q);
+
+	// get function of absolute rotation
+	const Quaternion & getAbsoluteRotation();
+
+	// set function of absolute translation
+	void setAbsoluteTranslation(const Vector3D &v);
+
+	// get function of absolute translation
+	const Vector3D & getAbsoluteTranslation();
+
 	// set function of matrix
-	void setMatrix(const matrix44 &matrix);
+	void setMatrix(const Matrix &matrix);
 
 	// get function of matrix
-	const matrix44 & getMatrix();
+	const Matrix & getMatrix();
 
 	// get function of id
 	int getId();
@@ -50,7 +74,16 @@ private:
 	int id;
 	// a matrix describes the current position of this bone instance
 	// the position is its relative position to the root
-	matrix44 matrix;
+	Matrix matrix;
+	// rotation in local space
+	Quaternion rotation;
+	// translation in world space
+	Vector3D  translation;
+	// rotation in local space
+	Quaternion absoluteRotation;
+	// translation in world space
+	Vector3D  absoluteTranslation;
+
 	// the id of this bone instance's father, root's fatherId is set
 	// to -1
 	int fatherId;

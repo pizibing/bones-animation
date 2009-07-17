@@ -147,7 +147,18 @@ inline Vector3D Vector3D::operator + (const Vector3D& vector)
 	v.z = z + vector.z; 
 	return v; 
 } 
- 
+
+//运算符重载(+) 
+//参数为Vector3D对象,返回另一个Vector3D对象 
+inline Vector3D operator + (const Vector3D& vector1, const Vector3D& vector2) 
+{ 
+	Vector3D v; 
+	v.x = vector1.x + vector2.x; 
+	v.y = vector1.y + vector2.y; 
+	v.z = vector1.z + vector2.z; 
+	return v; 
+} 
+
  
 //运算符重载(+) 
 //参数为VECTOR3D结构,返回另一个Vector3D对象 
@@ -253,6 +264,17 @@ inline Vector3D Vector3D::operator * (float fs)
 	v.x = x * fs; 
 	v.y = y * fs; 
 	v.z = z * fs; 
+	return v; 
+} 
+
+//运算符重载(*),标量与向量之积 
+//参数为浮点标量,返回另一个Vector3D对象 
+inline Vector3D operator * (const Vector3D & vector,float fs) 
+{ 
+	Vector3D v; 
+	v.x = vector.x * fs; 
+	v.y = vector.y * fs; 
+	v.z = vector.z * fs; 
 	return v; 
 } 
  

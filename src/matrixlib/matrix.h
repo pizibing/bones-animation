@@ -51,18 +51,20 @@ public:
 	
 	Matrix operator * (const Matrix & matrix) const;
 
-	inline void operator *= (const Matrix & matrix);
+	void operator *= (const Matrix & matrix);
 
-	inline Matrix operator * (float factor) const;
+	Vector3D operator * (const Vector3D &v) const;
 
-	inline void operator *= (float factor);
+	Matrix operator * (float factor) const;
+
+	void operator *= (float factor);
 
 	// set the matrix with the given rotation and translation
-	inline void set(const Quaternion rotation, Vector3D translation);
+	void set(const Quaternion rotation, Vector3D translation);
 	// set the matrix with the given rotation ,translation will not be changed
-	inline void set(const Quaternion rotation);
+	void set(const Quaternion rotation);
 	// set the matrix with the given translation, rotation will not be changed
-	inline void set(Vector3D translation);
+	void set(Vector3D translation);
 
 	// set the matrix with a float array
 	inline void set(float *mv){
@@ -75,19 +77,19 @@ public:
 	}
 
 	// @return the rotation of the matrix
-	inline Quaternion getRotation() const;
+	Quaternion getRotation() const;
 
 	// @return the translation of the matrix
-	inline Vector3D getTranslation() const;
+	Vector3D getTranslation() const;
 
 	// @return the inverse matrix of the matrix
 	Matrix getInverseMatrix() const;
 
 	// transform the position by the matrix
 	// @param position float array for a vector3d
-	inline void transform(float *position) const;
+	void transform(float *position) const;
 
-	inline Vector3D TransformVector(const Vector3D& v) const;
+	Vector3D TransformVector(const Vector3D& v) const;
 	
 
 public:	
@@ -96,5 +98,6 @@ public:
 	
 };
 
+Vector3D operator * (const Vector3D& v, const Matrix& m);
 
 #endif

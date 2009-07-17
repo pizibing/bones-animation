@@ -1,10 +1,8 @@
 #pragma once
 
-#ifndef Matrix
-#define Matrix matrix44
-#endif
-
 class Matrix;
+class Quaternion;
+class Vector3D;
 class ChBone;
 class ChKeyFrame;
 
@@ -22,10 +20,24 @@ public:
 
 	// @param animate_time
 	// @return the relative transform matrix for the bone
-	const Matrix& getTransformMatrix(int animate_time);
+	//const Matrix& getTransformMatrix(int animate_time);
+	
+	// @param animate_time the frame time
+	// @return the relative rotate transform for the bone
+	const Quaternion & getRotation(int animate_time);
+
+	// @param animate_time the frame time
+	// @return the relative translate transform for the bone
+	const Vector3D & getTranslation(int animate_time);
 
 	// @return the relative transform matrix of the last frame
-	const Matrix& getLastTransformMatrix();
+	//const Matrix& getLastTransformMatrix();
+
+	// @return the relative rotate transform of the last frame
+	const Quaternion& getLastRotation() const;
+
+	// @return the relative translate transform of the last frame
+	const Vector3D& getLastTranslation() const;
 
 	// @return the bone of the track
 	ChBone * getBone()const;
@@ -39,7 +51,7 @@ public:
 	bool addKeyFrame(const Matrix &matrix, int frame_time);
 
 	// @return the total animation time of the track
-	int getAnimationTime();
+	int getAnimationTime() const;
 
 	// initialized the key frame array
 	// @param frame_num the array size
@@ -55,5 +67,9 @@ private:
 	// bone to animate
 	ChBone * m_bone;
 	// current transform matrix
-	Matrix m_currentMatrix;
+	//Matrix m_currentMatrix;
+	// quaternion for temp
+	Quaternion m_currentRotation;
+	// vector3d for temp
+	Vector3D m_currentTranslation;
 };

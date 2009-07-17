@@ -1,5 +1,7 @@
 #include <assert.h>
-#include "../matrixlib/mtxlib.h"
+#include "../matrixlib/Vector3D.h"
+#include "../matrixlib/quaternion.h"
+#include "../matrixlib/matrix.h"
 #include "ChVertex.h"
 #include "ChSkin.h"
 

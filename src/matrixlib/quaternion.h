@@ -1,6 +1,8 @@
 #ifndef CHAR_QUATERNION_H
 #define CHAR_QUATERNION_H
 
+#include <math.h>
+
 class Matrix;
 class Vector3D;
 
@@ -107,7 +109,16 @@ public:
 	@param mat The matrix whose rotation we will represent */
 	static Quaternion MatrixRotationQuaternion(const Matrix& matrix);
 
+	/** Returns the slerp of this quaternion to other at factor time
+	@param q1 The first Quaternion 
+	@param q2 The Quaternion to interpolate to
+	@param factor The percentage (0 < time < 1) to slerp
+	@return The Quaternion formed by the slerp */
+	static Quaternion slerp(const Quaternion& q1, const Quaternion& q2, float factor);
+
 };
+
+Vector3D operator*(const Vector3D& v, const Quaternion& q);
 
 
 #endif

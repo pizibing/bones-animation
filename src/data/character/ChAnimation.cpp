@@ -1,5 +1,6 @@
-#include "../matrixlib/mtxlib.h"
-//#include "../matrixlib/matrix.h"
+#include "../matrixlib/Vector3D.h"
+#include "../matrixlib/quaternion.h"
+#include "../matrixlib/matrix.h"
 #include "ChAnimation.h"
 #include "ChBone.h"
 #include "ChSkeleton.h"
@@ -72,8 +73,26 @@ bool ChAnimation::init(int track_num){
 //        animation
 // @param boneId the index for the blending bone
 // @return the transform matrix for the bone
-const Matrix& ChAnimation::blendBone(int animatetime,int boneId){
-	return m_tracks[boneId]->getTransformMatrix(animatetime);
+//const Matrix& ChAnimation::blendBone(int animatetime,int boneId){
+//	return m_tracks[boneId]->getTransformMatrix(animatetime);
+//}
+
+// calculate the rotate transform for the bone
+// @param animatetime the time in second from the beginning of the
+//        animation
+// @param boneId the index for the blending bone
+// @return the rotate transform for the bone
+const Quaternion& ChAnimation::blendBoneRotation(int animatetime,int boneId){
+	return m_tracks[boneId]->getRotation(animatetime);
+}
+
+// calculate the translate transform for the bone
+// @param animatetime the time in second from the beginning of the
+//        animation
+// @param boneId the index for the blending bone
+// @return the translate transform for the bone
+const Vector3D& ChAnimation::blendBoneTranslation(int animatetime,int boneId){
+	return m_tracks[boneId]->getTranslation(animatetime);
 }
 
 // @return the total time of the animation;

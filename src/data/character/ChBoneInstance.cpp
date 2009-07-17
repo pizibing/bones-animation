@@ -1,4 +1,6 @@
-#include "../matrixlib/mtxlib.h"
+#include "../matrixlib/Vector3D.h"
+#include "../matrixlib/quaternion.h"
+#include "../matrixlib/matrix.h"
 #include "ChBoneInstance.h"
 
 
@@ -15,13 +17,53 @@ ChBoneInstance::~ChBoneInstance(void){
 	if(childId) delete[] childId;
 }
 
+// set function of rotation
+void ChBoneInstance::setRotation(const Quaternion &q){
+	rotation = q;
+}
+
+// get function of rotation
+const Quaternion & ChBoneInstance::getRotation(){
+	return rotation;
+}
+
+// set function of translation
+void ChBoneInstance::setTranslation(const Vector3D &v){
+	translation = v;
+}
+
+// get function of translation
+const Vector3D & ChBoneInstance::getTranslation(){
+	return translation;
+}
+
+// set function of absolute rotation
+void ChBoneInstance::setAbsoluteRotation(const Quaternion &q){
+	absoluteRotation = q;
+}
+
+// get function of absolute rotation
+const Quaternion & ChBoneInstance::getAbsoluteRotation(){
+	return absoluteRotation;
+}
+
+// set function of absolute translation
+void ChBoneInstance::setAbsoluteTranslation(const Vector3D &v){
+	absoluteTranslation = v;
+}
+
+// get function of absolute translation
+const Vector3D & ChBoneInstance::getAbsoluteTranslation(){
+	return absoluteTranslation;
+}
+
 // set function of matrix
-void ChBoneInstance::setMatrix(const matrix44 &matrix){
+void ChBoneInstance::setMatrix(const Matrix &matrix){
 	this->matrix = matrix;
 }
 
 // get function of matrix
-const matrix44 & ChBoneInstance::getMatrix(){
+const Matrix & ChBoneInstance::getMatrix(){
 	return matrix;
 }
 

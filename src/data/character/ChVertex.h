@@ -1,6 +1,6 @@
 #pragma once
 
-class matrix44;
+class Matrix;
 
 // vertex and bone pair
 // it tells which bone is related to, transforming matrix of 
@@ -9,7 +9,7 @@ struct VBpair{
     // the related bone's id
 	int boneId;
 	// the default bone position matrix's inverse matrix
-	matrix44 matrix;
+	Matrix matrix;
 	// this bone's power to the vertex
 	float power;
 };

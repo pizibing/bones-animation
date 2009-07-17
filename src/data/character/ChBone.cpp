@@ -1,5 +1,6 @@
-#include "../matrixlib/mtxlib.h"
-//#include "../matrixlib/matrix.h"
+#include "../matrixlib/Vector3D.h"
+#include "../matrixlib/quaternion.h"
+#include "../matrixlib/matrix.h"
 #include "ChBone.h"
 
 // constructor
@@ -63,15 +64,51 @@ bool ChBone::addChildBone(ChBone *bone){
 }
 
 // get the original relative transform matrix
-const Matrix& ChBone::getOriginalTransformMatrix()const{
-	return m_originalTransformMatrix;
+//const Matrix& ChBone::getOriginalTransformMatrix()const{
+//	return m_originalTransformMatrix;
+//}
+
+// get the rotation transform in local space
+const Quaternion& ChBone::getRotation() const{
+	return m_rotation;
+}
+
+// get the translation transform in local space
+const Vector3D& ChBone::getTranslation() const{
+	return m_translation;
+}
+
+// get the rotation transform in world space
+const Quaternion& ChBone::getAbsoluteRotation() const{
+	return m_absoluteRotation;
+}
+
+// get the translation transform in world space
+const Vector3D& ChBone::getAbsoluteTranslation() const{
+	return m_absoluteTranslation;
 }
 
 // set the original relative transform matrix
-void ChBone::setOriginalTransformMatrix(const Matrix &m){
-	m_originalTransformMatrix = m;
+void ChBone::setTransformMatrix(const Matrix &m){
+	m_rotation = m.getRotation();
+	m_translation = m.getTranslation();
 }
 
+// set the absolute transform matrix
+void ChBone::setAbsolteTransformMatrix(const Matrix &m){
+	m_absoluteRotation = m.getRotation();
+	m_translation = m.getTranslation();
+	m_bindPoseInverse = m.getInverseMatrix();
+}
+
+// get the bind pose inverse matrix in world space
+const Matrix & ChBone::getBindPoseInverse(){
+	return m_bindPoseInverse;
+}
+// set the bind pose inverse matrix
+void ChBone::setBindPoseInverse(const Matrix & m){
+	m_bindPoseInverse = m;
+}
 
 // initialize this bone with child_num child bones
 // @param child_num child bone number

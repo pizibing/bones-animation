@@ -1,4 +1,7 @@
-#include "../matrixlib/mtxlib.h"
+#include <assert.h>
+#include "../matrixlib/Vector3D.h"
+#include "../matrixlib/quaternion.h"
+#include "../matrixlib/matrix.h"
 #include "ChVertex.h"
 
 // constructor
@@ -55,7 +58,7 @@ void ChVertex::initPair(int pairNum, int boneId, float* matrix, float power){
 	// init pair
 	pairs[pairNum].boneId = boneId;
 	pairs[pairNum].power = power;
-	matrix44 m = matrix44(matrix);
+	Matrix m = Matrix(matrix);
 	pairs[pairNum].matrix = m;
 }
 

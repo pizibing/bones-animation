@@ -1,5 +1,7 @@
 #include <assert.h>
-#include "../matrixlib/mtxlib.h"
+#include "../matrixlib/Vector3D.h"
+#include "../matrixlib/quaternion.h"
+#include "../matrixlib/matrix.h"
 #include "../data/MoveSelfObject.h"
 #include "../data/LineObject.h"
 #include "../data/VBOMesh.h"
@@ -71,7 +73,7 @@ Line* CharacterObject::representInLine(int* num){
 
 // this function change the position matrix of the 
 // class by multiplying change
-void CharacterObject::moveSelf(matrix44 change){}
+void CharacterObject::moveSelf(Matrix change){}
 
 // this function is the factory function of skeleton
 // user should use the return pointer to initialize the skeleton
