@@ -71,6 +71,9 @@ public:
 	// set the bind pose inverse matrix
 	void setBindPoseInverse(const Matrix & m);
 
+	// calculate transform in world space and for all child bones
+	void calculateAbsoluteTransform();
+
 	// initialize this bone with child_num child bones
 	// @param child_num child bone number
 	// @return true if successful

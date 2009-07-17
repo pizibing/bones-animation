@@ -1,6 +1,8 @@
 #include "ModelLoader.h"
 #include "SimpleModelLoader.h"
-#include "../matrixlib/mtxlib.h"
+#include "../matrixlib/Vector3D.h"
+#include "../matrixlib/quaternion.h"
+#include "../matrixlib/matrix.h"
 #include "../data/VBOMesh.h"
 #include "../data/VBOObject.h"
 #include "../data/LineObject.h"
@@ -48,7 +50,7 @@ bool SimpleModelLoader::loadModel(int kind, char* path){
 		// get relative transform matrix of the bone from Fcollada
 		Matrix matrix = Matrix();
 		// set bone's relative transform matrix 
-		bone->setOriginalTransformMatrix(matrix);
+		bone->setTransformMatrix(matrix);
 		// get parent's name
 		std::string parentName = "";
 		// get parent's pointer
@@ -69,6 +71,9 @@ bool SimpleModelLoader::loadModel(int kind, char* path){
 			bone->addChildBone(child);
 		}
 	}
+	// calculate tranform in world space
+	skeleton->calculateAbsoluteTransform();
+
 	// get root bone's name from Fcollada
 	std::string rootName = "";
 	// get root's pointer

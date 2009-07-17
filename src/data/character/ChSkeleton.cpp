@@ -3,6 +3,7 @@
 #include "../matrixlib/matrix.h"
 #include "ChBone.h"
 #include "ChSkeleton.h"
+#include <assert.h>
 
 
 // constructor
@@ -74,6 +75,12 @@ ChBone* ChSkeleton::getRootBone()const{
 // get the array of all bones
 void ChSkeleton::setRootBone(ChBone *bone){
 	m_rootBone = bone;
+}
+
+// calculate transform in world space
+void ChSkeleton::calculateAbsoluteTransform(){
+	assert(m_rootBone);
+	m_rootBone->calculateAbsoluteTransform();
 }
 
 // init the pointer array for bones
