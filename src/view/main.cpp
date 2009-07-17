@@ -93,9 +93,31 @@ void myGlutKeyboard(unsigned char Key, int x, int y)
 {
 	switch(Key)
 	{
-	case 27: 
 	case 'q':
 		exit(0);
+		break;
+	// rotate camera clockwise
+	case 'z':
+		command->rotateCamera(0.1);
+		break;
+	// rotate camera anticlockwise
+	case 'x':
+		command->rotateCamera(-0.1);
+		break;
+	// character move forward
+	case GLUT_KEY_UP:
+		break;
+	// character move backward
+	case GLUT_KEY_DOWN:
+		break;
+	// character move left
+	case GLUT_KEY_LEFT:
+		break;
+	// character move right
+	case GLUT_KEY_RIGHT:
+		break;
+	//default
+	default:
 		break;
 	};
 
