@@ -62,7 +62,7 @@ void Command::drawScene(){
 //load all default models
 bool Command::loadModel(){
 	//modelLoader->loadModel(0,"cube.dae");
-	return modelLoader->loadModel(0,"F40/F40.dae");
+	return modelLoader->loadModel(2,"niki.dae");
 }
 
 // load a model with the given path
