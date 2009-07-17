@@ -39,9 +39,9 @@ GLuint TextureManager::getTextureId(const char* path){
 		std::string suffix = spath.substr(spath.length() - 3, 3);
 		// if suffix is tga
 		if(suffix == "tga"){
-			TextureTga *texture;
-			BuildTexture(path, texture);
-			id = texture->texID;
+			TextureTga texture;
+			BuildTexture(path, &texture);
+			id = texture.texID;
 		}
 		// else
 		else
