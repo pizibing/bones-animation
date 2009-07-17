@@ -2,11 +2,10 @@
 
 #include <string>
 
-#ifndef Matrix
-#define Matrix matrix44
-#endif
-
+class Vector3D;
+class Quaternion;
 class Matrix;
+
 
 // bone for a character,such as head,hand,foot etc.
 // has a parent bone pointer and a array for child bone pointers
@@ -47,10 +46,30 @@ public:
 	bool addChildBone(ChBone *bone);
 
 	// get the original relative transform matrix
-	const Matrix& getOriginalTransformMatrix()const;
+	//const Matrix& getTransformMatrix()const;
 
-	// set the original relative transform matrix
-	void setOriginalTransformMatrix(const Matrix &m);
+	// get the rotation transform in local space
+	const Quaternion& getRotation() const;
+
+	// get the translation transform in local space
+	const Vector3D& getTranslation() const;
+
+	// get the rotation transform in world space
+	const Quaternion& getAbsoluteRotation() const;
+
+	// get the translation transform in world space
+	const Vector3D& getAbsoluteTranslation() const;
+
+	// set the relative transform matrix
+	void setTransformMatrix(const Matrix &m);
+
+	// set the absolute transform matrix
+	void setAbsolteTransformMatrix(const Matrix &m);
+
+	// get the bind pose inverse matrix
+	const Matrix & getBindPoseInverse();
+	// set the bind pose inverse matrix
+	void setBindPoseInverse(const Matrix & m);
 
 	// initialize this bone with child_num child bones
 	// @param child_num child bone number
@@ -74,6 +93,17 @@ private:
 	int m_current_child_num;
 	
 	// relative transformation to form original skeleton
-	Matrix m_originalTransformMatrix;
+	//Matrix m_originalTransformMatrix;
+	
+	// rotation in local space
+	Quaternion m_rotation;
+	// translation in local space
+	Vector3D m_translation;
+	// rotation in world space
+	Quaternion m_absoluteRotation;
+	// translation in world space
+	Vector3D m_absoluteTranslation;
+
+	Matrix 	m_bindPoseInverse;
 
 };

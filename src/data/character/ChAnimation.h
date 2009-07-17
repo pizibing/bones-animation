@@ -3,8 +3,9 @@
 #include <map>
 #include <string>
 
-#define Matrix matrix44
-
+class Vector3D;
+class Quaternion;
+class Matrix;
 class ChBone;
 class ChSkeleton;
 class ChTrack;
@@ -43,7 +44,22 @@ public:
 	//        animation
 	// @param boneId the index for the blending bone
 	// @return the transform matrix for the bone
-	const Matrix& blendBone(int animatetime,int boneId);
+	//const Matrix& blendBone(int animatetime,int boneId);
+
+	// calculate the rotate transform for the bone
+	// @param animatetime the time in second from the beginning of the
+	//        animation
+	// @param boneId the index for the blending bone
+	// @return the rotate transform for the bone
+	const Quaternion& blendBoneRotation(int animatetime,int boneId);
+
+	// calculate the translate transform for the bone
+	// @param animatetime the time in second from the beginning of the
+	//        animation
+	// @param boneId the index for the blending bone
+	// @return the translate transform for the bone
+	const Vector3D& blendBoneTranslation(int animatetime,int boneId);
+
 
 	// @return the total time of the animation;
 	int getAnimationTime();

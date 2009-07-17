@@ -45,6 +45,9 @@ public:
 	// set root bone
 	void setRootBone(ChBone *bone);
 
+	// calculate transform in world space
+	void calculateAbsoluteTransform();
+
 	// init the pointer array for bones
 	// skeleton can be initialized only once
 	// @param bone_num the number of bones

@@ -1,4 +1,3 @@
-#include <math.h>
 #include "quaternion.h"
 #include "matrix.h"
 #include "Vector3D.h"
@@ -17,6 +16,12 @@ Quaternion Quaternion::operator*(const Quaternion& q) const{
 // rotate the vector3d by this quaternion
 Vector3D Quaternion::operator*(const Vector3D& v) const{
 	Quaternion out = (*this) * Quaternion(v.x, v.y, v.z, 0.0f) * (~(*this));
+	return Vector3D(out.x, out.y, out.z);
+}
+
+// rotate the vector3d by this quaternion
+Vector3D operator*(const Vector3D& v, const Quaternion& q) {
+	Quaternion out = q * Quaternion(v.x, v.y, v.z, 0.0f) * (~q);
 	return Vector3D(out.x, out.y, out.z);
 }
 
@@ -151,4 +156,8 @@ Quaternion Quaternion::MatrixRotationQuaternion(const Matrix& m){
 		q.w = (m[4] - m[1]) / s;
 	}
 	return q;
+}
+
+Quaternion Quaternion::slerp(const Quaternion& q1, const Quaternion& q2, float factor){
+	return q1.slerp(q2,factor);
 }

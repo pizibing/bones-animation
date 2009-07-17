@@ -53,7 +53,7 @@ public:
 
 	// this function change the position matrix of the 
 	// class by multiplying change
-	void moveSelf(matrix44 change);
+	void moveSelf(Matrix change);
 
 	// this function is the factory function of skeleton
 	// user should use the return pointer to initialize the skeleton

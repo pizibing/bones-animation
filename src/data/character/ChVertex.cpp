@@ -1,4 +1,7 @@
-#include "../matrixlib/mtxlib.h"
+#include <assert.h>
+#include "../matrixlib/Vector3D.h"
+#include "../matrixlib/quaternion.h"
+#include "../matrixlib/matrix.h"
 #include "ChVertex.h"
 
 // constructor

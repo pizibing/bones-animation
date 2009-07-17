@@ -1,7 +1,10 @@
 #include "Vector3D.h"
 #include "quaternion.h"
 #include "matrix.h"
-#include <limits>
+
+#ifndef DBL_EPSILON
+#define DBL_EPSILON     2.2204460492503131e-016 /* smallest such that 1.0+DBL_EPSILON != 1.0 */
+#endif
 
 // @return a matrix for the result of multiplication of this and another
 Matrix Matrix::operator * (const Matrix & matrix) const{
@@ -30,12 +33,20 @@ Matrix Matrix::operator * (const Matrix & matrix) const{
 }
 
 // multiply this matrix by another
-inline void Matrix::operator *= (const Matrix & matrix){
+void Matrix::operator *= (const Matrix & matrix){
 	*this = *this * matrix;
 }
 
+Vector3D Matrix::operator * (const Vector3D &v) const{
+	return Vector3D(
+		m[0] * v.x + m[1] * v.y + m[2] * v.z,
+		m[4] * v.x + m[5] * v.y + m[6] * v.z,
+		m[8] * v.x + m[9] * v.y + m[10] * v.z
+		);
+}
+
 // @return a matrix  for the result of this matrix scaled by factor
-inline Matrix Matrix::operator * (float factor) const{
+Matrix Matrix::operator * (float factor) const{
 	Matrix matrix (*this);
 	for(int i=0;i<16;i++)
 		matrix[i]*=factor;
@@ -43,12 +54,12 @@ inline Matrix Matrix::operator * (float factor) const{
 }
 
 // scale this matrix by factor
-inline void Matrix::operator *= (float factor){
+void Matrix::operator *= (float factor){
 	for(int i=0;i<16;i++) m[i]*=factor;
 }
 
 // set the matrix with the given rotation and translation
-inline void Matrix::set(const Quaternion rotation, Vector3D translation){
+void Matrix::set(const Quaternion rotation, Vector3D translation){
 	rotation.SetToMatrix(*this);
 	// row 3
 	m[12] = translation.x;
@@ -58,12 +69,12 @@ inline void Matrix::set(const Quaternion rotation, Vector3D translation){
 }
 
 // set the matrix with the given rotation ,translation will not be changed
-inline void Matrix::set(const Quaternion rotation){
+void Matrix::set(const Quaternion rotation){
 	rotation.SetToMatrix(*this);
 }
 
 // set the matrix with the given translation, rotation will not be changed
-inline void Matrix::set(Vector3D translation){
+void Matrix::set(Vector3D translation){
 	// row 3
 	m[12] = translation.x;
 	m[13] = translation.y;
@@ -72,12 +83,12 @@ inline void Matrix::set(Vector3D translation){
 }
 
 // @return the rotation of the matrix
-inline Quaternion Matrix::getRotation() const{
+Quaternion Matrix::getRotation() const{
 	return Quaternion::MatrixRotationQuaternion(*this);
 }
 
 // @return the translation of the matrix
-inline Vector3D Matrix::getTranslation() const{
+Vector3D Matrix::getTranslation() const{
 	return Vector3D(m[12],m[13],m[14]);
 }
 
@@ -101,7 +112,7 @@ static float det3x3(float a1, float a2, float a3, float b1, float b2, float b3, 
 }
 
 // @return the inverse matrix of the matrix
-inline Matrix Matrix::getInverseMatrix() const{
+Matrix Matrix::getInverseMatrix() const{
 	Matrix b;
 
 	b.m[0] =  det3x3(m[5], m[9], m[13], m[6], m[10], m[14], m[7], m[11], m[15]);
@@ -126,7 +137,7 @@ inline Matrix Matrix::getInverseMatrix() const{
 
 	double det = (m[0] * b.m[0]) + (m[1] * b.m[4]) + (m[2] * b.m[8]) + (m[3] * b.m[12]);
 
-	double epsilon = std::numeric_limits<double>::epsilon();
+	double epsilon = DBL_EPSILON;
 	if (det + epsilon >= 0.0f && det - epsilon <= 0.0f) {
 		det = 0.0001f;
 		if(det<0)det *=-1;
@@ -160,7 +171,7 @@ inline Matrix Matrix::getInverseMatrix() const{
 // transform the position by the matrix
 // (x,y,z,1) = (x,y,z,1)*[Matrix44]
 // @param position float array for a vector3d
-inline void Matrix::transform(float *position) const{
+void Matrix::transform(float *position) const{
 	float x,y,z;
 	x = m[0] * position[0] + m[1] * position[1] + m[2] * position[2];
 	y =	m[4] * position[0] + m[5] * position[1] + m[6] * position[2];
@@ -174,7 +185,7 @@ inline void Matrix::transform(float *position) const{
 //  (x,y,z,1)*[Matrix44]
 // @param v a vector3d to be transformed
 // @return a vector transformed by the matrix
-inline Vector3D Matrix::TransformVector(const Vector3D& v) const
+Vector3D Matrix::TransformVector(const Vector3D& v) const
 {
 	return Vector3D(
 		m[0] * v.x + m[1] * v.y + m[2] * v.z,
@@ -183,7 +194,15 @@ inline Vector3D Matrix::TransformVector(const Vector3D& v) const
 		);
 }
 
+Vector3D operator * (const Vector3D& v, const Matrix& m){
+	return Vector3D(
+		m[0] * v.x + m[1] * v.y + m[2] * v.z,
+		m[4] * v.x + m[5] * v.y + m[6] * v.z,
+		m[8] * v.x + m[9] * v.y + m[10] * v.z
+		);
+}
+
 // multiply a float by a matrix
-inline Matrix operator * (float factor, const Matrix & matrix){
+Matrix operator * (float factor, const Matrix & matrix){
 	return matrix*factor;
 }

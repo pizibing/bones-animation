@@ -1,8 +1,12 @@
-#include "../matrixlib/mtxlib.h"
+#include "../matrixlib/Vector3D.h"
+#include "../matrixlib/quaternion.h"
+#include "../matrixlib/matrix.h"
 #include "ChTrack.h"
 #include "ChSkeleton.h"
 #include "ChAnimation.h"
 #include "ChAnimationManager.h"
+
+#include <assert.h>
 
 // constructor
 ChAnimationManager::ChAnimationManager(void)
@@ -88,13 +92,43 @@ bool ChAnimationManager::init(int animation_num){
 // @param animation the name for the blending animation
 // @param bone the name for the blending bone
 // @return the transform matrix for the bone
-Matrix ChAnimationManager::blendAnimationBone(int animatetime,const std::string &animation,const std::string &bone){
+//Matrix ChAnimationManager::blendAnimationBone(int animatetime,const std::string &animation,const std::string &bone){
+//	int animationId = m_animationMap[animation];
+//	int boneId = m_skeleton->getBoneId(bone);
+//	if(animationId>=0&&animationId<=m_animation_num){
+//		return m_animations[animationId]->blendBone(animatetime,boneId);
+//	}
+//	return Matrix();
+//}
+
+// calculate the rotate transform for the bone with the animation
+// @param time_ms the time in second from the beginning of the
+//        animation
+// @param animation the name for the blending animation
+// @param bone the name for the blending bone
+// @return the rotate transform for the bone
+Quaternion ChAnimationManager::blendAnimationBoneRotation(int animatetime,const std::string &animation,const std::string &bone){
 	int animationId = m_animationMap[animation];
 	int boneId = m_skeleton->getBoneId(bone);
 	if(animationId>=0&&animationId<=m_animation_num){
-		return m_animations[animationId]->blendBone(animatetime,boneId);
+		return m_animations[animationId]->blendBoneRotation(animatetime,boneId);
 	}
-	return Matrix();
+	return Quaternion();
+}
+
+// calculate the translate transform for the bone with the animation
+// @param time_ms the time in second from the beginning of the
+//        animation
+// @param animation the name for the blending animation
+// @param bone the name for the blending bone
+// @return the translate transform for the bone
+Vector3D ChAnimationManager::blendAnimationBoneTranslation(int animatetime,const std::string &animation,const std::string &bone){
+	int animationId = m_animationMap[animation];
+	int boneId = m_skeleton->getBoneId(bone);
+	if(animationId>=0&&animationId<=m_animation_num){
+		return m_animations[animationId]->blendBoneTranslation(animatetime,boneId);
+	}
+	return Vector3D();
 }
 
 // calculate the transform matrix for the bone with the animation
@@ -103,36 +137,105 @@ Matrix ChAnimationManager::blendAnimationBone(int animatetime,const std::string 
 // @param animationId the index for the blending animation
 // @param boneId the index for the blending bone
 // @return the transform matrix for the bone
-Matrix ChAnimationManager::blendAnimationBone(int animatetime,int animationId,int boneId){
-	return m_animations[animationId]->blendBone(animatetime,boneId);
+//Matrix ChAnimationManager::blendAnimationBone(int animatetime,int animationId,int boneId){
+//	return m_animations[animationId]->blendBone(animatetime,boneId);
+//}
+
+// calculate the rotate transform for the bone with the animation
+// @param animatetime the time in second from the beginning of the
+//        animation
+// @param animationId the index for the blending animation
+// @param boneId the index for the blending bone
+// @return the rotate transform for the bone
+Quaternion ChAnimationManager::blendAnimationBoneRotation(int animatetime,int animationId,int boneId){
+	return m_animations[animationId]->blendBoneRotation(animatetime,boneId);
 }
 
+// calculate the translate transform for the bone with the animation
+// @param animatetime the time in second from the beginning of the
+//        animation
+// @param animationId the index for the blending animation
+// @param boneId the index for the blending bone
+// @return the translate transform for the bone
+Vector3D ChAnimationManager::blendAnimationBoneTranslation(int animatetime,int animationId,int boneId){
+	return m_animations[animationId]->blendBoneTranslation(animatetime,boneId);
+}
 
 // return the  root bone's transform matrix at animatetime
 // the result returned is from the second frame to the last frame
 // the first frame will not be returned for first frame equals last frame
-Matrix ChAnimationManager::getCurrentRootMatrix(int animatetime, const char* animation){
+//Matrix ChAnimationManager::getCurrentRootMatrix(int animatetime, const char* animation){
+//
+//	// animatetime should not be smaller than 0
+//	assert(animatetime >= 0);
+//	
+//	int animationId = m_animationMap[animation];
+//	// check whether animatetime can be exactly divided by total animation time
+//	int remain = animatetime % m_animations[animationId]->getAnimationTime();
+//	// if remain is 0, then animatetime is the last frame's time
+//	if(remain == 0)
+//		return m_animations[animationId]->getTrack(0)->getLastTransformMatrix();
+//	// else blend bone as usual
+//	else
+//		return m_animations[animationId]->blendBone(animatetime,0);
+//	
+//}
 
+// return the  root bone's rotate transform at animatetime
+// the result returned is from the second frame to the last frame
+// the first frame will not be returned for first frame equals last frame
+Quaternion ChAnimationManager::getCurrentRootRotation(int animatetime, const char* animation){
 	// animatetime should not be smaller than 0
 	assert(animatetime >= 0);
-	
+
 	int animationId = m_animationMap[animation];
 	// check whether animatetime can be exactly divided by total animation time
 	int remain = animatetime % m_animations[animationId]->getAnimationTime();
 	// if remain is 0, then animatetime is the last frame's time
 	if(remain == 0)
-		return m_animations[animationId]->getTrack(0)->getLastTransformMatrix();
+		return m_animations[animationId]->getTrack(0)->getLastRotation();
 	// else blend bone as usual
 	else
-		return m_animations[animationId]->blendBone(animatetime,0);
-	
+		return m_animations[animationId]->blendBoneRotation(animatetime,0);
+}
+
+// return the  root bone's rotate transform at animatetime
+// the result returned is from the second frame to the last frame
+// the first frame will not be returned for first frame equals last frame
+Vector3D ChAnimationManager::getCurrentRootTranslation(int animatetime, const char* animation){
+	// animatetime should not be smaller than 0
+	assert(animatetime >= 0);
+
+	int animationId = m_animationMap[animation];
+	// check whether animatetime can be exactly divided by total animation time
+	int remain = animatetime % m_animations[animationId]->getAnimationTime();
+	// if remain is 0, then animatetime is the last frame's time
+	if(remain == 0)
+		return m_animations[animationId]->getTrack(0)->getLastTranslation();
+	// else blend bone as usual
+	else
+		return m_animations[animationId]->blendBoneTranslation(animatetime,0);
 }
 
 // return the root bone's transform matrix one frame before animatetime
 // the result returned is from the first frame to the last frame but one
 // the last frame will not be returned for first frame equals last frame
-Matrix ChAnimationManager::getLastRootMatrix(int animatetime, const char* animation){
+//Matrix ChAnimationManager::getLastRootMatrix(int animatetime, const char* animation){
+//
+//	// animatetime should not be smaller than 0
+//	assert(animatetime >= 0);
+//
+//	int animationId = m_animationMap[animation];
+//	// to avoid -1, set animatetime to next loop's corresponding value
+//	if(animatetime == 0) animatetime = m_animations[animationId]->getAnimationTime();
+//	// return last frame, root bone's matrix
+//	return m_animations[animationId]->blendBone(animatetime - 1,0);
+//}
 
+// return the root bone's rotate transform one frame before animatetime
+// the result returned is from the first frame to the last frame but one
+// the last frame will not be returned for first frame equals last frame
+Quaternion ChAnimationManager::getLastRootRotation(int animatetime, const char* animation){
 	// animatetime should not be smaller than 0
 	assert(animatetime >= 0);
 
@@ -140,5 +243,19 @@ Matrix ChAnimationManager::getLastRootMatrix(int animatetime, const char* animat
 	// to avoid -1, set animatetime to next loop's corresponding value
 	if(animatetime == 0) animatetime = m_animations[animationId]->getAnimationTime();
 	// return last frame, root bone's matrix
-	return m_animations[animationId]->blendBone(animatetime - 1,0);
+	return m_animations[animationId]->blendBoneRotation(animatetime - 1,0);
+}
+
+// return the root bone's translate transform one frame before animatetime
+// the result returned is from the first frame to the last frame but one
+// the last frame will not be returned for first frame equals last frame
+Vector3D ChAnimationManager::getLastRootTranslation(int animatetime, const char* animation){
+	// animatetime should not be smaller than 0
+	assert(animatetime >= 0);
+
+	int animationId = m_animationMap[animation];
+	// to avoid -1, set animatetime to next loop's corresponding value
+	if(animatetime == 0) animatetime = m_animations[animationId]->getAnimationTime();
+	// return last frame, root bone's matrix
+	return m_animations[animationId]->blendBoneTranslation(animatetime - 1,0);
 }

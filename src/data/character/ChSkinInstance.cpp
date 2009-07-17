@@ -1,5 +1,7 @@
+#include "../matrixlib/Vector3D.h"
+#include "../matrixlib/quaternion.h"
+#include "../matrixlib/matrix.h"
 #include "ChSkinInstance.h"
-#include "../matrixlib/mtxlib.h"
 #include "../data/character/ChVertex.h"
 #include "../data/character/ChSkin.h"
 #include "../data/character/ChVertexInstance.h"

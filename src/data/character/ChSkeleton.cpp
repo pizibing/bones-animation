@@ -1,7 +1,9 @@
-#include "../matrixlib/mtxlib.h"
-//#include "../matrixlib/matrix.h"
-#include "ChSkeleton.h"
+#include "../matrixlib/Vector3D.h"
+#include "../matrixlib/quaternion.h"
+#include "../matrixlib/matrix.h"
 #include "ChBone.h"
+#include "ChSkeleton.h"
+
 
 // constructor
 ChSkeleton::ChSkeleton(void)

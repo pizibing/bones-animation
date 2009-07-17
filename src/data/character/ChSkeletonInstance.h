@@ -3,7 +3,7 @@
 class ChBoneInstance;
 class ChSkeleton;
 class ChAnimationManager;
-class matrix44;
+class Matrix;
 
 // ChSkeletonInstance is a class that stores the current
 // instance of a character's skeleton
@@ -31,7 +31,7 @@ public:
 	// animanager where you can get all animation
 	// animation is the name of the animation to use, aimationtime is the 
 	// current play time in animation
-	matrix44 calSkeletonInstance(ChAnimationManager * animanager, int aimationtime, const char* animation);
+	Matrix calSkeletonInstance(ChAnimationManager * animanager, int aimationtime, const char* animation);
 
 	// this function will calculate the current position of all the bone
 	// instance of this skeleton.
@@ -45,7 +45,7 @@ public:
 	// and animation2
 	// power1 is the power of animation1 in this blend, it should be 0 to 1
 	// power of animation2 is of cause 1 minus power1
-	matrix44 calSkeletonInstance(ChAnimationManager * animanager, int animationtime1,
+	Matrix calSkeletonInstance(ChAnimationManager * animanager, int animationtime1,
 		int animationtime2, const char* animation1, const char* animation2, float power1);
 
 	// get a bone instance from the bones whose id equals to the given id

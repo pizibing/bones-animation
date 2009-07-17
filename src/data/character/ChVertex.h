@@ -1,6 +1,6 @@
 #pragma once
 
-class matrix44;
+class Matrix;
 
 // vertex and bone pair
 // it tells which bone is related to, transforming matrix of 
