@@ -27,6 +27,13 @@ public:
 	// load a model with the given path
 	bool loadModel(const char* path);
 
+	// rotate camera in a plain that is vertical to +z axis and interact
+	// at z = CAMERA_HEIGHT + characterPostion.
+	// angle should be presented in rad
+	// if angle is positive, camera move clock wise
+	// vice versa
+	void rotateCamera(float angle);
+
 private:
 	// all managers
 	Display* display;
