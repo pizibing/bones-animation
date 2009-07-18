@@ -1,5 +1,6 @@
 #pragma once
 
+class Matrix;
 class SimpleLine;
 class MoveSelfObject;
 class LineObject;
@@ -132,7 +133,7 @@ private:
 
 	/* instances */
 	// matrix instance that may be changed every frame
-	float chMatrixInstance[16];
+	Matrix chMatrixInstance;
 	// bone instance that may be changed every frame
 	ChSkeletonInstance* chSkeletonInstance;
 	// skin instance that may be changed every frame

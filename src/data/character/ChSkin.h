@@ -8,7 +8,7 @@ class ChSkin
 {
 public:
 	// constructor
-	ChSkin(void);
+	ChSkin(ChSkeleton* skeleton);
 	// destructor
 	~ChSkin(void);
 
@@ -21,7 +21,7 @@ public:
 	// set the verNum-th ChVertex of vertices to vertex
 	// verNum should be smaller than num
 	// vertex's id will be set to verNum
-	void initVertice(int verNum, ChVertex* vertex);
+	ChVertex* initVertice(int verNum);
 
 	// get function of vertices
 	ChVertex** getVertices();
@@ -37,4 +37,6 @@ private:
 	ChVertex** vertices;
 	// length of vertices
 	int verticeSize;
+	// the skeleton the skin is on
+	ChSkeleton* skeleton;
 };

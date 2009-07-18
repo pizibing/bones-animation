@@ -1,13 +1,14 @@
 #pragma once
 
 class Matrix;
+class ChSkeleton;
 
 // vertex and bone pair
 // it tells which bone is related to, transforming matrix of 
 // this bone and the power of this bone
 struct VBpair{
     // the related bone's id
-	char* boneId;
+	int boneId;
 	// this bone's power to the vertex
 	float power;
 };
@@ -21,9 +22,12 @@ public:
 	// constructor
 	// initialize the default position by the given px,py,pz
 	// set default id to -1
-	ChVertex(float px, float py, float pz);
+	ChVertex(ChSkeleton* skeleton);
 	// destructor
 	~ChVertex(void);
+
+	// set the default position of the vertex
+	void setDefaultPosition(float px, float py, float pz);
 
 	// set the default normal of the vertex
 	// hasNormal will be set to true and normal[3] will be set
@@ -79,4 +83,6 @@ private:
 	float normal[3];
 	// id of this vertex
 	int id;
+	// skeleton the vertex is on
+	ChSkeleton* skeleton;
 };
