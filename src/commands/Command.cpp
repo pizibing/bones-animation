@@ -69,3 +69,13 @@ bool Command::loadModel(){
 bool Command::loadModel(const char* path){
 	return modelLoader->loadModel(0,path);
 }
+
+// rotate camera in a plain that is vertical to +z axis and interact
+// at z = CAMERA_HEIGHT + characterPostion.
+// angle should be presented in rad
+// if angle is positive, camera move clock wise
+// vice versa
+void Command::rotateCamera(float angle){
+	// use Camera Manager to implement this function
+	cameraManager->rotateCamera(angle);
+}
