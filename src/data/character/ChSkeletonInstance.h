@@ -56,6 +56,11 @@ private:
 	// with boneId as root bone
 	void calculateAbsoluteTransform(int boneId);
 
+	// calculate the root change matrix at the given animationtime
+	// in animation in animanager
+	Matrix calRootChange(ChAnimationManager * animanager, 
+		int animationtime, const char* animation);
+
 private:
 	// the root of this skeleton
 	ChBoneInstance* root;

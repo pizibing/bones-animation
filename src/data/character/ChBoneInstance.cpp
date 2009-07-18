@@ -109,3 +109,13 @@ int* ChBoneInstance::getChildId(int* num){
 
 	return childId;
 }
+
+// get function of inverse
+Matrix ChBoneInstance::getInverse(){
+	return inverse;
+}
+
+// set function of inverse
+void ChBoneInstance::setInverse(Matrix inverse){
+	this->inverse = inverse;
+}
