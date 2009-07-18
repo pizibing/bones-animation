@@ -3,22 +3,30 @@
 #include "../matrixlib/quaternion.h"
 #include "../matrixlib/matrix.h"
 #include "ChVertex.h"
+#include "../data/character/ChBone.h"
+#include "../data/character/ChSkeleton.h"
 
 // constructor
-ChVertex::ChVertex(float px, float py, float pz){
-	// init position
-	position[0] = px;
-	position[1] = py;
-	position[2] = pz;
+ChVertex::ChVertex(ChSkeleton* skeleton){
 	// init normal
 	hasNormal = false;
 	// init pairNum
 	pairNum = 0;
+	// init skeleton
+	this->skeleton = skeleton;
 }
 
 // destructor
 ChVertex::~ChVertex(void){
 	if(pairs) delete[] pairs;
+}
+
+// set the default position of the vertex
+void ChVertex::setDefaultPosition(float px, float py, float pz){
+	// init position
+	position[0] = px;
+	position[1] = py;
+	position[2] = pz;
 }
 
 // set the default normal of the vertex
@@ -56,7 +64,7 @@ void ChVertex::initPair(int pairNum, char* boneName, float power){
 	assert(pairNum < this->pairNum);
 
 	// init pair
-	pairs[pairNum].boneId = boneName;
+	pairs[pairNum].boneId = skeleton->getBone(boneName)->getId();
 	pairs[pairNum].power = power;
 }
 

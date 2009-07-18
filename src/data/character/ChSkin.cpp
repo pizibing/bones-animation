@@ -5,9 +5,12 @@
 #include "ChVertex.h"
 #include "ChSkin.h"
 
-ChSkin::ChSkin(void){
+// constructor
+ChSkin::ChSkin(ChSkeleton* skeleton){
+	this->skeleton = skeleton;
 }
 
+// destructor
 ChSkin::~ChSkin(void){
 }
 
@@ -29,13 +32,17 @@ void ChSkin::initVertices(int num){
 // set the verNum-th ChVertex of vertices to vertex
 // verNum should be smaller than verticeSize
 // vertex's id will be set to verNum
-void ChSkin::initVertice(int verNum, ChVertex* vertex){
+ChVertex* ChSkin::initVertice(int verNum){
 	// verNum should be smaller than num
 	assert(verNum < verticeSize);
 
+	// init ChVertex
+	ChVertex* vertex = new ChVertex(skeleton);
 	// set id
 	vertex->setId(verNum);
 	vertices[verNum] = vertex;
+
+	return vertex;
 }
 
 // get function of vertices
