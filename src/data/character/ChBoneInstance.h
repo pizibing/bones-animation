@@ -68,6 +68,12 @@ public:
 	// will be set to 0
 	int* getChildId(int* num);
 
+	// get function of inverse
+	Matrix getInverse();
+
+	// set function of inverse
+	void setInverse(Matrix inverse);
+
 private:
 	// the id of this ChBoneInstance 
 	// it should equals to the corresponding ChBone's id
@@ -83,6 +89,8 @@ private:
 	Quaternion absoluteRotation;
 	// translation in world space
 	Vector3D  absoluteTranslation;
+	// the inverse matrix of the default absolute transform matrix of this bone
+	Matrix inverse;
 
 	// the id of this bone instance's father, root's fatherId is set
 	// to -1

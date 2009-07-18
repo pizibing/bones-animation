@@ -6,6 +6,14 @@
 #define DBL_EPSILON     2.2204460492503131e-016 /* smallest such that 1.0+DBL_EPSILON != 1.0 */
 #endif
 
+// add operator
+Matrix Matrix::operator + (const Matrix & matrix) const{
+	Matrix mx;
+	for(int i = 0; i < 16; i++)
+		mx.m[i] = m[i] + matrix[i];
+	return mx;
+}
+
 // @return a matrix for the result of multiplication of this and another
 Matrix Matrix::operator * (const Matrix & matrix) const{
 	Matrix mx;

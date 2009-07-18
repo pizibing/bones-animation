@@ -68,12 +68,34 @@ void ChSkinInstance::calSkinInstance(ChSkeletonInstance* skeletonInstance, ChSki
 			current.set(boneInstance->getAbsoluteRotation(),
 				boneInstance->getAbsoluteTranslation());
 			// get related bone's default inverse transform matrix
+			Matrix inverse = boneInstance->getInverse();
+			// calculate current*default inverse
+			Matrix mul = current * inverse;
 			// change position via current*default inverse
+			float* p = vertex->getPosition();
+			float ptemp[3];
+			for(int k = 0; k < 3; k++)
+				ptemp[k] = p[k];
+			mul.transform(ptemp);
+			// sum position by factor power
+			for(int k = 0; k < 3; k++)
+				position[k] += ptemp[k] * pairs[j].power;
 			// change normal via current*default inverse
+			if(vertexInstance->getHasNormal()){
+				float* n = vertex->getNormal();
+				float ntemp[3];
+				for(int k = 0; k < 3; k++)
+					ntemp[k] = n[k];
+				mul.transform(ntemp);
+				// sum normal by factor power
+				for(int k = 0; k < 3; k++)
+					normal[k] += ntemp[k] * pairs[j].power;
+			}
 		}
 		// set position and normal
 		vertexInstance->setPosition(position);
-		vertexInstance->setNormal(normal);
+		if(vertexInstance->getHasNormal())
+			vertexInstance->setNormal(normal);
 	}
 }
 
