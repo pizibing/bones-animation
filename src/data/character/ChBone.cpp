@@ -126,6 +126,10 @@ void ChBone::calculateAbsoluteTransform(){
 		m_absoluteRotation = m_rotation;
 		m_absoluteTranslation = m_translation;
 	}
+	//set bind pose inverse matrix
+	Matrix m;
+	m.set(m_absoluteRotation,m_absoluteTranslation);
+	m_bindPoseInverse = m.getInverseMatrix();
 }
 
 // initialize this bone with child_num child bones

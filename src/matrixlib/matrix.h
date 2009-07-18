@@ -11,10 +11,11 @@ class Matrix
 	// member variables
 public:
 	/* column first 4*4 matrix
-    	m0  m4  m8   m12 (rotate x )
-		m1  m5  m9   m13 (rotate y)
-		m2  m6  m10  m14 (rotate z)
-		m3  m7  m11  m15 (translation)*/
+    	m0  m4  m8   m12 
+		m1  m5  m9   m13 
+		m2  m6  m10  m14 
+		m3  m7  m11  m15 
+		Rx  Ry  Rz translation*/
 	float m[16];
 	
 	// constructors/destructor
@@ -94,7 +95,7 @@ public:
 
 public:	
 	// The identity matrix.
-	static const Quaternion Identity;
+	static const Matrix Identity;
 	
 };
 
