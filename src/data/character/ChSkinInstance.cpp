@@ -5,6 +5,8 @@
 #include "../data/character/ChVertex.h"
 #include "../data/character/ChSkin.h"
 #include "../data/character/ChVertexInstance.h"
+#include "../data/character/ChBoneInstance.h"
+#include "../data/character/ChSkeletonInstance.h"
 
 // constructor
 // this constructor will create ChVertexInstance as many as
@@ -15,7 +17,7 @@ ChSkinInstance::ChSkinInstance(ChSkin* skin){
 	int size = skin->getVerticeSize();
 	// create ChSkinInstance's vertices
 	vertices = new ChVertexInstance*[size];
-	verticeSize = verticeSize;
+	verticeSize = size;
 	// for each ChVertex, create corresponding ChVertexInstance
 	for(int i = 0; i < size; i++){
 		ChVertex* vertex = ver[i];
@@ -57,7 +59,17 @@ void ChSkinInstance::calSkinInstance(ChSkeletonInstance* skeletonInstance, ChSki
 		int pairNum = vertex->getPairNum();
 		// for each pair
 		for(int j = 0; j < pairNum; j++){
-			//calculate position and normal, multiply power,and add them to sum
+			// get related bone id
+			int boneId = pairs[j].boneId;
+			// get related bone's instance
+			ChBoneInstance* boneInstance = skeletonInstance->getBoneInstance(boneId);
+			// get related bone's current transform matrix
+			Matrix current = Matrix();
+			current.set(boneInstance->getAbsoluteRotation(),
+				boneInstance->getAbsoluteTranslation());
+			// get related bone's default inverse transform matrix
+			// change position via current*default inverse
+			// change normal via current*default inverse
 		}
 		// set position and normal
 		vertexInstance->setPosition(position);

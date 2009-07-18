@@ -17,11 +17,7 @@
 CharacterObject::CharacterObject(void){
 	meshSize = 0;
 	// init matrix to identity matrix
-	for(int i = 1; i < 16; i++) chMatrixInstance[i] = 0;
-	chMatrixInstance[0] = 1;
-	chMatrixInstance[5] = 1;
-	chMatrixInstance[10] = 1;
-	chMatrixInstance[15] = 1;
+	chMatrixInstance = Matrix();
 	// init instance
 	chSkeletonInstance = NULL;
 	chSkinInstance = NULL;
@@ -73,7 +69,9 @@ SimpleLine* CharacterObject::representInLine(int* num){
 
 // this function change the position matrix of the 
 // class by multiplying change
-void CharacterObject::moveSelf(Matrix change){}
+void CharacterObject::moveSelf(Matrix change){
+	chMatrixInstance = change * chMatrixInstance;
+}
 
 // this function is the factory function of skeleton
 // user should use the return pointer to initialize the skeleton
@@ -117,7 +115,7 @@ ChAnimationManager* CharacterObject::getAnimations(){
 ChSkin* CharacterObject::getSkin(){
 	// if skin is NULL
 	if(!skin){
-		skin = new ChSkin();
+		skin = new ChSkin(skeleton);
 	}
 	return skin;
 }
@@ -205,26 +203,28 @@ void CharacterObject::setMatrix(float* matrix){
 	// update chvbomeshes
 	for(int i = 0; i < meshSize; i++){
 		// update chvbomeshes according to matrix instance
-		chvbomeshes[i]->updateVBO(chMatrixInstance);
+		chvbomeshes[i]->updateVBO(chMatrixInstance.get());
 	}
 }
 
 // set the current gesture of the character
 // animation is the name of the animation to use
-// time_ms is the play time in millisecond of the animation
+// time_ms is the play time's frame number of the animation
 void CharacterObject::setGesture(const char* animation, int time_ms){
-	// calculate skeleton instance
-	chSkeletonInstance->calSkeletonInstance(animations,time_ms,animation);
+	// calculate skeleton instance and get the move self matrix
+	Matrix change = 
+		chSkeletonInstance->calSkeletonInstance(animations,time_ms,animation);
 	// use return change matrix to change matrix instance
-
+	this->moveSelf(change);
 	// calculate skin instance
 	chSkinInstance->calSkinInstance(chSkeletonInstance,skin);
 	// update chvbomeshes
 	for(int i = 0; i < meshSize; i++){
 		// update chvbomeshes according to vertex instance
+		// normals and position maybe updated
 		chvbomeshes[i]->updateVBO(chSkinInstance);
 		// update chvbomeshes according to matrix instance
-		chvbomeshes[i]->updateVBO(chMatrixInstance);
+		chvbomeshes[i]->updateVBO(chMatrixInstance.get());
 	}
 	// update vbomeshes according to chvbomeshes
 	for(int i = 0; i < meshSize; i++){

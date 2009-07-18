@@ -53,9 +53,19 @@ Matrix ChSkeletonInstance::calSkeletonInstance(ChAnimationManager * animanager, 
 	}
 	calculateAbsoluteTransform(m_skeleton->getRootBone()->getId());
 
-	// use getCurrentRootMatrix and getLastRootMatrix to calculate
-	// the return Matrix
-	return Matrix();
+	// get current transform matrix of root
+	Matrix current = Matrix();
+	current.set(animanager->getCurrentRootRotation(animationtime,animation),
+		animanager->getCurrentRootTranslation(animationtime,animation));
+	// get last transform matrix of root
+	Matrix lastm = Matrix();
+	lastm.set(animanager->getLastRootRotation(animationtime,animation),
+		animanager->getLastRootTranslation(animationtime,animation));
+	// get inverse matrix of last matrix
+	Matrix inverseLast = lastm.getInverseMatrix();
+
+	// return current * inverse of last
+	return current * inverseLast;
 }
 
 // this function will calculate the current position of all the bone

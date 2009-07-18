@@ -130,10 +130,12 @@ bool SimpleModelLoader::loadModel(int kind, char* path){
 	skin->initVertices(vertexNum);
 	// initialize each vertex in the skin
 	for(int i = 0; i < vertexNum; i++){
+		// create a vertex
+		ChVertex* vertex = skin->initVertice(vertexNum);
 		// get position of the vertex to be added from Fcollada
 		float px,py,pz;
 		// create a new vertex
-		ChVertex* vertex = new ChVertex(px,py,pz);
+		vertex->setDefaultPosition(px,py,pz);
 		// get normal of the vertex from Fcollada
 		float nx,ny,nz;
 		// set normal
