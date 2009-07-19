@@ -16,6 +16,8 @@ ChSkeletonInstance::ChSkeletonInstance(ChSkeleton* skeleton)
 	bones = new ChBoneInstance*[skeleton->getBoneNum()];
 	for(int i=0;i<skeleton->getBoneNum();i++){
 		bones[i] = new ChBoneInstance(i);
+		// set inverse matrix
+		bones[i]->setInverse(m_skeleton->getBone(bones[i]->getId())->getBindPoseInverse());
 	}
 	root = bones[skeleton->getRootBone()->getId()];
 }
@@ -53,19 +55,8 @@ Matrix ChSkeletonInstance::calSkeletonInstance(ChAnimationManager * animanager, 
 	}
 	calculateAbsoluteTransform(m_skeleton->getRootBone()->getId());
 
-	// get current transform matrix of root
-	Matrix current = Matrix();
-	current.set(animanager->getCurrentRootRotation(animationtime,animation),
-		animanager->getCurrentRootTranslation(animationtime,animation));
-	// get last transform matrix of root
-	Matrix lastm = Matrix();
-	lastm.set(animanager->getLastRootRotation(animationtime,animation),
-		animanager->getLastRootTranslation(animationtime,animation));
-	// get inverse matrix of last matrix
-	Matrix inverseLast = lastm.getInverseMatrix();
-
-	// return current * inverse of last
-	return current * inverseLast;
+	// return the change matrix
+	return calRootChange(animanager,animationtime,animation);
 }
 
 // this function will calculate the current position of all the bone
@@ -107,9 +98,32 @@ Matrix ChSkeletonInstance::calSkeletonInstance(ChAnimationManager * animanager, 
 	}
 	calculateAbsoluteTransform(m_skeleton->getRootBone()->getId());
 
-	// use getCurrentRootMatrix and getLastRootMatrix to calculate
-	// the return Matrix
-	return Matrix();
+	// calculate change matrix factoring by power
+	Matrix change1 = calRootChange(animanager,animationtime1,animation1);
+	Matrix change2 = calRootChange(animanager,animationtime2,animation2);
+	Matrix change = change1 * power1 + change2 * (1 - power1);
+
+	return change;
+}
+
+// calculate the root change matrix at the given animationtime
+// in animation in animanager
+Matrix ChSkeletonInstance::calRootChange(ChAnimationManager * animanager, 
+					 int animationtime, const char* animation){
+	
+	// get current transform matrix of root
+	Matrix current = Matrix();
+	current.set(animanager->getCurrentRootRotation(animationtime,animation),
+	 animanager->getCurrentRootTranslation(animationtime,animation));
+	// get last transform matrix of root
+	Matrix lastm = Matrix();
+	lastm.set(animanager->getLastRootRotation(animationtime,animation),
+	 animanager->getLastRootTranslation(animationtime,animation));
+	// get inverse matrix of last matrix
+	Matrix inverseLast = lastm.getInverseMatrix();
+
+	// return current * inverse of last
+	return current * inverseLast;
 }
 
 // get a bone instance from the bones whose id equals to the given id

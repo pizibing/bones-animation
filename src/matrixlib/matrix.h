@@ -52,6 +52,8 @@ public:
 	
 	Matrix operator * (const Matrix & matrix) const;
 
+	Matrix operator + (const Matrix & matrix) const;
+
 	void operator *= (const Matrix & matrix);
 
 	Vector3D operator * (const Vector3D &v) const;
