@@ -6,6 +6,10 @@
 #define DBL_EPSILON     2.2204460492503131e-016 /* smallest such that 1.0+DBL_EPSILON != 1.0 */
 #endif
 
+#ifndef M_PI
+#define M_PI       3.14159265358979323846f
+#endif
+
 // @return a matrix for the result of multiplication of this and another
 Matrix Matrix::operator * (const Matrix & matrix) const{
 	Matrix mx;
@@ -205,4 +209,61 @@ Vector3D operator * (const Vector3D& v, const Matrix& m){
 // multiply a float by a matrix
 Matrix operator * (float factor, const Matrix & matrix){
 	return matrix*factor;
+}
+
+// rotate the matrix with axis (x,y,z) by angle degree
+void Matrix::Rotate(float x, float y, float z, float angle){
+	(*this)*=AxisRotationMatrix(x,y,z,angle/180.0f*M_PI);
+}
+
+// rotate the matrix by quaternion
+void Matrix::Rotate(const Quaternion & q){
+	Vector3D axis;
+	float angle;
+	q.ToAngleAxis(axis,angle);
+	(*this)*=(axis.x,axis.y,axis.z,angle);
+}
+
+// rotate the matrix with by angle vector (x,y,z)
+void Matrix::Translate(float x, float y, float z){
+	m[12] += x;
+	m[13] += y;
+	m[14] += z;
+}
+
+// rotate the matrix with by angle vector3d
+void Matrix::Translate(const Vector3D & v){
+	m[12] += v.x;
+	m[13] += v.y;
+	m[14] += v.z;
+}
+
+// get rotation Matrix with axis(x,y,z) by angle in radians
+Matrix Matrix::AxisRotationMatrix(float x, float y, float z, float angle)
+{
+	// Formulae inspired from http://www.mines.edu/~gmurray/ArbitraryAxisRotation/ArbitraryAxisRotation.html
+	Matrix matrix;
+	Vector3D a(x,y,z);
+	a.Unitize();
+	float xSq = a.x * a.x;
+	float ySq = a.y * a.y;
+	float zSq = a.z * a.z;
+	float cT = cosf(angle);
+	float sT = sinf(angle);
+
+	matrix[0] = xSq + (ySq + zSq) * cT;
+	matrix[4] = a.x * a.y * (1.0f - cT) + a.z * sT;
+	matrix[8] = a.x * a.z * (1.0f - cT) - a.y * sT;
+	matrix[12] = 0.0f;
+	matrix[1] = a.x * a.y * (1.0f - cT) - a.z * sT;
+	matrix[5] = ySq + (xSq + zSq) * cT;
+	matrix[9] = a.y * a.z * (1.0f - cT) + a.x * sT;
+	matrix[13] = 0.0f;
+	matrix[2] = a.x * a.z * (1.0f - cT) + a.y * sT;
+	matrix[6] = a.y * a.z * (1.0f - cT) - a.x * sT;
+	matrix[10] = zSq + (xSq + ySq) * cT;
+	matrix[14] = 0.0f;
+	matrix[11] = matrix[7] = matrix[3] = 0.0f;
+	matrix[15] = 1.0f;
+	return matrix;
 }

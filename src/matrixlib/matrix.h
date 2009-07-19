@@ -90,8 +90,23 @@ public:
 	// @param position float array for a vector3d
 	void transform(float *position) const;
 
+	// same as transform
 	Vector3D TransformVector(const Vector3D& v) const;
-	
+
+	// rotate the matrix with axis (x,y,z) by angle degree
+	void Rotate(float x, float y, float z, float angle);
+
+	// rotate the matrix by quaternion
+	void Rotate(const Quaternion & q);
+
+	// rotate the matrix with by angle vector (x,y,z)
+	void Translate(float x, float y, float z);
+
+	// rotate the matrix with by angle vector3d
+	void Translate(const Vector3D & v);
+
+	// get rotation Matrix with axis(x,y,z) by angle in radians
+	Matrix AxisRotationMatrix(float x, float y, float z, float angle);
 
 public:	
 	// The identity matrix.
