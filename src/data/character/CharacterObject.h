@@ -116,8 +116,32 @@ public:
 
 	// set the current gesture of the character
 	// animation is the name of the animation to use
-	// time_ms is the play time in millisecond of the animation
-	void setGesture(const char* animation, int time_ms);
+	// time_ms is the play frame number of the animation
+	void setGesture(const char* animation, int time);
+
+	// set the current gesture of the character
+	// animation1 and 2 are the names of the animation to use
+	// time1,time2 are the play frame number of the animation1 and 2
+	// power is the power of animation 1, animation 2 's power will be 1-power
+	void setGesture(const char* animaiton1, const char* animation2, int time1, int time2, float power1);
+
+	// change v according to change
+	// actually just v add change is the result, of course
+	// v should not exceed 0 to 3
+	void changeV(float change);
+
+	// get function of v
+	float getV();
+
+	// rotate this character, direction will be changed
+	// as the matrix instance will be rotate the same way
+	// angle is the angle to rotate, it is in degree
+	// positive angle rotate anticlockwise, negative angle
+	// rotate clockwise
+	void rotateCharacter(float angle);
+
+	// get function of direction
+	float getDirection();
 
 private:
 	/* display */
@@ -138,6 +162,14 @@ private:
 	ChSkeletonInstance* chSkeletonInstance;
 	// skin instance that may be changed every frame
 	ChSkinInstance* chSkinInstance;
+	/* instance physics */
+	// v is a float between 0 and 2
+	// 0: idle; 0-1: walk; 1-2: walk and run; 2: run;
+	float v;
+	// direction is an angle in degree between 0 and 360
+	// direction is the angle from +x axis to the direction
+	// the character is facing
+	float direction;
 
 	/* data */
 	// skeleton of CharacterObject which describes the bone structure

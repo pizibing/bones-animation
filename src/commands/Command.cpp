@@ -18,7 +18,7 @@ Command::Command(void){
 	modelLoader = new FColladaModelLoader();
 	calculator = new Calculator();
 	objectManager = ObjectManager::getInstance();
-	cameraManager = new CameraManager();
+	cameraManager = CameraManager::getInstance();
 	lightManager = LightManager::getInstance();
 	displayManager = new DisplayManager();
 }
@@ -28,7 +28,6 @@ Command::~Command(void){
 	delete display;
 	delete modelLoader;
 	delete calculator;
-	delete cameraManager;
 }
 
 // draw all the objects that should be displayed in the
@@ -72,10 +71,52 @@ bool Command::loadModel(const char* path){
 
 // rotate camera in a plain that is vertical to +z axis and interact
 // at z = CAMERA_HEIGHT + characterPostion.
-// angle should be presented in rad
+// angle should be presented in degree
 // if angle is positive, camera move clock wise
 // vice versa
 void Command::rotateCamera(float angle){
 	// use Camera Manager to implement this function
 	cameraManager->rotateCamera(angle);
+}
+
+// character move forward in the given direction
+// direction can be ARROW_NONE,ARROW_UP,ARROW_DOWN
+// ARROW_LEFT,ARROW_RIGHT.which none means no moveforward
+// up,down,left and right is always the direction on the screen
+void Command::moveCharacter(int direction){
+	// calculate the direction angle according to camera angle
+	// and the arrow direction given
+	float angle = 0;
+	switch(direction){
+		// if arrow none, slow down
+		case ARROW_NONE:
+			angle = -1;
+			break;
+		case ARROW_UP:
+			angle = 180 + cameraManager->getAngle();
+			break;
+		case ARROW_DOWN:
+			angle = cameraManager->getAngle();
+			break;
+		case ARROW_LEFT:
+			angle = 270 + cameraManager->getAngle();
+			break;
+		case ARROW_RIGHT:
+			angle = 90 + cameraManager->getAngle();
+			break;
+		default:
+			angle = -1;
+			break;
+	}
+
+	// modify angle to fit into -1 to 360
+	if(angle > 0){
+		// get int divide result 
+		int r = (int)(angle / 360);
+		// get the remain
+		angle = angle - 360 * r;
+	}
+
+	// use calculator to calculate character move
+	calculator->moveCharacter(angle);
 }

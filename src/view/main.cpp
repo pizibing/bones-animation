@@ -35,9 +35,18 @@ PFNGLUNMAPBUFFERARBPROC pglUnmapBufferARB = 0;                   // unmap VBO pr
 #define glUnmapBufferARB          pglUnmapBufferARB
 #endif
 
+// function declare
+void myGlutIdle(int value);
+
 //////////////////////////////////////////////////////////////////////
 float xy_aspect;//screen width/height
 Command* command;//command that handles all events
+// arrow key down state of every frame,default state is ARROW_NONE
+// other states are ARROW_UP,ARROW_DOWN,ARROW_LEFT,ARROW_RIGHT
+int arrowState = 0;
+// when one key is down its effect should last for several frames
+// this value record the frame it lasts
+int arrowLast = 0;
 
 /** These are the live variables passed into GLUI ***/
 
@@ -64,6 +73,8 @@ void control_cb( int control ){
 		//	GLUI* openfile = GLUI_Master.create_glui( "open file..",0,950,100);
 		//	fb = new GLUI_FileBrowser(openfile,"", false,OPEN_FILE,control_cb);
 		//	break;
+		default:
+			break;
 	}
 }
 
@@ -88,7 +99,7 @@ void myGlutDisplay( void )
 }
 
 /**************************************** myGlutKeyboard() **********/
-
+// deal with regular keys
 void myGlutKeyboard(unsigned char Key, int x, int y)
 {
 	switch(Key)
@@ -98,40 +109,63 @@ void myGlutKeyboard(unsigned char Key, int x, int y)
 		break;
 	// rotate camera clockwise
 	case 'z':
-		command->rotateCamera(0.1);
+		command->rotateCamera(3);
 		break;
 	// rotate camera anticlockwise
 	case 'x':
-		command->rotateCamera(-0.1);
-		break;
-	// character move forward
-	case GLUT_KEY_UP:
-		break;
-	// character move backward
-	case GLUT_KEY_DOWN:
-		break;
-	// character move left
-	case GLUT_KEY_LEFT:
-		break;
-	// character move right
-	case GLUT_KEY_RIGHT:
+		command->rotateCamera(-3);
 		break;
 	//default
 	default:
 		break;
 	};
-
-	glutPostRedisplay();
 }
 
-
-/***************************************** myGlutMenu() ***********/
-
-void myGlutMenu( int value )
-{
-	myGlutKeyboard( value, 0, 0 );
+// deal with special keys include arrow keys and F1-F10
+void myGlutSpecial(int a_keys, int x, int y){
+	switch(a_keys){
+		// character move forward
+	case GLUT_KEY_UP:
+		arrowState = ARROW_UP;
+		arrowLast = 0;
+		break;
+		// character move backward
+	case GLUT_KEY_DOWN:
+		arrowState = ARROW_DOWN;
+		arrowLast = 0;
+		break;
+		// character move left
+	case GLUT_KEY_LEFT:
+		arrowState = ARROW_LEFT;
+		arrowLast = 0;
+		break;
+		// character move right
+	case GLUT_KEY_RIGHT:
+		arrowState = ARROW_RIGHT;
+		arrowLast = 0;
+		break;
+	default:
+		break;
+	}
 }
 
+// control the frame update time to MSPF
+// frameBegin is the start time of every frame
+// frameEnd is the end calculation time of every frame
+void frameControl(SYSTEMTIME frameBegin,SYSTEMTIME frameEnd){
+	//calculate milliseconds this frame took
+	int frameBetween;
+	if(frameEnd.wSecond == frameBegin.wSecond)
+		frameBetween = frameEnd.wMilliseconds - frameBegin.wMilliseconds;
+	else
+		frameBetween = 1000 + frameEnd.wMilliseconds - frameBegin.wMilliseconds;
+
+	//control fps(mspf), and display next frame
+	if(frameBetween >= MSPF) 
+		glutTimerFunc(0,myGlutIdle,0);
+	else
+		glutTimerFunc(MSPF - frameBetween,myGlutIdle,0);
+}
 
 /***************************************** myGlutIdle() ***********/
 
@@ -147,27 +181,24 @@ void myGlutIdle(int value)
 	if ( glutGetWindow() != main_window ) 
 		glutSetWindow(main_window);  
 
-	/*  GLUI_Master.sync_live_all();  -- not needed - nothing to sync in this
-	application  */
+	// move the character
+	command->moveCharacter(arrowState);
 
+	// display
 	myGlutDisplay();
+
+	// set arrow key state to default, if it is out of effect
+	if(arrowLast > ARROW_LAST_FRAME)
+		arrowState = ARROW_NONE;
+	// increase arrowLast
+	arrowLast++;
 
 	//record end time of this frame
 	SYSTEMTIME frameEnd;
 	GetLocalTime(&frameEnd);
 
-	//calculate milliseconds this frame took
-	int frameBetween;
-	if(frameEnd.wSecond == frameBegin.wSecond)
-		frameBetween = frameEnd.wMilliseconds - frameBegin.wMilliseconds;
-	else
-		frameBetween = 1000 + frameEnd.wMilliseconds - frameBegin.wMilliseconds;
-
-	//control fps(mspf), and display next frame
-	if(frameBetween >= MSPF) 
-		glutTimerFunc(0,myGlutIdle,0);
-	else
-		glutTimerFunc(MSPF - frameBetween,myGlutIdle,0);
+	// control the frame time
+	frameControl(frameBegin,frameEnd);
 }
 
 /***************************************** myGlutMouse() **********/
@@ -219,7 +250,7 @@ void initGlut(int argc, char* argv[]){
 	//GLUI_Master.set_glutIdleFunc(myGlutIdle);
 	GLUI_Master.set_glutReshapeFunc( myGlutReshape );  
 	GLUI_Master.set_glutKeyboardFunc( myGlutKeyboard );
-	GLUI_Master.set_glutSpecialFunc( NULL );
+	GLUI_Master.set_glutSpecialFunc( myGlutSpecial );
 	GLUI_Master.set_glutMouseFunc( myGlutMouse );
 	glutMotionFunc( myGlutMotion );
 }

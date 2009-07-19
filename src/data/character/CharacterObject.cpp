@@ -21,6 +21,9 @@ CharacterObject::CharacterObject(void){
 	// init instance
 	chSkeletonInstance = NULL;
 	chSkinInstance = NULL;
+	// init instance physics
+	v = 0;
+	direction = 0;
 	// init data
 	skeleton = NULL;
 	skin = NULL;
@@ -210,10 +213,10 @@ void CharacterObject::setMatrix(float* matrix){
 // set the current gesture of the character
 // animation is the name of the animation to use
 // time_ms is the play time's frame number of the animation
-void CharacterObject::setGesture(const char* animation, int time_ms){
+void CharacterObject::setGesture(const char* animation, int time){
 	// calculate skeleton instance and get the move self matrix
 	Matrix change = 
-		chSkeletonInstance->calSkeletonInstance(animations,time_ms,animation);
+		chSkeletonInstance->calSkeletonInstance(animations,time,animation);
 	// use return change matrix to change matrix instance
 	this->moveSelf(change);
 	// calculate skin instance
@@ -230,4 +233,80 @@ void CharacterObject::setGesture(const char* animation, int time_ms){
 	for(int i = 0; i < meshSize; i++){
 		vbomeshes[i] = *chvbomeshes[i]->getVBOMesh();
 	}
+}
+
+// set the current gesture of the character
+// animation1 and 2 are the names of the animation to use
+// time1,time2 are the play frame number of the animation1 and 2
+// power is the power of animation 1, animation 2 's power will be 1-power
+void CharacterObject::setGesture(const char* animaiton1, const char* animation2, int time1, int time2, float power1){
+	// calculate skeleton instance and get the move self matrix
+	Matrix change = 
+		chSkeletonInstance->calSkeletonInstance(animations,time1,time2,animaiton1,animation2,power1);
+	// use return change matrix to change matrix instance
+	this->moveSelf(change);
+	// calculate skin instance
+	chSkinInstance->calSkinInstance(chSkeletonInstance,skin);
+	// update chvbomeshes
+	for(int i = 0; i < meshSize; i++){
+		// update chvbomeshes according to vertex instance
+		// normals and position maybe updated
+		chvbomeshes[i]->updateVBO(chSkinInstance);
+		// update chvbomeshes according to matrix instance
+		chvbomeshes[i]->updateVBO(chMatrixInstance.get());
+	}
+	// update vbomeshes according to chvbomeshes
+	for(int i = 0; i < meshSize; i++){
+		vbomeshes[i] = *chvbomeshes[i]->getVBOMesh();
+	}
+}
+
+// change v according to change
+// actually just v add change is the result, of course
+// v should not exceed 0 to 3
+void CharacterObject::changeV(float change){
+	// change v
+	v += change;
+
+	// modified v to fit into 0 to 3
+	if(v > 3) v = 3;
+	if(v < 0) v = 0;
+}
+
+// get function of v
+float CharacterObject::getV(){
+	return v;
+}
+
+// rotate this character, direction will be changed
+// as the matrix instance will be rotate the same way
+// angle is the angle to rotate, it is in degree
+// positive angle rotate anticlockwise, negative angle
+// rotate clockwise
+void CharacterObject::rotateCharacter(float angle){
+	// change this-> angle according to the given angle
+	direction += angle;
+	// if angle is bigger than 0, just get the remain
+	if(direction >= 0){
+		// get int divide result 
+		int r = (int)(direction / 360);
+		// get the remain
+		direction = direction - 360 * r;
+	}
+	// if angle is smaller than 0
+	else{
+		// get int divide result 
+		int r = (int)(direction / 360);
+		// get the remain
+		direction = direction - 360 * r;
+		// 360 minus angle
+		direction = 360 + direction;
+	}
+
+	// rotate matrix instance according to angle
+}
+
+// get function of direction
+float CharacterObject::getDirection(){
+	return direction;
 }
