@@ -39,11 +39,11 @@ void ChAnimationManager::setSkeleton(ChSkeleton * skeleton){
 // @return the pointer of animation with the name
 //         if no animation has the name, create a new animation
 ChAnimation * ChAnimationManager::getAnimation(const std::string &name){
-	int id = m_animationMap[name];
-	if(id>=0&&id<m_animation_num){
-		return m_animations[id];
+	std::map<std::string,int>::iterator i = m_animationMap.find(name);
+	if(i!=m_animationMap.end()){
+		return m_animations[i->second];
 	}
-	id = m_animationMap.size();
+	int id = m_animationMap.size();
 	if(id<m_animation_num){
 		m_animations[id] = new ChAnimation();
 		m_animations[id]->setName(name);
