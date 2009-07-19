@@ -304,6 +304,7 @@ void CharacterObject::rotateCharacter(float angle){
 	}
 
 	// rotate matrix instance according to angle
+	chMatrixInstance.AxisRotationMatrix(0,0,1,angle);
 }
 
 // get function of direction
