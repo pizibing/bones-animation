@@ -32,6 +32,7 @@
 #include "FCDocument\FCDAnimated.h"
 #include "FCDocument\FCDAnimationKey.h"
 #include "FCDocument\FCDAnimationCurve.h"
+#include "FCDocument\FCDAnimationChannel.h"
 #include "FCDocument\FCDTransform.h"
 #include "FCDocument\FCDControllerInstance.h"
 #include "FCDocument\FCDSkinController.h"
@@ -42,6 +43,8 @@
 class Vector3D;
 class ModelLoader;
 class ObjectManager;
+class LineObject;
+class Matrix;
 
 //it contains the fuction to load from the fcollada data file
 class FColladaModelLoader :
@@ -59,7 +62,7 @@ public:
 	bool loadModel(int kind,const char* path);
 
 	//store the vertices, normals, texturecoords and create staticobjects to display
-	void storeVertices();
+	void storeVertices(int kind);
 
 	void storeLight();
 
@@ -74,35 +77,38 @@ public:
 	void storeAnimation();
 
 	//build the scene include the material of the polygons, the texture of the polygons and the matrix of the bone.
-	void buildScene(FCDSceneNode* ptr_root);
+	void buildScene(FCDSceneNode* ptr_root, int kind);
+
+	void buildSceneInstance(FCDSceneNode* ptr_root, int kind);
+
+	void buildSkin(FCDSkinController* skin);
+
+	void buildSceneMatrix(FCDSceneNode* ptr_root);
 
 	//set the material of the mesh
-	void setMeshFCMaterial(FCDGeometryInstance* geometry_instance, FCDGeometryMesh* mesh, int meshIndex);
+	void setMeshFCMaterial(FCDGeometryInstance* geometry_instance, FCDGeometryMesh* mesh, int meshIndex, int kind);
 
 	//set the target material to the polygon
-	void setFCMaterial(int j, int target);
+	void setFCMaterial(int j, int target, int kind);
 
-	void drawLine(FCDSceneNode* node_origin);
-
-	bool checkBone(FCDSceneNode* node_origin);
+	void drawLine(FCDSceneNode* node_origin, int kind);
 
 	//search the texture in the texture lib by texture id
 	FCDImage *SearchTextureByName(fm::string textureid);
 
-	
+	void BuildCharacter();
+
+	int getBoneNumber();
+
+	void initBoneScene(FCDSceneNode* node_origin);
+
+	int getBoneIndexByName(std::string name);
+
+	std::vector<SimpleLine*> simpleLines;	
 
 private:
 	// pointer to dae file that will be opened using fcollada
 	FCDocument* m_document;
-
-	int m_num_vertices;
-	Vector3D *m_ptrs_vertices;
-
-	bool m_has_normals;
-	Vector3D *m_ptrs_normals;
-
-	bool m_has_texcoords;
-	Vector3D *m_ptrs_texcoords;
 
 	//numbeer of textures
 	int m_num_textures;
@@ -128,7 +134,20 @@ private:
 	std::vector<FCDCamera*> m_ptrs_Orthographiccameras;
 
 	int m_num_animations;
+	std::string* animationsBoneName; 
 	std::vector<FCDAnimation*> m_ptrs_animation;
+
+	//character value
+	int boneNumber;
+	std::string* boneName; 
+	Matrix* boneMatrix;
+	std::string* boneParentName; 
+	std::string** boneChildName; 
+	int* boneChildNum;
+	std::string filename;
+
+	int skinVertexNum;
+
 
 	//objectmanage
 	ObjectManager* objectManager;

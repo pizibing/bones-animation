@@ -2,9 +2,23 @@
 #include <assert.h>
 #include <string>
 #include "../matrixlib/Vector3D.h"
+#include "../matrixlib/quaternion.h"
+#include "../matrixlib/matrix.h"
 #include "../data/VBOMesh.h"
+#include "../data/SimpleLine.h"
 #include "../data/VBOObject.h"
+#include "../data/LineObject.h"
+#include "../data/MoveSelfObject.h"
 #include "../data/static/StaticObject.h"
+#include "../data/character/ChVertex.h"
+#include "../data/character/ChSkin.h"
+#include "../data/character/ChBone.h"
+#include "../data/character/ChSkeleton.h"
+#include "../data/character/ChKeyFrame.h"
+#include "../data/character/ChTrack.h"
+#include "../data/character/ChAnimation.h"
+#include "../data/character/ChAnimationManager.h"
+#include "../data/character/CharacterObject.h"
 #include "../managers/ObjectManager.h"
 #include "ModelLoader.h"
 #include "../managers/TextureManager.h"
@@ -19,6 +33,7 @@ FColladaModelLoader::FColladaModelLoader(void){
 
 	//initialize the values
 	m_document=NULL;
+	boneNumber = 0;
 }
 
 //destructor
@@ -36,7 +51,8 @@ bool FColladaModelLoader::loadModel(int kind,const char* szPathName){
 
 	//it is a class value, which administrate the 
 	objectManager = ObjectManager::getInstance();
-
+	std::string tempFilename = szPathName;
+	filename = tempFilename.substr(0, tempFilename.length()-4);
 	// new dae file
 	m_document = FCollada::NewTopDocument();
 
@@ -76,7 +92,7 @@ bool FColladaModelLoader::loadModel(int kind,const char* szPathName){
 	assert(ret);
 
 	//store the vertices, normals, texturecoords and create staticobjects to display
-	storeVertices();
+	storeVertices(kind);
 
 	storeLight();
 
@@ -94,16 +110,102 @@ bool FColladaModelLoader::loadModel(int kind,const char* szPathName){
 	FCDSceneNode* ptr_root=m_document->GetVisualSceneRoot();
 	if(ptr_root!=NULL)
 	{
-		buildScene(ptr_root);
-		drawLine(ptr_root);
+		buildScene(ptr_root, kind);
+		drawLine(ptr_root, kind);
+	}
+
+	if(kind = 2)
+	{
+		BuildCharacter();
 	}
 
 	return true;
 }
 
+void FColladaModelLoader::BuildCharacter()
+{
+	// create a new CharacterObject
+	CharacterObject* character = new CharacterObject();
 
+	/* step1: initialize skeleton */
+	// create a new ChSkeleton
+	ChSkeleton* skeleton = character->getSkeleton();
+	// get bone number of the skeleton from Fcollada
+	int bone_num = 0;
+
+	bone_num = getBoneNumber();
+//	printf("boneNumber\n");
+//	printf("%i\n", boneNumber);
+//	printf("\n");
+	// set bone number to skeleton
+	skeleton->init(bone_num);
+	// for each bone
+	for(int i = 0; i < bone_num; i++){
+		/* create a new ChBone, the name of the bone is necessary */
+		// get bone name from Fcollada
+		std::string name = boneName[i];
+//		printf("boneName\n");
+//		printf("%s\n", name.c_str());
+		ChBone* bone = skeleton->getBone(name);
+		/* initialize the bone */
+		// get relative transform matrix of the bone from Fcollada
+		Matrix matrix = boneMatrix[i];
+
+//		printf("boneMatrix\n");
+//		printf("%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n",
+//		matrix.m[0], matrix.m[4], matrix.m[8], matrix.m[12], 
+//		matrix.m[1], matrix.m[5], matrix.m[9], matrix.m[13], 
+//		matrix.m[2], matrix.m[6], matrix.m[10], matrix.m[14], 
+//		matrix.m[3], matrix.m[7], matrix.m[11], matrix.m[15]);
+		// set bone's relative transform matrix 
+		bone->setTransformMatrix(matrix);
+		// get parent's name from Fcollada
+		std::string parentName = boneParentName[i];
+//		printf("boneParentName\n");
+//		printf("%s\n", parentName.c_str());
+		if(parentName.length() > 0)
+		{
+			// get parent's pointer
+			ChBone* parent = skeleton->getBone(parentName);
+			// set parent
+			bone->SetParentBone(parent);
+		}
+		else{
+			// set root bone
+			skeleton->setRootBone(bone);
+		}
+		// get child number from Fcollada
+		int child_num = boneChildNum[i];
+//		printf("boneChildNum\n");
+//		printf("%i\n", child_num);
+		// set child number
+		bone->init(child_num);
+		// for each child
+		for(int j = 0; j < child_num; j++){
+			// get child's name from Fcollada
+			std::string childName = boneChildName[i][j];
+//			printf("boneChildName\n");
+//			printf("%s\n", childName.c_str());
+			// get child's pointer
+			ChBone* child = skeleton->getBone(childName);
+			// set child
+			bone->addChildBone(child);
+		}
+//		printf("\n");
+	}
+	// calculate tranform in world space
+	skeleton->calculateAbsoluteTransform();
+//	printf("\n");
+}
+
+
+
+int FColladaModelLoader::getBoneNumber()
+{
+	return boneNumber;
+}
 //store the vertices, normals, texturecoords and create staticobjects to display
-void FColladaModelLoader::storeVertices()
+void FColladaModelLoader::storeVertices(int kind)
 {
 	// how many geometries there are?
 	FCDGeometryLibrary* geolib=m_document->GetGeometryLibrary();
@@ -149,14 +251,14 @@ void FColladaModelLoader::storeVertices()
 				indices = geometrypolygonsinput->GetIndices();
 
 				//m_num_vertices=(int) indices->size();
-				m_num_vertices=(int) geometrypolygonsinput->GetIndexCount();
+				int m_num_vertices=(int) geometrypolygonsinput->GetIndexCount();
 				/*store the vertex*/
 
 				// source of vertex
 				source = ptr_polygons->GetParent()->FindSourceByType(FUDaeGeometryInput::POSITION);
 
 				// allocate memory for triangles and its vertex (a triangle has 3 vertex)
-				m_ptrs_vertices = (Vector3D*)malloc( m_num_vertices * sizeof(Vector3D) );
+				Vector3D *m_ptrs_vertices = (Vector3D*)malloc( m_num_vertices * sizeof(Vector3D) );
 
 				// look for vertices using indices
 				// 3 vertex form a triangle
@@ -175,7 +277,8 @@ void FColladaModelLoader::storeVertices()
 
 				// source of vertex
 				source = ptr_polygons->GetParent()->FindSourceByType(FUDaeGeometryInput::NORMAL);
-
+				bool m_has_normals;
+				Vector3D *m_ptrs_normals;
 				if (source==NULL) {
 					m_has_normals=false;
 				} else {
@@ -203,7 +306,8 @@ void FColladaModelLoader::storeVertices()
 
 				// do the same for texcture coordinates
 				source = ptr_polygons->GetParent()->FindSourceByType(FUDaeGeometryInput::TEXCOORD);
-
+				bool m_has_texcoords;
+				Vector3D *m_ptrs_texcoords;
 				// maybe they are not present
 				if (source==NULL) {
 					m_has_texcoords=false;
@@ -237,53 +341,57 @@ void FColladaModelLoader::storeVertices()
 						}
 					}
 				}
-
-				//init the total data of the vertexs and normals
-				GLfloat * m_vbo_vertices = new GLfloat[m_num_vertices * 3];
-				GLfloat * m_vbo_normals = new GLfloat[m_num_vertices * 3];
-				GLfloat * m_vbo_texcoords = new GLfloat[m_num_vertices * 2];
-
-				//convert the Vector3D vertexs data to my structures 
-				for(int i=0; i<m_num_vertices; i++)
+				if(kind == 2)
 				{
-					m_vbo_vertices[3*i] = (m_ptrs_vertices+i)->x;
-					m_vbo_vertices[3*i+1] = (m_ptrs_vertices+i)->y;
-					m_vbo_vertices[3*i+2] = (m_ptrs_vertices+i)->z;
-				}
-				if(m_has_normals == true)
-				{
-					//convert the Vector3D normals data to my structures 
+					//init the total data of the vertexs and normals
+					GLfloat * m_vbo_vertices = new GLfloat[m_num_vertices * 3];
+					GLfloat * m_vbo_normals = new GLfloat[m_num_vertices * 3];
+					GLfloat * m_vbo_texcoords = new GLfloat[m_num_vertices * 2];
+
+					//convert the Vector3D vertexs data to my structures 
 					for(int i=0; i<m_num_vertices; i++)
 					{
-						m_vbo_normals[3*i] = (m_ptrs_normals+i)->x;
-						m_vbo_normals[3*i+1] = (m_ptrs_normals+i)->y;
-						m_vbo_normals[3*i+2] = (m_ptrs_normals+i)->z;
+						m_vbo_vertices[3*i] = (m_ptrs_vertices+i)->x;
+						m_vbo_vertices[3*i+1] = (m_ptrs_vertices+i)->y;
+						m_vbo_vertices[3*i+2] = (m_ptrs_vertices+i)->z;
 					}
-				}
-				if(m_has_texcoords == true)
-				{
-					//convert the Vector3D texcoords data to my structures 
-					for(int i=0; i<m_num_vertices; i++)
+					if(m_has_normals == true)
 					{
-						m_vbo_texcoords[2*i] = (m_ptrs_texcoords+i)->x;
-						m_vbo_texcoords[2*i+1] = (m_ptrs_texcoords+i)->y;
+						//convert the Vector3D normals data to my structures 
+						for(int i=0; i<m_num_vertices; i++)
+						{
+							m_vbo_normals[3*i] = (m_ptrs_normals+i)->x;
+							m_vbo_normals[3*i+1] = (m_ptrs_normals+i)->y;
+							m_vbo_normals[3*i+2] = (m_ptrs_normals+i)->z;
+						}
 					}
+					if(m_has_texcoords == true)
+					{
+						//convert the Vector3D texcoords data to my structures 
+						for(int i=0; i<m_num_vertices; i++)
+						{
+							m_vbo_texcoords[2*i] = (m_ptrs_texcoords+i)->x;
+							m_vbo_texcoords[2*i+1] = (m_ptrs_texcoords+i)->y;
+						}
+					}
+					//create the staticobject with vertexs
+					StaticObject* objects = new StaticObject(m_vbo_vertices, m_num_vertices * 3);
+
+					//set the normals of the staticobject
+					objects->setNormals(m_vbo_normals, m_num_vertices * 3);
+
+					//set the texcoords of the staticobject
+					m_total_texcoords.push_back(m_vbo_texcoords);
+
+					m_size_texcoords.push_back(m_num_vertices * 2);
+
+					//add the objects to objectmanage
+					objectManager->addVBOObject(objects);
 				}
-				//create the staticobject with vertexs
-				StaticObject* objects = new StaticObject(m_vbo_vertices, m_num_vertices * 3);
-
-				//set the normals of the staticobject
-				objects->setNormals(m_vbo_normals, m_num_vertices * 3);
-
-				//set the texcoords of the staticobject
-				m_total_texcoords.push_back(m_vbo_texcoords);
-
-				m_size_texcoords.push_back(m_num_vertices * 2);
-
-				//add the objects to objectmanage
-				objectManager->addVBOObject(objects);
 			}
-			m_ptrs_geometries.push_back(mesh);
+			if(kind == 2){
+				m_ptrs_geometries.push_back(mesh);
+			}
 		}
 	}
 }
@@ -395,7 +503,7 @@ void FColladaModelLoader::storeAnimation(){
 	// how many animations are there?
 	FCDAnimationLibrary* animationlib=m_document->GetAnimationLibrary();
 	m_num_animations=(int) animationlib->GetEntityCount();
-
+	animationsBoneName = new std::string[m_num_animations];
 	FCDAnimation* animation;
 	for (int i=0; i<m_num_animations; i++) {
 		animation = animationlib->GetEntity(i);
@@ -404,11 +512,215 @@ void FColladaModelLoader::storeAnimation(){
 }
 
 //build the scene include the material of the polygons, the texture of the polygons and the matrix of the bone.
-void FColladaModelLoader::buildScene(FCDSceneNode* node_origin)
+void FColladaModelLoader::buildScene(FCDSceneNode* node_origin, int kind)
 {
 	//child scene node
 	FCDSceneNode* child_origin;
 
+	buildSceneInstance(node_origin, kind);
+
+	buildSceneMatrix(node_origin);
+
+	initBoneScene(node_origin);
+	for (int i=0; i<(int)node_origin->GetChildrenCount(); i++) {
+		child_origin=node_origin->GetChild(i);
+		buildScene(child_origin, kind);
+	}
+}
+void FColladaModelLoader::initBoneScene(FCDSceneNode* node_origin){
+	if(node_origin ->GetJointFlag() == true){
+		int index = getBoneIndexByName(node_origin->GetSubId().c_str());
+		if(index >= 0 && index< boneNumber)
+		{
+			if(node_origin->GetParentCount() > 0){
+				int parentIndex = getBoneIndexByName(node_origin->GetParent(0)->GetSubId().c_str());
+				if(parentIndex >= 0 && parentIndex< boneNumber)
+				{
+					boneParentName[index] = boneName[parentIndex];
+				}
+				else{
+					boneParentName[index] = "";
+				}
+			}
+			else{
+				boneParentName[index] = "";
+			}
+
+			int boneChildCount = 0;
+			for(int i = 0; i< (int)node_origin->GetChildrenCount(); i++)
+			{
+				int tempChildIndex= getBoneIndexByName(node_origin->GetChild(i)->GetSubId().c_str());
+				if(tempChildIndex >= 0 && tempChildIndex< boneNumber){
+					if(node_origin->GetChild(i)->GetJointFlag() ==true)
+					boneChildCount++;
+				}
+			}
+			boneChildNum[index] = boneChildCount;
+			int tempChildNum = boneChildNum[index];
+			boneChildName[index] = new std::string[tempChildNum];
+			int tempChildCount = 0;
+			for(int i = 0; i< (int)node_origin->GetChildrenCount(); i++){
+				if(node_origin->GetChild(i)->GetJointFlag() ==true){
+					int tempChildIndex= getBoneIndexByName(node_origin->GetChild(i)->GetSubId().c_str());
+					if(tempChildIndex >= 0 && tempChildIndex< boneNumber){
+						boneChildName[index][tempChildCount] = boneName[tempChildIndex];
+						tempChildCount++;
+					}
+				}
+			}
+		}
+	}
+}
+
+int FColladaModelLoader::getBoneIndexByName(std::string name)
+{
+	for(int i=0; i<boneNumber; i++)
+	{
+		if(boneName[i]==name)
+			return i;
+	}
+	return -1;
+}
+
+void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind)
+{
+	// copy node instances
+	FCDEntityInstance* instance;
+
+	//the entity of the instance, and the name of the entity
+	FCDEntity* entity;
+	std::string name;
+
+	//instance flag to check which the instance id found in the library
+	bool flag_found;
+
+	//look through the instance
+	for (int i=0; i<(int)node_origin->GetInstanceCount(); i++) {
+
+		//set or reset the parameter
+		flag_found=false;
+		instance=node_origin->GetInstance(i);
+		entity=instance->GetEntity();
+		name=entity->GetDaeId().c_str();
+
+		//check if the instance is controller instance
+		if(instance->GetType()==FCDEntityInstance::CONTROLLER)
+		{
+			//get the controller instance
+			FCDControllerInstance* controllerInstance = dynamic_cast<FCDControllerInstance*>(instance);
+
+			//get the skin controller
+			FCDSkinController* skin = dynamic_cast<FCDController*>(controllerInstance->GetEntity())->GetSkinController();
+
+			// look for this name in geo library
+			for (int j=0; j<(int)m_ptrs_geometries.size(); j++) {
+
+				//get the target geometries
+				if (m_ptrs_geometries[j]->GetDaeId().c_str()==skin->GetTarget()->GetDaeId().c_str()) {				
+					//get the polygon index
+					int meshIndex=0;
+					for(int p=0; p<j; p++)
+					{
+						meshIndex+=(int)m_ptrs_geometries[p]->GetPolygonsCount();
+					}
+
+					//get the geometry mesh
+					FCDGeometryMesh* mesh=m_ptrs_geometries[j];
+					printf("%i\n", mesh->GetSource(0)->GetValueCount());
+					FCDMaterial* material;
+
+					//the id of the pointed material
+					std::string id_material;
+
+					//look through the mesh
+					for (int i=0; i<(int)mesh->GetPolygonsCount(); i++) {
+
+						material=NULL;
+						// look for this material_semantic in geometry_instance
+						for (int k=0; k<(int)controllerInstance->GetMaterialInstanceCount(); k++) {
+							// look for this material in my material lib
+
+							FCDMaterialInstance* materialInstance = controllerInstance->GetMaterialInstance(k);
+							//get the material instance from the geo instance
+
+							//check whether the semantic of the material instance is equals to the semantic of the polygon 
+							if (materialInstance->GetSemantic()==mesh->GetPolygons(i)->GetMaterialSemantic()) {
+								//get the material id of the pointed material
+								id_material=materialInstance->GetMaterial()->GetDaeId().c_str();
+
+								// look for a pointer for that material in my material lib
+								for (int j=0; j<m_num_materials; j++){
+									if (m_ptrs_materials[j]->GetDaeId().c_str()==id_material) {
+										//set the material of the polygon
+										setFCMaterial(j, meshIndex+i, kind);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			buildSkin(skin);
+		}
+		// look for this name in geo library
+		for (int j=0; j<(int)m_ptrs_geometries.size(); j++) {
+			if (m_ptrs_geometries[j]->GetDaeId().c_str()==name) {
+				//get the Geo instance
+				FCDGeometryInstance* geometry_instance=dynamic_cast<FCDGeometryInstance*>(instance);
+				//get the mesh
+				FCDGeometryMesh* mesh=m_ptrs_geometries[j];
+				//get the polygon index
+				int meshIndex=0;
+				for(int p=0; p<j; p++)
+				{
+					meshIndex+=(int)m_ptrs_geometries[p]->GetPolygonsCount();
+				}
+				//get the material
+				setMeshFCMaterial(geometry_instance, mesh, meshIndex, kind);
+				flag_found=true;
+				break;
+			}
+		}
+		if (flag_found) continue;
+	}
+}
+
+void FColladaModelLoader::buildSkin(FCDSkinController* skin){
+	boneNumber = (int)skin->GetJointCount();
+	boneName = new std::string[boneNumber];
+	boneMatrix = new Matrix[boneNumber];
+	boneParentName = new std::string[boneNumber];
+	boneChildNum = new int[boneNumber];
+	boneChildName = new std::string*[boneNumber];
+	skinVertexNum = skin->GetInfluenceCount();
+
+
+	for(int i = 0; i < (int)skin->GetJointCount(); i++)
+	{
+	FCDSkinControllerJoint* joint = skin->GetJoint(i);
+	boneName[i] = joint->GetId().c_str();
+	FMMatrix44 inverse = joint->GetBindPoseInverse() * skin->GetBindShapeTransform();
+	float tempMatrixElement[] ={inverse.m[0][0], inverse.m[0][1], inverse.m[0][2], inverse.m[0][3], 
+	inverse.m[1][0], inverse.m[1][1], inverse.m[1][2], inverse.m[1][3],
+	inverse.m[2][0], inverse.m[2][1], inverse.m[2][2], inverse.m[2][3],
+	inverse.m[3][0], inverse.m[3][1], inverse.m[3][2], inverse.m[3][3],};
+	Matrix tempMatrix = Matrix(tempMatrixElement);
+	boneMatrix[i] = tempMatrix;
+	}
+
+	for(int i = 0; i < (int)skin->GetInfluenceCount(); i++)
+	{
+	FCDSkinControllerVertex* influences = skin->GetVertexInfluence(i);
+	for(int j =0; j < (int)influences->GetPairCount(); j++)
+	{
+	FCDJointWeightPair* pairs = influences->GetPair(j);
+	}
+	}
+	
+}
+void FColladaModelLoader::buildSceneMatrix(FCDSceneNode* node_origin)
+{
 	FCDTransform*  trans_origin;
 
 	// copy node transformations
@@ -536,134 +848,10 @@ void FColladaModelLoader::buildScene(FCDSceneNode* node_origin)
 			}
 			continue;
 		}
-
-
-	}
-
-	// copy node instances
-	FCDEntityInstance* instance;
-
-	//the entity of the instance, and the name of the entity
-	FCDEntity* entity;
-	std::string name;
-
-	//instance flag to check which the instance id found in the library
-	bool flag_found;
-
-	//look through the instance
-	for (int i=0; i<(int)node_origin->GetInstanceCount(); i++) {
-
-		//set or reset the parameter
-		flag_found=false;
-		instance=node_origin->GetInstance(i);
-		entity=instance->GetEntity();
-		name=entity->GetDaeId().c_str();
-
-		//check if the instance is controller instance
-		if(instance->GetType()==FCDEntityInstance::CONTROLLER)
-		{
-			//get the controller instance
-			FCDControllerInstance* controllerInstance = dynamic_cast<FCDControllerInstance*>(instance);
-
-			//get the skin controller
-			FCDSkinController* skin = dynamic_cast<FCDController*>(controllerInstance->GetEntity())->GetSkinController();
-
-			// look for this name in geo library
-			for (int j=0; j<(int)m_ptrs_geometries.size(); j++) {
-
-				//get the target geometries
-				if (m_ptrs_geometries[j]->GetDaeId().c_str()==skin->GetTarget()->GetDaeId().c_str()) {
-					
-					//get the polygon index
-					int meshIndex=0;
-					for(int p=0; p<j; p++)
-					{
-						meshIndex+=(int)m_ptrs_geometries[p]->GetPolygonsCount();
-					}
-
-					//get the geometry mesh
-					FCDGeometryMesh* mesh=m_ptrs_geometries[j];
-					FCDMaterial* material;
-
-					//the id of the pointed material
-					std::string id_material;
-
-					//look through the mesh
-					for (int i=0; i<(int)mesh->GetPolygonsCount(); i++) {
-
-						material=NULL;
-						// look for this material_semantic in geometry_instance
-						for (int k=0; k<(int)controllerInstance->GetMaterialInstanceCount(); k++) {
-							// look for this material in my material lib
-
-							FCDMaterialInstance* materialInstance = controllerInstance->GetMaterialInstance(k);
-							//get the material instance from the geo instance
-
-							//check whether the semantic of the material instance is equals to the semantic of the polygon 
-							if (materialInstance->GetSemantic()==mesh->GetPolygons(i)->GetMaterialSemantic()) {
-								//get the material id of the pointed material
-								id_material=materialInstance->GetMaterial()->GetDaeId().c_str();
-
-								// look for a pointer for that material in my material lib
-								for (int j=0; j<m_num_materials; j++){
-									if (m_ptrs_materials[j]->GetDaeId().c_str()==id_material) {
-										//set the material of the polygon
-										setFCMaterial(j, meshIndex+i);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-
-			/*
-			for(int i = 0; i < (int)skin->GetJointCount(); i++)
-			{
-				FCDSkinControllerJoint* joint = skin->GetJoint(i);
-				FMMatrix44 inverse = joint->GetBindPoseInverse() * skin->GetBindShapeTransform();
-			}
-
-			for(int i = 0; i < (int)skin->GetInfluenceCount(); i++)
-			{
-				FCDSkinControllerVertex* influences = skin->GetVertexInfluence(i);
-				for(int j =0; j < (int)influences->GetPairCount(); j++)
-				{
-					FCDJointWeightPair* pairs = influences->GetPair(j);
-				}
-			}
-			*/
-		}
-		// look for this name in geo library
-		for (int j=0; j<(int)m_ptrs_geometries.size(); j++) {
-			if (m_ptrs_geometries[j]->GetDaeId().c_str()==name) {
-				//get the Geo instance
-				FCDGeometryInstance* geometry_instance=dynamic_cast<FCDGeometryInstance*>(instance);
-				//get the mesh
-				FCDGeometryMesh* mesh=m_ptrs_geometries[j];
-				//get the polygon index
-				int meshIndex=0;
-				for(int p=0; p<j; p++)
-				{
-					meshIndex+=(int)m_ptrs_geometries[p]->GetPolygonsCount();
-				}
-				//get the material
-				setMeshFCMaterial(geometry_instance, mesh, meshIndex);
-				flag_found=true;
-				break;
-			}
-		}
-		if (flag_found) continue;
-	}
-
-	for (int i=0; i<(int)node_origin->GetChildrenCount(); i++) {
-		child_origin=node_origin->GetChild(i);
-		buildScene(child_origin);
 	}
 }
-
 //set the material of the mesh
-void FColladaModelLoader::setMeshFCMaterial(FCDGeometryInstance* geometry_instance, FCDGeometryMesh* mesh, int meshIndex)
+void FColladaModelLoader::setMeshFCMaterial(FCDGeometryInstance* geometry_instance, FCDGeometryMesh* mesh, int meshIndex, int kind)
 {
 	// fill this mesh instance with polygons instances
 
@@ -694,7 +882,7 @@ void FColladaModelLoader::setMeshFCMaterial(FCDGeometryInstance* geometry_instan
 				for (int j=0; j<m_num_materials; j++){
 					if (m_ptrs_materials[j]->GetDaeId().c_str()==id_material) {
 						//set the material of the polygon
-						setFCMaterial(j, meshIndex+i);
+						setFCMaterial(j, meshIndex+i, kind);
 					}
 				}
 			}
@@ -703,7 +891,7 @@ void FColladaModelLoader::setMeshFCMaterial(FCDGeometryInstance* geometry_instan
 }
 
 //set the target material to the polygon
-void FColladaModelLoader::setFCMaterial(int target, int index)
+void FColladaModelLoader::setFCMaterial(int target, int index, int kind)
 {
 	//target material
 	FCDMaterial* material = m_ptrs_materials[target];
@@ -927,14 +1115,17 @@ void FColladaModelLoader::setFCMaterial(int target, int index)
 		tex = textureManager->getTextureId(szFile.c_str());
 	}
 
-	//if has texture, set the texture
-	if(tex != NULL)
+	if(kind == 2)
 	{
-		((StaticObject *) objectManager->getVBOObject(2,index))->setTextures(m_total_texcoords[index], m_size_texcoords[index], tex);
-	}
+		//if has texture, set the texture
+		if(tex != NULL)
+		{
+			((StaticObject *) objectManager->getVBOObject(2,index))->setTextures(m_total_texcoords[index], m_size_texcoords[index], tex);
+		}
 
-	//set the material
-	((StaticObject *) objectManager->getVBOObject(2,index))->setMaterial(am, di, sp, em, sh);
+		//set the material
+		((StaticObject *) objectManager->getVBOObject(2,index))->setMaterial(am, di, sp, em, sh);
+	}
 }
 
 //search the texture in the texture lib by texture id
@@ -956,47 +1147,27 @@ FCDImage *FColladaModelLoader::SearchTextureByName(fm::string textureid){
 
 
 
-void FColladaModelLoader::drawLine(FCDSceneNode* node_origin)
+void FColladaModelLoader::drawLine(FCDSceneNode* node_origin, int kind)
 {
-	bool flag_found = false;
-
-	flag_found = checkBone(node_origin);
-
-	if(flag_found == true){
-		FMVector3 v = node_origin->CalculateWorldTransform().GetTranslation();
+	FMVector3 v_origin;
+	if(node_origin ->GetJointFlag() == true){
+		v_origin = node_origin->CalculateWorldTransform().GetTranslation();
 	}
 	for (int i=0; i<(int)node_origin->GetChildrenCount(); i++) {
 		FCDSceneNode* child_origin=node_origin->GetChild(i);
-		drawLine(child_origin);
-	}
-}
-
-bool FColladaModelLoader::checkBone(FCDSceneNode* node_origin)
-{
-	FCDEntityInstance* instance;
-
-	//the entity of the instance, and the name of the entity
-	FCDEntity* entity;
-	std::string name;
-
-	//instance flag to check which the instance id found in the library
-	bool flag_found = false;
-
-	//look through the instance
-	for (int i=0; i<(int)node_origin->GetInstanceCount(); i++) {
-
-		//set or reset the parameter
-		flag_found=false;
-		instance=node_origin->GetInstance(i);
-		entity=instance->GetEntity();
-		name=entity->GetDaeId().c_str();
-
-		// look for this name in geo library
-		for (int j=0; j<(int)m_ptrs_geometries.size(); j++) {
-			if (m_ptrs_geometries[j]->GetDaeId().c_str()==name) {
-				flag_found = true;
-			}
+		if ( child_origin ->GetJointFlag() == true)
+		{
+			FMVector3 v_child;
+			v_child = child_origin->CalculateWorldTransform().GetTranslation();
+			SimpleLine *simpleLine= new SimpleLine();
+			float dot1[3];
+			dot1[0] = v_origin.x; dot1[1] = v_origin.y; dot1[2] = v_origin.z;
+			float dot2[3];
+			dot2[0] = v_child.x; dot2[1] = v_child.y; dot2[2] = v_child.z;
+			simpleLine->setDot1(dot1);
+			simpleLine->setDot2(dot2);
+			simpleLines.push_back(simpleLine);
 		}
+		drawLine(child_origin, kind);
 	}
-	return flag_found;
 }
