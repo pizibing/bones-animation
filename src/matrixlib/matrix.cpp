@@ -10,6 +10,14 @@
 #define M_PI       3.14159265358979323846f
 #endif
 
+// add operator
+Matrix Matrix::operator + (const Matrix & matrix) const{
+	Matrix mx;
+	for(int i = 0; i < 16; i++)
+		mx.m[i] = m[i] + matrix[i];
+	return mx;
+}
+
 // @return a matrix for the result of multiplication of this and another
 Matrix Matrix::operator * (const Matrix & matrix) const{
 	Matrix mx;
