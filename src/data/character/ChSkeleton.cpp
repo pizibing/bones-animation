@@ -27,11 +27,11 @@ ChSkeleton::~ChSkeleton(void){
 // @return the pointer for the bone with the name
 //         if no bone has the name, create a new bone
 ChBone* ChSkeleton::getBone(const std::string &name){
-	int id = m_boneMap[name];
-	if(id>=0&&id<m_bone_num){
-		return m_bones[id];
+	std::map<std::string,int>::iterator i = m_boneMap.find(name);
+	if(i!=m_boneMap.end()){
+		return m_bones[i->second];
 	}
-	id = m_boneMap.size();
+	int id = m_boneMap.size();
 	if(id<m_bone_num){
 		m_bones[id] = new ChBone(name);
 		m_bones[id]->setId(id);
@@ -55,8 +55,11 @@ ChBone* ChSkeleton::getBone(int boneId){
 // get the index of bone with the name
 // @param name the name for the bone
 // @return the index of the bone 
+//			   -1 if cannot find
 int ChSkeleton::getBoneId(const std::string &name){
-	return m_boneMap[name];
+	std::map<std::string,int>::iterator i = m_boneMap.find(name);
+	if(i!=m_boneMap.end())return i->second;
+	return -1; 
 }
 
 ChBone** ChSkeleton::getAllBones()const{
