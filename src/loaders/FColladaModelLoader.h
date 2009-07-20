@@ -147,7 +147,12 @@ private:
 	std::string filename;
 
 	int skinVertexNum;
-
+	float* skinVertexPosX;
+	float* skinVertexPosY;
+	float* skinVertexPosZ;
+	int* skinVertexBoneCount;
+	std::string** skinVertexBoneName;
+	float** skinVertexBonePower;
 
 	//objectmanage
 	ObjectManager* objectManager;
