@@ -196,6 +196,149 @@ void FColladaModelLoader::BuildCharacter()
 	// calculate tranform in world space
 	skeleton->calculateAbsoluteTransform();
 //	printf("\n");
+
+	/* step2: initialize animations */
+
+	// create a new animation manager
+	ChAnimationManager* animations = character->getAnimations();
+	// get animation number of this CharacterObject from Fcollada
+//	int animation_num = 1;
+	// set animation number
+	animations->init(1);
+	// for each animation
+//	for(int i = 0; i < animation_num; i++){
+	// create a new animation, the name of the animation is necessary
+	// get name of the animation from Fcollada
+	std::string animationName = filename;
+//	printf("filename\n");
+//	printf("%s\n", filename.c_str());
+	ChAnimation* animation = animations->getAnimation(animationName);
+	/* each bone of the skeleton has one corresponding ChTrack in one
+	animation which records the movement of the bone */
+	// get animation number from Fcollada
+	int animation_num = m_num_animations;
+//	printf("animation_num\n");
+//	printf("%i\n", animation_num);
+	// for each bone (how to go through all the bones is your choice)
+	for(int i =0; i < animation_num; i++){
+		// get bone's name from Fcollada
+		std::string boneName = "";
+		// get bone's relative ChTrack
+//		ChTrack* track = animation->getTrack(boneName);
+		/* initialize the track */
+		// get key frame number of this track from Fcollada
+		int frame_num = 0;
+		// set key frame number
+//		track->init(frame_num);
+		// for each key frame
+		for(int j = 0; j < frame_num; j++){
+			// get relative change matrix of the bone in this key frame
+			// from Fcollada
+			Matrix matrix = Matrix();
+			// get this key frame's frame number in the whole animation
+			// from Fcollada
+			int frame_time = j;
+			// add the key frame into the track
+//			track->addKeyFrame(matrix,frame_time);
+		}
+	}
+//}
+
+	/* step3: initialize skin */
+	// create new ChSkin
+	ChSkin* skin = character->getSkin();
+	// get vertex number of the skin from Fcollada
+	int vertexNum = skinVertexNum;
+//	printf("vertexNum\n");
+//	printf("%i\n", vertexNum);
+//	printf("\n");
+	// set vertex number(no duplicated vertex is allowed)
+	skin->initVertices(vertexNum);
+	// initialize each vertex in the skin
+	for(int i = 0; i < vertexNum; i++){
+		// create a vertex
+//		ChVertex* vertex = skin->initVertice(vertexNum);
+		// get position of the vertex to be added from Fcollada
+		float px = skinVertexPosX[i];
+		float py = skinVertexPosY[i];
+		float pz = skinVertexPosZ[i];
+//		printf("%i vertex position\n", i);
+//		printf("(%f, %f, %f)\n", px, py, pz);
+		// create a new vertex
+//		vertex->setDefaultPosition(px,py,pz);
+		// get normal of the vertex from Fcollada
+	//	float nx,ny,nz;
+		// set normal
+	//	vertex->setDefaultNormal(nx,ny,nz);
+		// get number of bones this vertex relates to from Fcollada
+		int relatedBoneNum = skinVertexBoneCount[i];
+//		printf("relatedBoneNum\n");
+//		printf("%i\n", relatedBoneNum);
+		// set related bone number
+//		vertex->initPairs(relatedBoneNum);
+		/* pair is a struct that stores the related bones of the
+		vertex and their power */
+		// for each pair
+		for(int j = 0; j < relatedBoneNum; j++){
+			// get related bone name from Fcollada
+			std::string tempboneName = skinVertexBoneName[i][j];
+			char* boneName = (char*)tempboneName.c_str();
+//			printf("boneName\n");
+//			printf("%s\n", boneName);
+			// get power of the bone to this vertex
+			// please notice that the sum of all the powers of a vertex
+			// should be 1
+			float power = skinVertexBonePower[i][j];
+//			printf("power\n");
+//			printf("%f\n", power);
+			// set pair
+//			vertex->initPair(j,boneName,power);
+		}
+	}
+
+	/* step4: initialize skeleton and skin instance */
+	// this step is easy, just use the function below
+//	character->initInstance();
+
+	/* step5: initialize VBOs(a VBO is a group of triangles that have the
+	same material and textures) */
+	// get number of VBOs that you need to display this CharacterObject
+	int vboNum = 0;
+	// set vbo number
+//	character->initVBOs(vboNum);
+	// for each vbo
+	for(int i = 0; i < vboNum; i++){
+		/* vertices is an array of ids of ChVertex that is contained 
+		in this VBO, you can get the id of each vertex use getId()
+		function of ChVertex, perhaps you can generate all vertices'
+		id information when you built the skin */
+		// generate each vbo's vertices
+		int* vertices = 0;
+		// get the length of vertices
+		int vSize = 0;
+		// initialize i-th vbo
+//		character->initVBO(vertices,vSize,i);
+		// get texture coordinates of vertices
+		float* texCoord = 0;
+		// get length of texCoord
+		int tcSize = 0;
+		// get texture id
+		int texId = 0;
+		// set i-th vbo's texture
+//		character->setVBOTexture(texCoord,tcSize,texId,i);
+		// get material information of that vbo
+		GLfloat am[4];
+		GLfloat di[4];
+		GLfloat sp[4];
+		GLfloat em[4];
+		GLfloat sh;
+		// set i-th vbo's material
+//		character->setVBOMaterial(am,di,sp,em,sh,i);
+	}
+
+	/* step6: add the character to the ObjectManager */
+//	objectManager->addVBOObject(character);
+
 }
 
 
@@ -517,11 +660,12 @@ void FColladaModelLoader::buildScene(FCDSceneNode* node_origin, int kind)
 	//child scene node
 	FCDSceneNode* child_origin;
 
+	initBoneScene(node_origin);
+
 	buildSceneInstance(node_origin, kind);
 
 	buildSceneMatrix(node_origin);
 
-	initBoneScene(node_origin);
 	for (int i=0; i<(int)node_origin->GetChildrenCount(); i++) {
 		child_origin=node_origin->GetChild(i);
 		buildScene(child_origin, kind);
@@ -612,6 +756,7 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 			//get the skin controller
 			FCDSkinController* skin = dynamic_cast<FCDController*>(controllerInstance->GetEntity())->GetSkinController();
 
+			buildSkin(skin);
 			// look for this name in geo library
 			for (int j=0; j<(int)m_ptrs_geometries.size(); j++) {
 
@@ -626,7 +771,12 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 
 					//get the geometry mesh
 					FCDGeometryMesh* mesh=m_ptrs_geometries[j];
-					printf("%i\n", mesh->GetSource(0)->GetValueCount());
+					for(int posCount = 0; posCount < (int)mesh->GetSource(0)->GetValueCount(); posCount ++)
+					{
+						skinVertexPosX[posCount] = mesh->GetSource(0)->GetData()[3*posCount];
+						skinVertexPosY[posCount] = mesh->GetSource(0)->GetData()[3*posCount+1];
+						skinVertexPosZ[posCount] = mesh->GetSource(0)->GetData()[3*posCount+2];
+					}
 					FCDMaterial* material;
 
 					//the id of the pointed material
@@ -660,8 +810,6 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 					}
 				}
 			}
-
-			buildSkin(skin);
 		}
 		// look for this name in geo library
 		for (int j=0; j<(int)m_ptrs_geometries.size(); j++) {
@@ -693,29 +841,39 @@ void FColladaModelLoader::buildSkin(FCDSkinController* skin){
 	boneParentName = new std::string[boneNumber];
 	boneChildNum = new int[boneNumber];
 	boneChildName = new std::string*[boneNumber];
-	skinVertexNum = skin->GetInfluenceCount();
-
+	skinVertexNum = (int)skin->GetInfluenceCount();
+	skinVertexPosX = new float[skinVertexNum];
+	skinVertexPosY = new float[skinVertexNum];
+	skinVertexPosZ = new float[skinVertexNum];
+	skinVertexBoneCount = new int[skinVertexNum];
+	skinVertexBoneName = new std::string*[skinVertexNum];
+	skinVertexBonePower = new float*[skinVertexNum];
 
 	for(int i = 0; i < (int)skin->GetJointCount(); i++)
 	{
-	FCDSkinControllerJoint* joint = skin->GetJoint(i);
-	boneName[i] = joint->GetId().c_str();
-	FMMatrix44 inverse = joint->GetBindPoseInverse() * skin->GetBindShapeTransform();
-	float tempMatrixElement[] ={inverse.m[0][0], inverse.m[0][1], inverse.m[0][2], inverse.m[0][3], 
-	inverse.m[1][0], inverse.m[1][1], inverse.m[1][2], inverse.m[1][3],
-	inverse.m[2][0], inverse.m[2][1], inverse.m[2][2], inverse.m[2][3],
-	inverse.m[3][0], inverse.m[3][1], inverse.m[3][2], inverse.m[3][3],};
-	Matrix tempMatrix = Matrix(tempMatrixElement);
-	boneMatrix[i] = tempMatrix;
+		FCDSkinControllerJoint* joint = skin->GetJoint(i);
+		boneName[i] = joint->GetId().c_str();
+		FMMatrix44 inverse = joint->GetBindPoseInverse() * skin->GetBindShapeTransform();
+		float tempMatrixElement[] ={inverse.m[0][0], inverse.m[0][1], inverse.m[0][2], inverse.m[0][3], 
+		inverse.m[1][0], inverse.m[1][1], inverse.m[1][2], inverse.m[1][3],
+		inverse.m[2][0], inverse.m[2][1], inverse.m[2][2], inverse.m[2][3],
+		inverse.m[3][0], inverse.m[3][1], inverse.m[3][2], inverse.m[3][3],};
+		Matrix tempMatrix = Matrix(tempMatrixElement);
+		boneMatrix[i] = tempMatrix;
 	}
 
 	for(int i = 0; i < (int)skin->GetInfluenceCount(); i++)
 	{
-	FCDSkinControllerVertex* influences = skin->GetVertexInfluence(i);
-	for(int j =0; j < (int)influences->GetPairCount(); j++)
-	{
-	FCDJointWeightPair* pairs = influences->GetPair(j);
-	}
+		FCDSkinControllerVertex* influences = skin->GetVertexInfluence(i);
+		skinVertexBoneCount[i] = (int)influences->GetPairCount();
+		skinVertexBoneName[i] = new std::string[skinVertexBoneCount[i]];
+		skinVertexBonePower[i] = new float[skinVertexBoneCount[i]];
+		for(int j =0; j < (int)influences->GetPairCount(); j++)
+		{
+			FCDJointWeightPair* pairs = influences->GetPair(j);
+			skinVertexBoneName[i][j] = boneName[(int)pairs->jointIndex];
+			skinVertexBonePower[i][j] = pairs->weight;
+		}
 	}
 	
 }
