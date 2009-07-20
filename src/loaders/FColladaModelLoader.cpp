@@ -303,7 +303,7 @@ void FColladaModelLoader::BuildCharacter()
 	/* step5: initialize VBOs(a VBO is a group of triangles that have the
 	same material and textures) */
 	// get number of VBOs that you need to display this CharacterObject
-	int vboNum = 0;
+	int vboNum = charactervboNum;
 	// set vbo number
 //	character->initVBOs(vboNum);
 	// for each vbo
@@ -313,25 +313,25 @@ void FColladaModelLoader::BuildCharacter()
 		function of ChVertex, perhaps you can generate all vertices'
 		id information when you built the skin */
 		// generate each vbo's vertices
-		int* vertices = 0;
+		float* vertices = character_vbo_vertices[i];
 		// get the length of vertices
-		int vSize = 0;
+		int vSize = character_vbo_size * 3;
 		// initialize i-th vbo
 //		character->initVBO(vertices,vSize,i);
 		// get texture coordinates of vertices
-		float* texCoord = 0;
+		float* texCoord = character_vbo_texcoords[i];
 		// get length of texCoord
-		int tcSize = 0;
+		int tcSize = character_vbo_size * 2;
 		// get texture id
-		int texId = 0;
+		GLuint texId = character_vbo_texid[i];
 		// set i-th vbo's texture
 //		character->setVBOTexture(texCoord,tcSize,texId,i);
 		// get material information of that vbo
-		GLfloat am[4];
-		GLfloat di[4];
-		GLfloat sp[4];
-		GLfloat em[4];
-		GLfloat sh;
+		float am[4] = {character_vbo_am[i][0], character_vbo_am[i][1], character_vbo_am[i][2], character_vbo_am[i][3]};
+		float di[4] = {character_vbo_di[i][0], character_vbo_di[i][1], character_vbo_di[i][2], character_vbo_di[i][3]};
+		float sp[4] = {character_vbo_sp[i][0], character_vbo_sp[i][1], character_vbo_sp[i][2], character_vbo_sp[i][3]};
+		float em[4] = {character_vbo_em[i][0], character_vbo_em[i][1], character_vbo_em[i][2], character_vbo_em[i][3]};
+		float sh = character_vbo_sh[i];
 		// set i-th vbo's material
 //		character->setVBOMaterial(am,di,sp,em,sh,i);
 	}
@@ -487,9 +487,9 @@ void FColladaModelLoader::storeVertices(int kind)
 				if(kind == 2)
 				{
 					//init the total data of the vertexs and normals
-					GLfloat * m_vbo_vertices = new GLfloat[m_num_vertices * 3];
-					GLfloat * m_vbo_normals = new GLfloat[m_num_vertices * 3];
-					GLfloat * m_vbo_texcoords = new GLfloat[m_num_vertices * 2];
+					float * m_vbo_vertices = new GLfloat[m_num_vertices * 3];
+					float * m_vbo_normals = new GLfloat[m_num_vertices * 3];
+					float * m_vbo_texcoords = new GLfloat[m_num_vertices * 2];
 
 					//convert the Vector3D vertexs data to my structures 
 					for(int i=0; i<m_num_vertices; i++)
@@ -777,6 +777,156 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 						skinVertexPosY[posCount] = mesh->GetSource(0)->GetData()[3*posCount+1];
 						skinVertexPosZ[posCount] = mesh->GetSource(0)->GetData()[3*posCount+2];
 					}
+					// create my own polygons
+					int m_num_polygons=(int) mesh->GetPolygonsCount();
+					charactervboNum = m_num_polygons;
+					character_vbo_vertices = new float*[m_num_polygons];
+					character_vbo_normals = new float*[m_num_polygons];
+					character_vbo_texcoords = new float*[m_num_polygons];
+					character_vbo_am = new float*[m_num_polygons];
+					character_vbo_di = new float*[m_num_polygons];
+					character_vbo_sp = new float*[m_num_polygons];
+					character_vbo_em = new float*[m_num_polygons];
+					character_vbo_sh = new float[m_num_polygons];
+					character_vbo_texid = new GLuint[m_num_polygons];
+
+					for (int p=0;p<m_num_polygons;p++) {
+						FCDGeometryPolygons* ptr_polygons = mesh->GetPolygons(p);
+						FCDGeometrySource* source;
+						FCDGeometryPolygonsInput* geometrypolygonsinput;
+						uint32* indices;
+						// indices to vertex
+						geometrypolygonsinput=ptr_polygons->FindInput(FUDaeGeometryInput::POSITION);
+						indices = geometrypolygonsinput->GetIndices();
+
+						//m_num_vertices=(int) indices->size();
+						int m_num_vertices=(int) geometrypolygonsinput->GetIndexCount();
+						/*store the vertex*/
+
+						// source of vertex
+						source = ptr_polygons->GetParent()->FindSourceByType(FUDaeGeometryInput::POSITION);
+
+						// allocate memory for triangles and its vertex (a triangle has 3 vertex)
+						Vector3D *m_ptrs_vertices = (Vector3D*)malloc( m_num_vertices * sizeof(Vector3D) );
+
+						// look for vertices using indices
+						// 3 vertex form a triangle
+
+						for (int im=0; im<m_num_vertices; im++) {
+							// a vertex index
+							int index=(int) indices[im];
+							// a vertex values from it index
+							float *p=&source->GetData()[index*3];
+							m_ptrs_vertices[im].x=p[0];
+							m_ptrs_vertices[im].y=p[1];
+							m_ptrs_vertices[im].z=p[2];
+						}
+
+						/*store the normal*/
+
+						// source of vertex
+						source = ptr_polygons->GetParent()->FindSourceByType(FUDaeGeometryInput::NORMAL);
+						bool m_has_normals;
+						Vector3D *m_ptrs_normals;
+						if (source==NULL) {
+							m_has_normals=false;
+						} else {
+							m_has_normals=true;
+							// indices
+							geometrypolygonsinput=ptr_polygons->FindInput(FUDaeGeometryInput::NORMAL);
+							indices = geometrypolygonsinput->GetIndices();
+
+							// allocate memory for triangles and its vertex (a triangle has 3 vertex)
+							m_ptrs_normals = (Vector3D*)malloc( m_num_vertices * sizeof(Vector3D) );
+
+							// look for vertices using indices
+							for (int im=0; im<m_num_vertices; im++) {
+								// a vertex index
+								int index=(int) indices[im];
+								// a vertex values from it index
+								float *p=&source->GetData()[index*3];
+								m_ptrs_normals[im].x=p[0];
+								m_ptrs_normals[im].y=p[1];
+								m_ptrs_normals[im].z=p[2];
+							}
+						}
+
+						/*store the texture coordinates*/
+
+						// do the same for texcture coordinates
+						source = ptr_polygons->GetParent()->FindSourceByType(FUDaeGeometryInput::TEXCOORD);
+						bool m_has_texcoords;
+						Vector3D *m_ptrs_texcoords;
+						// maybe they are not present
+						if (source==NULL) {
+							m_has_texcoords=false;
+						} else {
+							m_has_texcoords=true;
+
+							// indices
+							geometrypolygonsinput=ptr_polygons->FindInput(FUDaeGeometryInput::TEXCOORD);
+							indices = geometrypolygonsinput->GetIndices();
+
+							// allocate memory for triangles and its vertex (a triangle has 3 vertex)
+							m_ptrs_texcoords = (Vector3D*)malloc( m_num_vertices * sizeof(Vector3D) );
+							int stride;
+							stride=source->GetStride();
+
+							// 3ds max exports textures with 3 coordinates, but maya and Google Earth use 2 coordinates
+
+							// look for vertices using indices
+							for (int im=0; im<m_num_vertices; im++) {
+								// a vertex index
+								int index=(int) indices[im];
+								// a vertex values from it index
+								float *p=&source->GetData()[index*stride];
+								m_ptrs_texcoords[im].x=p[0];
+								m_ptrs_texcoords[im].y=p[1];
+								if (stride==3) {
+									m_ptrs_texcoords[im].z=p[2]; 
+								}
+								else{
+									m_ptrs_texcoords[im].z=0.0f;
+								}
+							}
+						}
+						//init the total data of the vertexs and normals
+						float * m_vbo_vertices = new float[m_num_vertices * 3];
+						float * m_vbo_normals = new float[m_num_vertices * 3];
+						float * m_vbo_texcoords = new float[m_num_vertices * 2];
+
+						//convert the Vector3D vertexs data to my structures 
+						for(int im=0; im<m_num_vertices; im++)
+						{
+							m_vbo_vertices[3*im] = (m_ptrs_vertices+im)->x;
+							m_vbo_vertices[3*im+1] = (m_ptrs_vertices+im)->y;
+							m_vbo_vertices[3*im+2] = (m_ptrs_vertices+im)->z;
+						}
+						if(m_has_normals == true)
+						{
+							//convert the Vector3D normals data to my structures 
+							for(int im=0; im<m_num_vertices; im++)
+							{
+								m_vbo_normals[3*im] = (m_ptrs_normals+im)->x;
+								m_vbo_normals[3*im+1] = (m_ptrs_normals+im)->y;
+								m_vbo_normals[3*im+2] = (m_ptrs_normals+im)->z;
+							}
+						}
+						if(m_has_texcoords == true)
+						{
+							//convert the Vector3D texcoords data to my structures 
+							for(int im=0; im<m_num_vertices; im++)
+							{
+								m_vbo_texcoords[2*im] = (m_ptrs_texcoords+im)->x;
+								m_vbo_texcoords[2*im+1] = (m_ptrs_texcoords+im)->y;
+							}
+						}
+						character_vbo_size = m_num_vertices;
+						character_vbo_vertices[p] = m_vbo_vertices;
+						character_vbo_normals[p] = m_vbo_normals;
+						character_vbo_texcoords[p] = m_vbo_texcoords;
+					}
+
 					FCDMaterial* material;
 
 					//the id of the pointed material
@@ -802,7 +952,7 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 								for (int j=0; j<m_num_materials; j++){
 									if (m_ptrs_materials[j]->GetDaeId().c_str()==id_material) {
 										//set the material of the polygon
-										setFCMaterial(j, meshIndex+i, kind);
+										setFCMaterial(j, meshIndex+i, i, kind);
 									}
 								}
 							}
@@ -1040,7 +1190,7 @@ void FColladaModelLoader::setMeshFCMaterial(FCDGeometryInstance* geometry_instan
 				for (int j=0; j<m_num_materials; j++){
 					if (m_ptrs_materials[j]->GetDaeId().c_str()==id_material) {
 						//set the material of the polygon
-						setFCMaterial(j, meshIndex+i, kind);
+						setFCMaterial(j, meshIndex+i, i, kind);
 					}
 				}
 			}
@@ -1049,7 +1199,7 @@ void FColladaModelLoader::setMeshFCMaterial(FCDGeometryInstance* geometry_instan
 }
 
 //set the target material to the polygon
-void FColladaModelLoader::setFCMaterial(int target, int index, int kind)
+void FColladaModelLoader::setFCMaterial(int target, int index, int polygonIndex, int kind)
 {
 	//target material
 	FCDMaterial* material = m_ptrs_materials[target];
@@ -1275,11 +1425,23 @@ void FColladaModelLoader::setFCMaterial(int target, int index, int kind)
 
 	if(kind == 2)
 	{
+		character_vbo_am[polygonIndex] = new float[4];
+		character_vbo_di[polygonIndex] = new float[4];
+		character_vbo_sp[polygonIndex] = new float[4];
+		character_vbo_em[polygonIndex] = new float[4];
+		character_vbo_texid[polygonIndex] = 0;
 		//if has texture, set the texture
 		if(tex != NULL)
 		{
 			((StaticObject *) objectManager->getVBOObject(2,index))->setTextures(m_total_texcoords[index], m_size_texcoords[index], tex);
+			character_vbo_texid[polygonIndex] = tex;
 		}
+
+		character_vbo_am[polygonIndex] = am;
+		character_vbo_di[polygonIndex] = di;
+		character_vbo_sp[polygonIndex] = sp;
+		character_vbo_em[polygonIndex] = em;
+		character_vbo_sh[polygonIndex] = sh;
 
 		//set the material
 		((StaticObject *) objectManager->getVBOObject(2,index))->setMaterial(am, di, sp, em, sh);
