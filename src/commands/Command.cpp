@@ -9,13 +9,13 @@
 #include "../managers/DisplayManager.h"
 #include "../calculation/Calculator.h"
 #include "../loaders/ModelLoader.h"
-#include "../loaders/FColladaModelLoader.h"
+#include "../loaders/CommandModelLoader.h"
 #include <gl/glut.h>
 
 //constructor
 Command::Command(void){
 	display = new ConcreteDisplay();
-	modelLoader = new FColladaModelLoader();
+	modelLoader = CommandModelLoader::getInstance();
 	calculator = new Calculator();
 	objectManager = ObjectManager::getInstance();
 	cameraManager = CameraManager::getInstance();
@@ -26,7 +26,6 @@ Command::Command(void){
 //destructor
 Command::~Command(void){
 	delete display;
-	delete modelLoader;
 	delete calculator;
 }
 
@@ -61,7 +60,7 @@ void Command::drawScene(){
 //load all default models
 bool Command::loadModel(){
 	//modelLoader->loadModel(0,"cube.dae");
-	return modelLoader->loadModel(2,"niki.dae");
+	return modelLoader->loadModel(STATIC_LOADER_KIND,"resource/niki.dae");
 }
 
 // load a model with the given path
