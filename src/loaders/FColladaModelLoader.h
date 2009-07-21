@@ -89,7 +89,7 @@ public:
 	void setMeshFCMaterial(FCDGeometryInstance* geometry_instance, FCDGeometryMesh* mesh, int meshIndex, int kind);
 
 	//set the target material to the polygon
-	void setFCMaterial(int j, int target, int kind);
+	void setFCMaterial(int j, int target, int polygonIndex, int kind);
 
 	void drawLine(FCDSceneNode* node_origin, int kind);
 
@@ -147,7 +147,24 @@ private:
 	std::string filename;
 
 	int skinVertexNum;
+	float* skinVertexPosX;
+	float* skinVertexPosY;
+	float* skinVertexPosZ;
+	int* skinVertexBoneCount;
+	std::string** skinVertexBoneName;
+	float** skinVertexBonePower;
 
+	int charactervboNum;
+	int character_vbo_size;
+	float ** character_vbo_vertices;
+	float ** character_vbo_normals;
+	float ** character_vbo_texcoords;
+	float** character_vbo_am;
+	float** character_vbo_di;
+	float** character_vbo_sp;
+	float** character_vbo_em;
+	float* character_vbo_sh;
+	GLuint* character_vbo_texid;
 
 	//objectmanage
 	ObjectManager* objectManager;

@@ -196,6 +196,149 @@ void FColladaModelLoader::BuildCharacter()
 	// calculate tranform in world space
 	skeleton->calculateAbsoluteTransform();
 //	printf("\n");
+
+	/* step2: initialize animations */
+
+	// create a new animation manager
+	ChAnimationManager* animations = character->getAnimations();
+	// get animation number of this CharacterObject from Fcollada
+//	int animation_num = 1;
+	// set animation number
+	animations->init(1);
+	// for each animation
+//	for(int i = 0; i < animation_num; i++){
+	// create a new animation, the name of the animation is necessary
+	// get name of the animation from Fcollada
+	std::string animationName = filename;
+//	printf("filename\n");
+//	printf("%s\n", filename.c_str());
+	ChAnimation* animation = animations->getAnimation(animationName);
+	/* each bone of the skeleton has one corresponding ChTrack in one
+	animation which records the movement of the bone */
+	// get animation number from Fcollada
+	int animation_num = m_num_animations;
+//	printf("animation_num\n");
+//	printf("%i\n", animation_num);
+	// for each bone (how to go through all the bones is your choice)
+	for(int i =0; i < animation_num; i++){
+		// get bone's name from Fcollada
+		std::string boneName = "";
+		// get bone's relative ChTrack
+//		ChTrack* track = animation->getTrack(boneName);
+		/* initialize the track */
+		// get key frame number of this track from Fcollada
+		int frame_num = 0;
+		// set key frame number
+//		track->init(frame_num);
+		// for each key frame
+		for(int j = 0; j < frame_num; j++){
+			// get relative change matrix of the bone in this key frame
+			// from Fcollada
+			Matrix matrix = Matrix();
+			// get this key frame's frame number in the whole animation
+			// from Fcollada
+			int frame_time = j;
+			// add the key frame into the track
+//			track->addKeyFrame(matrix,frame_time);
+		}
+	}
+//}
+
+	/* step3: initialize skin */
+	// create new ChSkin
+	ChSkin* skin = character->getSkin();
+	// get vertex number of the skin from Fcollada
+	int vertexNum = skinVertexNum;
+//	printf("vertexNum\n");
+//	printf("%i\n", vertexNum);
+//	printf("\n");
+	// set vertex number(no duplicated vertex is allowed)
+	skin->initVertices(vertexNum);
+	// initialize each vertex in the skin
+	for(int i = 0; i < vertexNum; i++){
+		// create a vertex
+//		ChVertex* vertex = skin->initVertice(vertexNum);
+		// get position of the vertex to be added from Fcollada
+		float px = skinVertexPosX[i];
+		float py = skinVertexPosY[i];
+		float pz = skinVertexPosZ[i];
+//		printf("%i vertex position\n", i);
+//		printf("(%f, %f, %f)\n", px, py, pz);
+		// create a new vertex
+//		vertex->setDefaultPosition(px,py,pz);
+		// get normal of the vertex from Fcollada
+	//	float nx,ny,nz;
+		// set normal
+	//	vertex->setDefaultNormal(nx,ny,nz);
+		// get number of bones this vertex relates to from Fcollada
+		int relatedBoneNum = skinVertexBoneCount[i];
+//		printf("relatedBoneNum\n");
+//		printf("%i\n", relatedBoneNum);
+		// set related bone number
+//		vertex->initPairs(relatedBoneNum);
+		/* pair is a struct that stores the related bones of the
+		vertex and their power */
+		// for each pair
+		for(int j = 0; j < relatedBoneNum; j++){
+			// get related bone name from Fcollada
+			std::string tempboneName = skinVertexBoneName[i][j];
+			char* boneName = (char*)tempboneName.c_str();
+//			printf("boneName\n");
+//			printf("%s\n", boneName);
+			// get power of the bone to this vertex
+			// please notice that the sum of all the powers of a vertex
+			// should be 1
+			float power = skinVertexBonePower[i][j];
+//			printf("power\n");
+//			printf("%f\n", power);
+			// set pair
+//			vertex->initPair(j,boneName,power);
+		}
+	}
+
+	/* step4: initialize skeleton and skin instance */
+	// this step is easy, just use the function below
+//	character->initInstance();
+
+	/* step5: initialize VBOs(a VBO is a group of triangles that have the
+	same material and textures) */
+	// get number of VBOs that you need to display this CharacterObject
+	int vboNum = charactervboNum;
+	// set vbo number
+//	character->initVBOs(vboNum);
+	// for each vbo
+	for(int i = 0; i < vboNum; i++){
+		/* vertices is an array of ids of ChVertex that is contained 
+		in this VBO, you can get the id of each vertex use getId()
+		function of ChVertex, perhaps you can generate all vertices'
+		id information when you built the skin */
+		// generate each vbo's vertices
+		float* vertices = character_vbo_vertices[i];
+		// get the length of vertices
+		int vSize = character_vbo_size * 3;
+		// initialize i-th vbo
+//		character->initVBO(vertices,vSize,i);
+		// get texture coordinates of vertices
+		float* texCoord = character_vbo_texcoords[i];
+		// get length of texCoord
+		int tcSize = character_vbo_size * 2;
+		// get texture id
+		GLuint texId = character_vbo_texid[i];
+		// set i-th vbo's texture
+//		character->setVBOTexture(texCoord,tcSize,texId,i);
+		// get material information of that vbo
+		float am[4] = {character_vbo_am[i][0], character_vbo_am[i][1], character_vbo_am[i][2], character_vbo_am[i][3]};
+		float di[4] = {character_vbo_di[i][0], character_vbo_di[i][1], character_vbo_di[i][2], character_vbo_di[i][3]};
+		float sp[4] = {character_vbo_sp[i][0], character_vbo_sp[i][1], character_vbo_sp[i][2], character_vbo_sp[i][3]};
+		float em[4] = {character_vbo_em[i][0], character_vbo_em[i][1], character_vbo_em[i][2], character_vbo_em[i][3]};
+		float sh = character_vbo_sh[i];
+		// set i-th vbo's material
+//		character->setVBOMaterial(am,di,sp,em,sh,i);
+	}
+
+	/* step6: add the character to the ObjectManager */
+//	objectManager->addVBOObject(character);
+
 }
 
 
@@ -344,9 +487,9 @@ void FColladaModelLoader::storeVertices(int kind)
 				if(kind == 2)
 				{
 					//init the total data of the vertexs and normals
-					GLfloat * m_vbo_vertices = new GLfloat[m_num_vertices * 3];
-					GLfloat * m_vbo_normals = new GLfloat[m_num_vertices * 3];
-					GLfloat * m_vbo_texcoords = new GLfloat[m_num_vertices * 2];
+					float * m_vbo_vertices = new GLfloat[m_num_vertices * 3];
+					float * m_vbo_normals = new GLfloat[m_num_vertices * 3];
+					float * m_vbo_texcoords = new GLfloat[m_num_vertices * 2];
 
 					//convert the Vector3D vertexs data to my structures 
 					for(int i=0; i<m_num_vertices; i++)
@@ -517,11 +660,12 @@ void FColladaModelLoader::buildScene(FCDSceneNode* node_origin, int kind)
 	//child scene node
 	FCDSceneNode* child_origin;
 
+	initBoneScene(node_origin);
+
 	buildSceneInstance(node_origin, kind);
 
 	buildSceneMatrix(node_origin);
 
-	initBoneScene(node_origin);
 	for (int i=0; i<(int)node_origin->GetChildrenCount(); i++) {
 		child_origin=node_origin->GetChild(i);
 		buildScene(child_origin, kind);
@@ -612,6 +756,7 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 			//get the skin controller
 			FCDSkinController* skin = dynamic_cast<FCDController*>(controllerInstance->GetEntity())->GetSkinController();
 
+			buildSkin(skin);
 			// look for this name in geo library
 			for (int j=0; j<(int)m_ptrs_geometries.size(); j++) {
 
@@ -626,7 +771,162 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 
 					//get the geometry mesh
 					FCDGeometryMesh* mesh=m_ptrs_geometries[j];
-					printf("%i\n", mesh->GetSource(0)->GetValueCount());
+					for(int posCount = 0; posCount < (int)mesh->GetSource(0)->GetValueCount(); posCount ++)
+					{
+						skinVertexPosX[posCount] = mesh->GetSource(0)->GetData()[3*posCount];
+						skinVertexPosY[posCount] = mesh->GetSource(0)->GetData()[3*posCount+1];
+						skinVertexPosZ[posCount] = mesh->GetSource(0)->GetData()[3*posCount+2];
+					}
+					// create my own polygons
+					int m_num_polygons=(int) mesh->GetPolygonsCount();
+					charactervboNum = m_num_polygons;
+					character_vbo_vertices = new float*[m_num_polygons];
+					character_vbo_normals = new float*[m_num_polygons];
+					character_vbo_texcoords = new float*[m_num_polygons];
+					character_vbo_am = new float*[m_num_polygons];
+					character_vbo_di = new float*[m_num_polygons];
+					character_vbo_sp = new float*[m_num_polygons];
+					character_vbo_em = new float*[m_num_polygons];
+					character_vbo_sh = new float[m_num_polygons];
+					character_vbo_texid = new GLuint[m_num_polygons];
+
+					for (int p=0;p<m_num_polygons;p++) {
+						FCDGeometryPolygons* ptr_polygons = mesh->GetPolygons(p);
+						FCDGeometrySource* source;
+						FCDGeometryPolygonsInput* geometrypolygonsinput;
+						uint32* indices;
+						// indices to vertex
+						geometrypolygonsinput=ptr_polygons->FindInput(FUDaeGeometryInput::POSITION);
+						indices = geometrypolygonsinput->GetIndices();
+
+						//m_num_vertices=(int) indices->size();
+						int m_num_vertices=(int) geometrypolygonsinput->GetIndexCount();
+						/*store the vertex*/
+
+						// source of vertex
+						source = ptr_polygons->GetParent()->FindSourceByType(FUDaeGeometryInput::POSITION);
+
+						// allocate memory for triangles and its vertex (a triangle has 3 vertex)
+						Vector3D *m_ptrs_vertices = (Vector3D*)malloc( m_num_vertices * sizeof(Vector3D) );
+
+						// look for vertices using indices
+						// 3 vertex form a triangle
+
+						for (int im=0; im<m_num_vertices; im++) {
+							// a vertex index
+							int index=(int) indices[im];
+							// a vertex values from it index
+							float *p=&source->GetData()[index*3];
+							m_ptrs_vertices[im].x=p[0];
+							m_ptrs_vertices[im].y=p[1];
+							m_ptrs_vertices[im].z=p[2];
+						}
+
+						/*store the normal*/
+
+						// source of vertex
+						source = ptr_polygons->GetParent()->FindSourceByType(FUDaeGeometryInput::NORMAL);
+						bool m_has_normals;
+						Vector3D *m_ptrs_normals;
+						if (source==NULL) {
+							m_has_normals=false;
+						} else {
+							m_has_normals=true;
+							// indices
+							geometrypolygonsinput=ptr_polygons->FindInput(FUDaeGeometryInput::NORMAL);
+							indices = geometrypolygonsinput->GetIndices();
+
+							// allocate memory for triangles and its vertex (a triangle has 3 vertex)
+							m_ptrs_normals = (Vector3D*)malloc( m_num_vertices * sizeof(Vector3D) );
+
+							// look for vertices using indices
+							for (int im=0; im<m_num_vertices; im++) {
+								// a vertex index
+								int index=(int) indices[im];
+								// a vertex values from it index
+								float *p=&source->GetData()[index*3];
+								m_ptrs_normals[im].x=p[0];
+								m_ptrs_normals[im].y=p[1];
+								m_ptrs_normals[im].z=p[2];
+							}
+						}
+
+						/*store the texture coordinates*/
+
+						// do the same for texcture coordinates
+						source = ptr_polygons->GetParent()->FindSourceByType(FUDaeGeometryInput::TEXCOORD);
+						bool m_has_texcoords;
+						Vector3D *m_ptrs_texcoords;
+						// maybe they are not present
+						if (source==NULL) {
+							m_has_texcoords=false;
+						} else {
+							m_has_texcoords=true;
+
+							// indices
+							geometrypolygonsinput=ptr_polygons->FindInput(FUDaeGeometryInput::TEXCOORD);
+							indices = geometrypolygonsinput->GetIndices();
+
+							// allocate memory for triangles and its vertex (a triangle has 3 vertex)
+							m_ptrs_texcoords = (Vector3D*)malloc( m_num_vertices * sizeof(Vector3D) );
+							int stride;
+							stride=source->GetStride();
+
+							// 3ds max exports textures with 3 coordinates, but maya and Google Earth use 2 coordinates
+
+							// look for vertices using indices
+							for (int im=0; im<m_num_vertices; im++) {
+								// a vertex index
+								int index=(int) indices[im];
+								// a vertex values from it index
+								float *p=&source->GetData()[index*stride];
+								m_ptrs_texcoords[im].x=p[0];
+								m_ptrs_texcoords[im].y=p[1];
+								if (stride==3) {
+									m_ptrs_texcoords[im].z=p[2]; 
+								}
+								else{
+									m_ptrs_texcoords[im].z=0.0f;
+								}
+							}
+						}
+						//init the total data of the vertexs and normals
+						float * m_vbo_vertices = new float[m_num_vertices * 3];
+						float * m_vbo_normals = new float[m_num_vertices * 3];
+						float * m_vbo_texcoords = new float[m_num_vertices * 2];
+
+						//convert the Vector3D vertexs data to my structures 
+						for(int im=0; im<m_num_vertices; im++)
+						{
+							m_vbo_vertices[3*im] = (m_ptrs_vertices+im)->x;
+							m_vbo_vertices[3*im+1] = (m_ptrs_vertices+im)->y;
+							m_vbo_vertices[3*im+2] = (m_ptrs_vertices+im)->z;
+						}
+						if(m_has_normals == true)
+						{
+							//convert the Vector3D normals data to my structures 
+							for(int im=0; im<m_num_vertices; im++)
+							{
+								m_vbo_normals[3*im] = (m_ptrs_normals+im)->x;
+								m_vbo_normals[3*im+1] = (m_ptrs_normals+im)->y;
+								m_vbo_normals[3*im+2] = (m_ptrs_normals+im)->z;
+							}
+						}
+						if(m_has_texcoords == true)
+						{
+							//convert the Vector3D texcoords data to my structures 
+							for(int im=0; im<m_num_vertices; im++)
+							{
+								m_vbo_texcoords[2*im] = (m_ptrs_texcoords+im)->x;
+								m_vbo_texcoords[2*im+1] = (m_ptrs_texcoords+im)->y;
+							}
+						}
+						character_vbo_size = m_num_vertices;
+						character_vbo_vertices[p] = m_vbo_vertices;
+						character_vbo_normals[p] = m_vbo_normals;
+						character_vbo_texcoords[p] = m_vbo_texcoords;
+					}
+
 					FCDMaterial* material;
 
 					//the id of the pointed material
@@ -652,7 +952,7 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 								for (int j=0; j<m_num_materials; j++){
 									if (m_ptrs_materials[j]->GetDaeId().c_str()==id_material) {
 										//set the material of the polygon
-										setFCMaterial(j, meshIndex+i, kind);
+										setFCMaterial(j, meshIndex+i, i, kind);
 									}
 								}
 							}
@@ -660,8 +960,6 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 					}
 				}
 			}
-
-			buildSkin(skin);
 		}
 		// look for this name in geo library
 		for (int j=0; j<(int)m_ptrs_geometries.size(); j++) {
@@ -693,29 +991,39 @@ void FColladaModelLoader::buildSkin(FCDSkinController* skin){
 	boneParentName = new std::string[boneNumber];
 	boneChildNum = new int[boneNumber];
 	boneChildName = new std::string*[boneNumber];
-	skinVertexNum = skin->GetInfluenceCount();
-
+	skinVertexNum = (int)skin->GetInfluenceCount();
+	skinVertexPosX = new float[skinVertexNum];
+	skinVertexPosY = new float[skinVertexNum];
+	skinVertexPosZ = new float[skinVertexNum];
+	skinVertexBoneCount = new int[skinVertexNum];
+	skinVertexBoneName = new std::string*[skinVertexNum];
+	skinVertexBonePower = new float*[skinVertexNum];
 
 	for(int i = 0; i < (int)skin->GetJointCount(); i++)
 	{
-	FCDSkinControllerJoint* joint = skin->GetJoint(i);
-	boneName[i] = joint->GetId().c_str();
-	FMMatrix44 inverse = joint->GetBindPoseInverse() * skin->GetBindShapeTransform();
-	float tempMatrixElement[] ={inverse.m[0][0], inverse.m[0][1], inverse.m[0][2], inverse.m[0][3], 
-	inverse.m[1][0], inverse.m[1][1], inverse.m[1][2], inverse.m[1][3],
-	inverse.m[2][0], inverse.m[2][1], inverse.m[2][2], inverse.m[2][3],
-	inverse.m[3][0], inverse.m[3][1], inverse.m[3][2], inverse.m[3][3],};
-	Matrix tempMatrix = Matrix(tempMatrixElement);
-	boneMatrix[i] = tempMatrix;
+		FCDSkinControllerJoint* joint = skin->GetJoint(i);
+		boneName[i] = joint->GetId().c_str();
+		FMMatrix44 inverse = joint->GetBindPoseInverse() * skin->GetBindShapeTransform();
+		float tempMatrixElement[] ={inverse.m[0][0], inverse.m[0][1], inverse.m[0][2], inverse.m[0][3], 
+		inverse.m[1][0], inverse.m[1][1], inverse.m[1][2], inverse.m[1][3],
+		inverse.m[2][0], inverse.m[2][1], inverse.m[2][2], inverse.m[2][3],
+		inverse.m[3][0], inverse.m[3][1], inverse.m[3][2], inverse.m[3][3],};
+		Matrix tempMatrix = Matrix(tempMatrixElement);
+		boneMatrix[i] = tempMatrix;
 	}
 
 	for(int i = 0; i < (int)skin->GetInfluenceCount(); i++)
 	{
-	FCDSkinControllerVertex* influences = skin->GetVertexInfluence(i);
-	for(int j =0; j < (int)influences->GetPairCount(); j++)
-	{
-	FCDJointWeightPair* pairs = influences->GetPair(j);
-	}
+		FCDSkinControllerVertex* influences = skin->GetVertexInfluence(i);
+		skinVertexBoneCount[i] = (int)influences->GetPairCount();
+		skinVertexBoneName[i] = new std::string[skinVertexBoneCount[i]];
+		skinVertexBonePower[i] = new float[skinVertexBoneCount[i]];
+		for(int j =0; j < (int)influences->GetPairCount(); j++)
+		{
+			FCDJointWeightPair* pairs = influences->GetPair(j);
+			skinVertexBoneName[i][j] = boneName[(int)pairs->jointIndex];
+			skinVertexBonePower[i][j] = pairs->weight;
+		}
 	}
 	
 }
@@ -882,7 +1190,7 @@ void FColladaModelLoader::setMeshFCMaterial(FCDGeometryInstance* geometry_instan
 				for (int j=0; j<m_num_materials; j++){
 					if (m_ptrs_materials[j]->GetDaeId().c_str()==id_material) {
 						//set the material of the polygon
-						setFCMaterial(j, meshIndex+i, kind);
+						setFCMaterial(j, meshIndex+i, i, kind);
 					}
 				}
 			}
@@ -891,7 +1199,7 @@ void FColladaModelLoader::setMeshFCMaterial(FCDGeometryInstance* geometry_instan
 }
 
 //set the target material to the polygon
-void FColladaModelLoader::setFCMaterial(int target, int index, int kind)
+void FColladaModelLoader::setFCMaterial(int target, int index, int polygonIndex, int kind)
 {
 	//target material
 	FCDMaterial* material = m_ptrs_materials[target];
@@ -1117,11 +1425,23 @@ void FColladaModelLoader::setFCMaterial(int target, int index, int kind)
 
 	if(kind == 2)
 	{
+		character_vbo_am[polygonIndex] = new float[4];
+		character_vbo_di[polygonIndex] = new float[4];
+		character_vbo_sp[polygonIndex] = new float[4];
+		character_vbo_em[polygonIndex] = new float[4];
+		character_vbo_texid[polygonIndex] = 0;
 		//if has texture, set the texture
 		if(tex != NULL)
 		{
 			((StaticObject *) objectManager->getVBOObject(2,index))->setTextures(m_total_texcoords[index], m_size_texcoords[index], tex);
+			character_vbo_texid[polygonIndex] = tex;
 		}
+
+		character_vbo_am[polygonIndex] = am;
+		character_vbo_di[polygonIndex] = di;
+		character_vbo_sp[polygonIndex] = sp;
+		character_vbo_em[polygonIndex] = em;
+		character_vbo_sh[polygonIndex] = sh;
 
 		//set the material
 		((StaticObject *) objectManager->getVBOObject(2,index))->setMaterial(am, di, sp, em, sh);
