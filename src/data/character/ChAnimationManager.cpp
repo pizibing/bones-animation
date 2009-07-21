@@ -10,19 +10,16 @@
 
 // constructor
 ChAnimationManager::ChAnimationManager(void)
-:m_animations(NULL),m_animation_num(0)
 {
 }
 
 // destructor
 ChAnimationManager::~ChAnimationManager(void){
-	for(int i=0;i<m_animation_num;i++){
+	for(unsigned int i=0;i<m_animations.size();i++){
 		delete m_animations[i];
+		m_animations[i] = NULL;
 	}
-	if(m_animations){
-		delete [] m_animations;
-	}
-	m_animations = NULL;
+	m_animations.clear();
 }
 
 // @return the skeleton to animate
@@ -43,29 +40,25 @@ ChAnimation * ChAnimationManager::getAnimation(const std::string &name){
 	if(i!=m_animationMap.end()){
 		return m_animations[i->second];
 	}
-	int id = m_animationMap.size();
-	if(id<m_animation_num){
-		m_animations[id] = new ChAnimation();
-		m_animations[id]->setName(name);
-		m_animations[id]->setSkeleton(m_skeleton);
-		m_animationMap[name] = id;
-		return m_animations[id];
-	}
-	return NULL;
+	int id = m_animations.size();
+	
+	ChAnimation *animation = new ChAnimation();
+	
+	animation->setName(name);
+	animation->setSkeleton(m_skeleton);
+	m_animationMap[name] = id;
+	m_animations.push_back(animation);
+	return m_animations[id];
 }
 
 // @param animationId the index of the animation 
 // @return the pointer of animation with the name
 //         if no animation has the index, create a new animation
 ChAnimation * ChAnimationManager::getAnimation(int animationId){
-	if(animationId<0||animationId>=m_animation_num)return NULL;
-	if(m_animations[animationId])return m_animations[animationId];
-	std::string name = "animation"+animationId;
-	m_animations[animationId] = new ChAnimation();
-	m_animations[animationId]->setName(name);
-	m_animations[animationId]->setSkeleton(m_skeleton);
-	m_animationMap[name] = animationId;
-	return m_animations[animationId];
+	unsigned int index = (unsigned int)animationId;
+	if(index<m_animations.size())
+		return m_animations[index];
+	else return NULL;
 }
 
 // init the pointer array for animations
@@ -73,17 +66,10 @@ ChAnimation * ChAnimationManager::getAnimation(int animationId){
 // @return true if successful 
 //         false if reinitialized or no memory
 bool ChAnimationManager::init(int animation_num){
-	if(m_animations)return false;
-
-	m_animations = new ChAnimation*[animation_num];
-	if(m_animations){
-		for(int i=0;i<animation_num;i++){
-			m_animations[i] = NULL;
-		}
-		m_animation_num = animation_num;
-	}
-
-	return false;
+	unsigned int num = (unsigned int)animation_num;
+	if(m_animations.size() >= num)return false;
+	m_animations.reserve(num);
+	return true;
 }
 
 // calculate the transform matrix for the bone with the animation
@@ -108,10 +94,11 @@ bool ChAnimationManager::init(int animation_num){
 // @param bone the name for the blending bone
 // @return the rotate transform for the bone
 Quaternion ChAnimationManager::blendAnimationBoneRotation(int animatetime,const std::string &animation,const std::string &bone){
-	int animationId = m_animationMap[animation];
+	unsigned int animationId = m_animationMap[animation];
 	int boneId = m_skeleton->getBoneId(bone);
-	if(animationId>=0&&animationId<=m_animation_num){
-		return m_animations[animationId]->blendBoneRotation(animatetime,boneId);
+	if(animationId>=0&&animationId<m_animations.size()){
+		ChAnimation * animation = m_animations[animationId];
+		return animation->blendBoneRotation(animatetime,boneId);
 	}
 	return Quaternion();
 }
@@ -123,10 +110,11 @@ Quaternion ChAnimationManager::blendAnimationBoneRotation(int animatetime,const 
 // @param bone the name for the blending bone
 // @return the translate transform for the bone
 Vector3D ChAnimationManager::blendAnimationBoneTranslation(int animatetime,const std::string &animation,const std::string &bone){
-	int animationId = m_animationMap[animation];
+	unsigned int animationId = m_animationMap[animation];
 	int boneId = m_skeleton->getBoneId(bone);
-	if(animationId>=0&&animationId<=m_animation_num){
-		return m_animations[animationId]->blendBoneTranslation(animatetime,boneId);
+	if(animationId<m_animations.size()){
+		ChAnimation * animation = m_animations[animationId];
+		return animation->blendBoneTranslation(animatetime,boneId);
 	}
 	return Vector3D();
 }
@@ -148,7 +136,8 @@ Vector3D ChAnimationManager::blendAnimationBoneTranslation(int animatetime,const
 // @param boneId the index for the blending bone
 // @return the rotate transform for the bone
 Quaternion ChAnimationManager::blendAnimationBoneRotation(int animatetime,int animationId,int boneId){
-	return m_animations[animationId]->blendBoneRotation(animatetime,boneId);
+	ChAnimation * animation = m_animations[animationId];
+	return animation->blendBoneRotation(animatetime,boneId);
 }
 
 // calculate the translate transform for the bone with the animation
@@ -158,7 +147,8 @@ Quaternion ChAnimationManager::blendAnimationBoneRotation(int animatetime,int an
 // @param boneId the index for the blending bone
 // @return the translate transform for the bone
 Vector3D ChAnimationManager::blendAnimationBoneTranslation(int animatetime,int animationId,int boneId){
-	return m_animations[animationId]->blendBoneTranslation(animatetime,boneId);
+	ChAnimation * animation = m_animations[animationId];
+	return animation->blendBoneTranslation(animatetime,boneId);
 }
 
 // return the  root bone's transform matrix at animatetime
@@ -190,13 +180,14 @@ Quaternion ChAnimationManager::getCurrentRootRotation(int animatetime, const cha
 
 	int animationId = m_animationMap[animation];
 	// check whether animatetime can be exactly divided by total animation time
-	int remain = animatetime % m_animations[animationId]->getAnimationTime();
+	ChAnimation * chanimation = m_animations[animationId];
+	int remain = animatetime % chanimation->getAnimationTime();
 	// if remain is 0, then animatetime is the last frame's time
 	if(remain == 0)
-		return m_animations[animationId]->getTrack(0)->getLastRotation();
+		return chanimation->getTrack(0)->getLastRotation();
 	// else blend bone as usual
 	else
-		return m_animations[animationId]->blendBoneRotation(animatetime,0);
+		return chanimation->blendBoneRotation(animatetime,0);
 }
 
 // return the  root bone's rotate transform at animatetime
@@ -208,13 +199,14 @@ Vector3D ChAnimationManager::getCurrentRootTranslation(int animatetime, const ch
 
 	int animationId = m_animationMap[animation];
 	// check whether animatetime can be exactly divided by total animation time
-	int remain = animatetime % m_animations[animationId]->getAnimationTime();
+	ChAnimation * chanimation = m_animations[animationId];
+	int remain = animatetime % chanimation->getAnimationTime();
 	// if remain is 0, then animatetime is the last frame's time
 	if(remain == 0)
-		return m_animations[animationId]->getTrack(0)->getLastTranslation();
+		return chanimation->getTrack(0)->getLastTranslation();
 	// else blend bone as usual
 	else
-		return m_animations[animationId]->blendBoneTranslation(animatetime,0);
+		return chanimation->blendBoneTranslation(animatetime,0);
 }
 
 // return the root bone's transform matrix one frame before animatetime
@@ -240,10 +232,11 @@ Quaternion ChAnimationManager::getLastRootRotation(int animatetime, const char* 
 	assert(animatetime >= 0);
 
 	int animationId = m_animationMap[animation];
+	ChAnimation * chanimation = m_animations[animationId];
 	// to avoid -1, set animatetime to next loop's corresponding value
-	if(animatetime == 0) animatetime = m_animations[animationId]->getAnimationTime();
+	if(animatetime == 0) animatetime = chanimation->getAnimationTime();
 	// return last frame, root bone's matrix
-	return m_animations[animationId]->blendBoneRotation(animatetime - 1,0);
+	return chanimation->blendBoneRotation(animatetime - 1,0);
 }
 
 // return the root bone's translate transform one frame before animatetime
@@ -254,8 +247,10 @@ Vector3D ChAnimationManager::getLastRootTranslation(int animatetime, const char*
 	assert(animatetime >= 0);
 
 	int animationId = m_animationMap[animation];
+	ChAnimation * chanimation = m_animations[animationId];
 	// to avoid -1, set animatetime to next loop's corresponding value
-	if(animatetime == 0) animatetime = m_animations[animationId]->getAnimationTime();
+	// to avoid -1, set animatetime to next loop's corresponding value
+	if(animatetime == 0) animatetime = chanimation->getAnimationTime();
 	// return last frame, root bone's matrix
-	return m_animations[animationId]->blendBoneTranslation(animatetime - 1,0);
+	return chanimation->blendBoneTranslation(animatetime - 1,0);
 }
