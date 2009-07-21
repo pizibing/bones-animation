@@ -177,6 +177,14 @@
 			Name="loaders"
 			>
 			<File
+				RelativePath=".\loaders\CommandModelLoader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\loaders\CommandModelLoader.h"
+				>
+			</File>
+			<File
 				RelativePath=".\loaders\FColladaModelLoader.cpp"
 				>
 			</File>
@@ -202,6 +210,14 @@
 			</File>
 			<File
 				RelativePath=".\loaders\SimpleModelLoader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\loaders\TerrainModelLoader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\loaders\TerrainModelLoader.h"
 				>
 			</File>
 		</Filter>
@@ -417,6 +433,18 @@
 				</File>
 				<File
 					RelativePath=".\data\character\ChVertexInstance.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="terrain"
+				>
+				<File
+					RelativePath=".\data\terrain\TerrainObject.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\data\terrain\TerrainObject.h"
 					>
 				</File>
 			</Filter>
