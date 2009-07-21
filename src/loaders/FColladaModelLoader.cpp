@@ -257,7 +257,7 @@ void FColladaModelLoader::BuildCharacter()
 	// initialize each vertex in the skin
 	for(int i = 0; i < vertexNum; i++){
 		// create a vertex
-//		ChVertex* vertex = skin->initVertice(vertexNum);
+		ChVertex* vertex = skin->initVertice(i);
 		// get position of the vertex to be added from Fcollada
 		float px = skinVertexPosX[i];
 		float py = skinVertexPosY[i];
@@ -265,17 +265,19 @@ void FColladaModelLoader::BuildCharacter()
 //		printf("%i vertex position\n", i);
 //		printf("(%f, %f, %f)\n", px, py, pz);
 		// create a new vertex
-//		vertex->setDefaultPosition(px,py,pz);
+		vertex->setDefaultPosition(px,py,pz);
 		// get normal of the vertex from Fcollada
-	//	float nx,ny,nz;
+		float nx = skinNormalPosX[i];
+		float ny = skinNormalPosY[i];
+		float nz = skinNormalPosZ[i];
 		// set normal
-	//	vertex->setDefaultNormal(nx,ny,nz);
+		vertex->setDefaultNormal(nx,ny,nz);
 		// get number of bones this vertex relates to from Fcollada
 		int relatedBoneNum = skinVertexBoneCount[i];
 //		printf("relatedBoneNum\n");
 //		printf("%i\n", relatedBoneNum);
 		// set related bone number
-//		vertex->initPairs(relatedBoneNum);
+		vertex->initPairs(relatedBoneNum);
 		/* pair is a struct that stores the related bones of the
 		vertex and their power */
 		// for each pair
@@ -292,7 +294,7 @@ void FColladaModelLoader::BuildCharacter()
 //			printf("power\n");
 //			printf("%f\n", power);
 			// set pair
-//			vertex->initPair(j,boneName,power);
+			vertex->initPair(j,boneName,power);
 		}
 	}
 
@@ -313,7 +315,12 @@ void FColladaModelLoader::BuildCharacter()
 		function of ChVertex, perhaps you can generate all vertices'
 		id information when you built the skin */
 		// generate each vbo's vertices
-		float* vertices = character_vbo_vertices[i];
+		if( i != vboNum -1){
+			int* vertices = getSkinVertexIndex(skinPolygonIndex[i], skinPolygonIndex[i+1]);
+		}
+		else{
+			int* vertices = getSkinVertexIndex(skinPolygonIndex[i], skinVertexNum);
+		}
 		// get the length of vertices
 		int vSize = character_vbo_size * 3;
 		// initialize i-th vbo
@@ -341,6 +348,15 @@ void FColladaModelLoader::BuildCharacter()
 
 }
 
+int * FColladaModelLoader::getSkinVertexIndex(int begin, int end){
+	assert(begin != end);
+	int * tempSkinVertexIndex = new int[end-begin];
+	for(int i=0; i<end - begin; i++)
+	{
+		tempSkinVertexIndex[i] = begin + i;
+	}
+	return tempSkinVertexIndex;
+}
 
 
 int FColladaModelLoader::getBoneNumber()
@@ -771,12 +787,6 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 
 					//get the geometry mesh
 					FCDGeometryMesh* mesh=m_ptrs_geometries[j];
-					for(int posCount = 0; posCount < (int)mesh->GetSource(0)->GetValueCount(); posCount ++)
-					{
-						skinVertexPosX[posCount] = mesh->GetSource(0)->GetData()[3*posCount];
-						skinVertexPosY[posCount] = mesh->GetSource(0)->GetData()[3*posCount+1];
-						skinVertexPosZ[posCount] = mesh->GetSource(0)->GetData()[3*posCount+2];
-					}
 					// create my own polygons
 					int m_num_polygons=(int) mesh->GetPolygonsCount();
 					charactervboNum = m_num_polygons;
@@ -789,6 +799,34 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 					character_vbo_em = new float*[m_num_polygons];
 					character_vbo_sh = new float[m_num_polygons];
 					character_vbo_texid = new GLuint[m_num_polygons];
+
+					skinPolygonIndex = new int[m_num_polygons];
+					int tempSkinPolygonIndexCount = 0;
+
+					int skinPolygonTotalVertexNum = 0;
+					for (int p=0;p<m_num_polygons;p++) {
+						FCDGeometryPolygons* ptr_polygons = mesh->GetPolygons(p);
+						FCDGeometryPolygonsInput* geometrypolygonsinput;
+						// indices to vertex
+						geometrypolygonsinput=ptr_polygons->FindInput(FUDaeGeometryInput::POSITION);
+
+						//m_num_vertices=(int) indices->size();
+						int m_num_vertices=(int) geometrypolygonsinput->GetIndexCount();
+						skinPolygonTotalVertexNum += m_num_vertices;
+					}
+
+					skinVertexNum = skinPolygonTotalVertexNum;
+					skinVertexPosX = new float[skinVertexNum];
+					skinVertexPosY = new float[skinVertexNum];
+					skinVertexPosZ = new float[skinVertexNum];
+					skinNormalPosX = new float[skinVertexNum];
+					skinNormalPosY = new float[skinVertexNum];
+					skinNormalPosZ = new float[skinVertexNum];
+					skinVertexBoneCount = new int[skinVertexNum];
+					skinPolygonVertexIndex = new int[skinVertexNum];
+					skinVertexBoneName = new std::string*[skinVertexNum];
+					skinVertexBonePower = new float*[skinVertexNum];
+					int tempPolygonVertexIndex = 0;
 
 					for (int p=0;p<m_num_polygons;p++) {
 						FCDGeometryPolygons* ptr_polygons = mesh->GetPolygons(p);
@@ -815,11 +853,15 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 						for (int im=0; im<m_num_vertices; im++) {
 							// a vertex index
 							int index=(int) indices[im];
+							skinPolygonVertexIndex[tempPolygonVertexIndex+im] = index;
 							// a vertex values from it index
 							float *p=&source->GetData()[index*3];
 							m_ptrs_vertices[im].x=p[0];
 							m_ptrs_vertices[im].y=p[1];
 							m_ptrs_vertices[im].z=p[2];
+							skinVertexPosX[tempPolygonVertexIndex+im] = p[0];
+							skinVertexPosY[tempPolygonVertexIndex+im] = p[1];
+							skinVertexPosZ[tempPolygonVertexIndex+im] = p[2];
 						}
 
 						/*store the normal*/
@@ -848,6 +890,9 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 								m_ptrs_normals[im].x=p[0];
 								m_ptrs_normals[im].y=p[1];
 								m_ptrs_normals[im].z=p[2];
+								skinNormalPosX[tempPolygonVertexIndex+im] = p[0];
+								skinNormalPosY[tempPolygonVertexIndex+im] = p[1];
+								skinNormalPosZ[tempPolygonVertexIndex+im] = p[2];
 							}
 						}
 
@@ -925,8 +970,23 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 						character_vbo_vertices[p] = m_vbo_vertices;
 						character_vbo_normals[p] = m_vbo_normals;
 						character_vbo_texcoords[p] = m_vbo_texcoords;
+						tempPolygonVertexIndex += m_num_vertices;
+						skinPolygonIndex[p] = tempSkinPolygonIndexCount;
+						tempSkinPolygonIndexCount += m_num_vertices;
 					}
-
+					for (int i= 0; i<skinVertexNum; i++)
+					{
+						FCDSkinControllerVertex* influences = skin->GetVertexInfluence(skinPolygonVertexIndex[i]);
+						skinVertexBoneCount[i] = (int)influences->GetPairCount();
+						skinVertexBoneName[i] = new std::string[skinVertexBoneCount[i]];
+						skinVertexBonePower[i] = new float[skinVertexBoneCount[i]];
+						for(int j =0; j < (int)influences->GetPairCount(); j++)
+						{
+							FCDJointWeightPair* pairs = influences->GetPair(j);
+							skinVertexBoneName[i][j] = boneName[(int)pairs->jointIndex];
+							skinVertexBonePower[i][j] = pairs->weight;
+						}
+					}
 					FCDMaterial* material;
 
 					//the id of the pointed material
@@ -991,13 +1051,6 @@ void FColladaModelLoader::buildSkin(FCDSkinController* skin){
 	boneParentName = new std::string[boneNumber];
 	boneChildNum = new int[boneNumber];
 	boneChildName = new std::string*[boneNumber];
-	skinVertexNum = (int)skin->GetInfluenceCount();
-	skinVertexPosX = new float[skinVertexNum];
-	skinVertexPosY = new float[skinVertexNum];
-	skinVertexPosZ = new float[skinVertexNum];
-	skinVertexBoneCount = new int[skinVertexNum];
-	skinVertexBoneName = new std::string*[skinVertexNum];
-	skinVertexBonePower = new float*[skinVertexNum];
 
 	for(int i = 0; i < (int)skin->GetJointCount(); i++)
 	{
@@ -1015,14 +1068,9 @@ void FColladaModelLoader::buildSkin(FCDSkinController* skin){
 	for(int i = 0; i < (int)skin->GetInfluenceCount(); i++)
 	{
 		FCDSkinControllerVertex* influences = skin->GetVertexInfluence(i);
-		skinVertexBoneCount[i] = (int)influences->GetPairCount();
-		skinVertexBoneName[i] = new std::string[skinVertexBoneCount[i]];
-		skinVertexBonePower[i] = new float[skinVertexBoneCount[i]];
 		for(int j =0; j < (int)influences->GetPairCount(); j++)
 		{
 			FCDJointWeightPair* pairs = influences->GetPair(j);
-			skinVertexBoneName[i][j] = boneName[(int)pairs->jointIndex];
-			skinVertexBonePower[i][j] = pairs->weight;
 		}
 	}
 	

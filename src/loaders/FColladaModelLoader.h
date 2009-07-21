@@ -104,6 +104,8 @@ public:
 
 	int getBoneIndexByName(std::string name);
 
+	int * getSkinVertexIndex(int begin, int end);
+
 	std::vector<SimpleLine*> simpleLines;	
 
 private:
@@ -150,6 +152,11 @@ private:
 	float* skinVertexPosX;
 	float* skinVertexPosY;
 	float* skinVertexPosZ;
+	float* skinNormalPosX;
+	float* skinNormalPosY;
+	float* skinNormalPosZ;
+	int* skinPolygonIndex;
+	int* skinPolygonVertexIndex;
 	int* skinVertexBoneCount;
 	std::string** skinVertexBoneName;
 	float** skinVertexBonePower;
