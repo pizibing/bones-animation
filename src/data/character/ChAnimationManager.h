@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <map>
 
 class Matrix;
@@ -38,6 +39,7 @@ public:
 	//         if no animation has the index, create a new animation
 	ChAnimation * getAnimation(int animationId);
 
+	// no longer used
 	// init the pointer array for animations
 	// manager can be initialized only once
 	// @param animation_num the number of animations
@@ -127,9 +129,9 @@ private:
 	// the skeleton to animate
 	ChSkeleton * m_skeleton;
 	// the number of animations
-	int m_animation_num;
+	//int m_animation_num;
 	// pointer array for animations
-	ChAnimation ** m_animations;
+	std::vector<ChAnimation*> m_animations;
 	// map the name with the index of animation
 	std::map< std::string, int > m_animationMap;
 
