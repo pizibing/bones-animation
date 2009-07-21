@@ -30,6 +30,10 @@ Vector3D operator*(const Vector3D& v, const Quaternion& q) {
 @param factor The percentage (0 < time < 1) to slerp
 @return The Quaternion formed by the slerp */
 Quaternion Quaternion::slerp(const Quaternion& other, float factor) const{
+	//quaternion must be normalized before operation
+	other.NormalizeIt();
+	this->NormalizeIt();
+
 	float theta, st, sut, sout, interp1, interp2;
 	float dot = x * other.x + y * other.y + z * other.z +
 		w * other.w;
