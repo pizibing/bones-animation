@@ -31,14 +31,14 @@ Vector3D operator*(const Vector3D& v, const Quaternion& q) {
 @return The Quaternion formed by the slerp */
 Quaternion Quaternion::slerp(const Quaternion& other, float factor) const{
 	//quaternion must be normalized before operation
-	other.NormalizeIt();
-	this->NormalizeIt();
+	Quaternion q1 = this->Normalize();
+	Quaternion q2 = other.Normalize();
 
 	float theta, st, sut, sout, interp1, interp2;
-	float dot = x * other.x + y * other.y + z * other.z +
-		w * other.w;
+	float dot = q1.x * q2.x + q1.y * q2.y + q1.z * q2.z +
+		q1.w * q2.w;
 
-	if (dot == 1.0f) return *this;
+	if (dot == 1.0f) return q1;
 
 	// algorithm taken from Shoemake's paper
 	theta = (float) acos(dot);
@@ -51,10 +51,10 @@ Quaternion Quaternion::slerp(const Quaternion& other, float factor) const{
 	interp2 = sut/st;
 
 	Quaternion result;
-	result.x = interp1*x + interp2*other.x;
-	result.y = interp1*y + interp2*other.y;
-	result.z = interp1*z + interp2*other.z;
-	result.w = interp1*w + interp2*other.w;
+	result.x = interp1*q1.x + interp2*q2.x;
+	result.y = interp1*q1.y + interp2*q2.y;
+	result.z = interp1*q1.z + interp2*q2.z;
+	result.w = interp1*q1.w + interp2*q2.w;
 
 	result.NormalizeIt();
 	return result;
