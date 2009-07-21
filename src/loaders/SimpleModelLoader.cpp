@@ -84,40 +84,37 @@ bool SimpleModelLoader::loadModel(int kind, char* path){
 	/* step2: initialize animations */
 	// create a new animation manager
 	ChAnimationManager* animations = character->getAnimations();
-	// get animation number of this CharacterObject from Fcollada
-	int animation_num = 0;
-	// set animation number
-	animations->init(animation_num);
-	// for each animation
-	for(int i = 0; i < animation_num; i++){
-		// create a new animation, the name of the animation is necessary
-		// get name of the animation from Fcollada
-		std::string animationName = "";
-		ChAnimation* animation = animations->getAnimation(animationName);
-		/* each bone of the skeleton has one corresponding ChTrack in one
-		   animation which records the movement of the bone */
-		// for each bone (how to go through all the bones is your choice)
-		for(;;){
-			// get bone's name
-			std::string boneName = "";
-			// get bone's relative ChTrack
-			ChTrack* track = animation->getTrack(boneName);
-			/* initialize the track */
-			// get key frame number of this track from Fcollada
-			int frame_num = 0;
-			// set key frame number
-			track->init(frame_num);
-			// for each key frame
-			for(;;){
-				// get relative change matrix of the bone in this key frame
-				// from Fcollada
-				Matrix matrix = Matrix();
-				// get this key frame's frame number in the whole animation
-				// from Fcollada
-				int frame_time = 0;
-				// add the key frame into the track
-				track->addKeyFrame(matrix,frame_time);
-			}
+	// load animations from this file
+	
+	// create a new animation, the name of the animation is necessary
+	// get name of the animation from Fcollada
+	// you can take the file name as animation name simply
+	std::string animationName = "filename";
+	ChAnimation* animation = animations->getAnimation(animationName);
+	/* each bone of the skeleton has one corresponding ChTrack in one
+	   animation which records the movement of the bone */
+	// for each bone (how to go through all the bones is your choice)
+	for(int i=0;i<skeleton->getBoneNum();i++){
+		// get bone's name
+		std::string boneName = "";
+		// get bone's relative ChTrack
+		ChTrack* track = animation->getTrack(boneName);
+		/* initialize the track */
+		// get key frame number of this track from Fcollada
+		// usually is the animation total key frame number
+		int frame_num = 0;
+		// set key frame number
+		track->init(frame_num);
+		// for each key frame
+		for(int j=0;j<frame_num;j++){
+			// get relative change matrix of the bone in this key frame
+			// from Fcollada
+			Matrix matrix = Matrix();
+			// get this key frame's frame number in the whole animation
+			// from Fcollada
+			int frame_time = 0;
+			// add the key frame into the track
+			track->addKeyFrame(matrix,frame_time);
 		}
 	}
 
