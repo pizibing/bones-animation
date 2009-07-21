@@ -131,7 +131,7 @@ bool SimpleModelLoader::loadModel(int kind, char* path){
 	// initialize each vertex in the skin
 	for(int i = 0; i < vertexNum; i++){
 		// create a vertex
-		ChVertex* vertex = skin->initVertice(vertexNum);
+		ChVertex* vertex = skin->initVertice(i);
 		// get position of the vertex to be added from Fcollada
 		float px,py,pz;
 		// create a new vertex

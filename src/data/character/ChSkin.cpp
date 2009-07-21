@@ -8,10 +8,13 @@
 // constructor
 ChSkin::ChSkin(ChSkeleton* skeleton){
 	this->skeleton = skeleton;
+	vertices = 0;
 }
 
 // destructor
 ChSkin::~ChSkin(void){
+	if(vertices) delete[] vertices;
+	vertices = 0;
 }
 
 // initialize vertices and verticeSize

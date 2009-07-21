@@ -14,11 +14,14 @@ ChVertex::ChVertex(ChSkeleton* skeleton){
 	pairNum = 0;
 	// init skeleton
 	this->skeleton = skeleton;
+
+	pairs = 0;
 }
 
 // destructor
 ChVertex::~ChVertex(void){
 	if(pairs) delete[] pairs;
+	pairs = 0;
 }
 
 // set the default position of the vertex
