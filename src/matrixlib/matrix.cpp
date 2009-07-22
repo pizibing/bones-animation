@@ -249,7 +249,6 @@ void Matrix::Translate(const Vector3D & v){
 // get rotation Matrix with axis(x,y,z) by angle in radians
 Matrix Matrix::AxisRotationMatrix(float x, float y, float z, float angle)
 {
-	// Formulae inspired from http://www.mines.edu/~gmurray/ArbitraryAxisRotation/ArbitraryAxisRotation.html
 	Matrix matrix;
 	Vector3D a(x,y,z);
 	a.Unitize();
