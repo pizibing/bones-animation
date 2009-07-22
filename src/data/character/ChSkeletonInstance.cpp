@@ -1,6 +1,7 @@
 #include "../matrixlib/Vector3D.h"
 #include "../matrixlib/quaternion.h"
 #include "../matrixlib/matrix.h"
+#include "../SimpleLine.h"
 #include "ChSkeletonInstance.h"
 #include "ChBoneInstance.h"
 #include "ChSkeleton.h"
@@ -29,6 +30,8 @@ ChSkeletonInstance::~ChSkeletonInstance(void)
 	}
 	if(bones)delete [] bones;
 	bones = NULL;
+	if(boneLines) delete [] boneLines;
+	boneLines = NULL;
 }
 
 //get function of root
@@ -132,6 +135,12 @@ ChBoneInstance* ChSkeletonInstance::getBoneInstance(int id){
 	return bones[id];
 }
 
+// get a bone instance position in world space from the bones whose id equals to the given id
+const Vector3D & ChSkeletonInstance::getBoneInstancePosition(int id) const{
+	assert(id>=0&&id<m_skeleton->getBoneNum());
+	return  bones[id]->getAbsoluteTranslation();
+}
+
 // calculate absolute transform for all bone instance 
 // with boneId as root bone
 void ChSkeletonInstance::calculateAbsoluteTransform(int boneId){
@@ -154,4 +163,37 @@ void ChSkeletonInstance::calculateAbsoluteTransform(int boneId){
 		bones[boneId]->setAbsoluteRotation(bones[boneId]->getRotation());
 		bones[boneId]->setAbsoluteTranslation(bones[boneId]->getTranslation());
 	}
+}
+
+// get the lines for the skeleton
+// modify num to get the line number
+SimpleLine * ChSkeletonInstance::getBoneLines(int *num){
+	if(!boneLines){
+		// initial bone line array
+		// root bone has no line
+		boneLines = new SimpleLine[m_skeleton->getBoneNum()-1];
+	}
+	int lineNum = 0;
+	ChBoneInstance * bone;
+	ChBoneInstance * parent;
+	int parentId;
+	Vector3D v;
+	// generate lines for all bone instance except root bone
+	for(int i=0;i<m_skeleton->getBoneNum();i++){
+		bone = bones[i];
+		// get b
+		parentId = m_skeleton->getBone(i)->getParentId();
+		if(parentId!=-1){
+			parent = bones[parentId];
+			// start point
+			v = parent->getAbsoluteTranslation();
+			boneLines[lineNum].setDot1(v.x,v.y,v.z);
+			// end point
+			v = bone->getAbsoluteTranslation();
+			boneLines[lineNum].setDot2(v.x,v.y,v.z);
+			lineNum++;
+		}
+	}
+	*num = lineNum;
+	return boneLines;
 }
