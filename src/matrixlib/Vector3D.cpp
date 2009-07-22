@@ -5,12 +5,11 @@
  //////////////////////////////////////////////////////////////////////   
  // Construction/Destruction   
  //////////////////////////////////////////////////////////////////////   
-    
- //缺省构造函数   
+       
  Vector3D::Vector3D() : x(0.0f), y(0.0f), z(1.0f)   
  {}   
     
- //重载构造函数   
+  
  Vector3D::Vector3D(float x, float y, float z)   
  {   
      this->x = x;   
@@ -31,11 +30,11 @@
     
  //////////////////////////////////////////////////////////////////////////////////////////////   
  //   
- //                    设置与获取     
+ //                    set and get
  //   
  //////////////////////////////////////////////////////////////////////////////////////////////   
     
- //设置, 由于具有"="重载功能, 所有设置函数只需要如下参数形式   
+ //set 
  void Vector3D::Set(float x, float y, float z)   
  {   
      this->x = x;   
@@ -43,7 +42,7 @@
      this->z = z;   
  }   
     
- //获取   
+ //get  
  VECTOR3D Vector3D::Get() const   
  {   
      VECTOR3D vector;   
@@ -54,10 +53,9 @@
  }   
     
     
- ///////////////////////////   变换   ////////////////////////////////   
+ ///////////////////////////   scale   ////////////////////////////////   
     
- //向量缩放   
- //用vector来缩放this向量   
+ //scale a vector   
  void Vector3D::Scale(Vector3D vector)   
  {   
      x *= vector.x;   
@@ -65,8 +63,7 @@
      z *= vector.z;   
  }   
     
- //向量缩放   
- //用vector来缩放this向量   
+ //scale  a VECTOR  
  void Vector3D::Scale(VECTOR3D vector)   
  {   
      x *= vector.x;   
@@ -74,8 +71,7 @@
      z *= vector.z;   
  }   
     
- //向量缩放   
- //用x, y, z来缩放this向量   
+ //scale this vector with a vector 
  void Vector3D::Scale(float x,  float y,  float z)   
  {   
      this->x *=  x;   
@@ -83,11 +79,9 @@
      this->z *=  z;   
  }   
     
- //将this向量进行旋转   
- //绕轴x旋转, fTheta为角度单位   
+ //rotate the vector with the x axis
  void Vector3D::RotateX(float fTheta)   
- {   
-     //将角度转化为弧度   
+ {    
      float fRad = (float)((fTheta * PIE) / 180.0);      
      float yy = (float)(y * cos(fRad) - z * sin(fRad));   
      float zz = (float)(y * sin(fRad) + z * cos(fRad));   
@@ -95,11 +89,9 @@
      z = zz;   
  }   
     
- //将this向量进行旋转   
- //绕轴y旋转, fTheta为角度单位   
+ //rotate the vector with the y axis  
  void Vector3D::RotateY(float fTheta)   
- {   
-     //将角度转化为弧度   
+ {     
      float fRad = (float)((fTheta * PIE) / 180.0);      
      float xx = (float)(x * cos(fRad) + z * sin(fRad));   
      float zz = (float)(-x * sin(fRad) + z * cos(fRad));   
@@ -107,11 +99,9 @@
      z = zz;   
  }   
     
- //将this向量进行旋转   
- //绕轴y旋转, fTheta为角度单位   
+ //rotate the vector with the z axis 
  void Vector3D::RotateZ(float fTheta)   
- {   
-     //将角度转化为弧度   
+ {    
      float fRad = (float)((fTheta * PIE) / 180.0);      
      float xx = (float)(x * cos(fRad) - y * sin(fRad));   
      float yy = (float)(x * sin(fRad) + y * cos(fRad));   
@@ -119,29 +109,22 @@
      y = yy;   
  }   
     
- //绕任意轴旋转, fTheta为角度,    
- //必须指出, 这里的轴为一个自由向量, 自由向量都可以从坐标原点画出   
+ //rotate the vector with any axis 
  void Vector3D::Rotate(float fTheta,  Vector3D axis)   
  {   
-     //单位化   
+     //unitize
      axis.Unitize();   
     
-     //旋转轴的方向数   
+  
      float fx = axis.x,  fy = axis.y,  fz = axis.z;   
-        
-     //将角度转化为弧度   
+          
      float fRad = (float)((fTheta * PIE) / 180.0);   
     
-     //角度的正弦和余弦   
      float c = (float)cos(fRad);   
      float s = (float)sin(fRad);   
     
-    
-     //多次变换的合成,参考相应的计算机图形学书籍,   
-     //变换的具体过程请参考:   
-     //<计算机图形学>(第三版),孙家广,清华大学出版社   
-        
-     //下面是最后的结果   
+       
+       
      float xx = (fx * fx * (1.0f - c) + c)      * x +   
                 (fx * fy * (1.0f - c) - fz * s) * y +   
                 (fx * fz * (1.0f - c) + fy * s) * z;   
@@ -154,21 +137,20 @@
                 (fz * fy * (1.0f - c) + fx * s) * y +   
                 (fz * fz * (1.0f - c) + c)      * z;   
     
-     //返回最后结果   
+     //return  
      x = xx;   
      y = yy;   
      z = zz;   
  }   
     
- //绕任意轴旋转, fTheta为角度,    
- //必须指出, 这里的轴为一个自由向量, 自由向量都可以从坐标原点画出   
+ //rotate the vector with any axis 
  void Vector3D::Rotate(float fTheta,  VECTOR3D axis)   
  {   
      Vector3D vector = axis;   
      this->Rotate(fTheta, vector);   
  }   
     
- //(x, y, z)为旋转轴向量   
+ //(x, y, z) is the retate vector   
  void Vector3D::Rotate(float fTheta,  float x, float y, float z)   
  {   
      Vector3D vector(x, y, z);   
@@ -177,15 +159,15 @@
     
  //////////////////////////////////////////////////////////////////////////////////////////////   
  //   
- //                    计算小面法线   
+ //                    get the facet normal  
  //   
  //////////////////////////////////////////////////////////////////////////////////////////////   
     
     
- //计算小面法线   
+ //get the facet normal  
  VECTOR3D Vector3D::Noraml(const VERTEX3D& v1,  const VERTEX3D& v2,  const VERTEX3D& v3)   
  {   
-     //右手规则   
+     //right hand rule 
      Vector3D vector1((v2.x - v1.x),  (v2.y - v1.y),  (v2.z - v1.z));    
      Vector3D vector2((v3.x - v1.x),  (v3.y - v1.y),  (v3.z - v1.z));    
      Vector3D noraml = vector1 * vector2;   
@@ -193,11 +175,11 @@
      return n;   
  }    
     
- //计算小面法线   
+ //get the facet normal
  VECTOR3D Vector3D::Noraml(const HOMOCOORD& v1,  const HOMOCOORD& v2,  const HOMOCOORD& v3)   
  {   
-     //如果一个三角形中包含无穷远点, 则该三角形是一个畸形三角形,    
-     float w1 = v1.w,  w2 = v2.w,  w3 = v3.w;   
+     //if the triangle contains a vertex in the remote enough place,the triangle will be a abnomal triangle
+	 float w1 = v1.w,  w2 = v2.w,  w3 = v3.w;   
      if(ABS(w1) <= 0.00001f) w1 = 1.0f;   
      if(ABS(w2) <= 0.00001f) w2 = 1.0f;   
      if(ABS(w3) <= 0.00001f) w3 = 1.0f;   

@@ -31,6 +31,15 @@ void ChBone::setId(int id){
 	m_id = id;
 }
 
+// @return the id of parent bone
+//			-1 if no parent bone
+int ChBone::getParentId() const{
+	if(m_parentbone){
+		return m_parentbone->getId();
+	}
+	return -1;
+}
+
 // @return the pointer of the parent bone
 ChBone * ChBone::getParentBone()const{
 	return m_parentbone;
