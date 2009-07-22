@@ -146,7 +146,11 @@ private:
 	std::string* boneParentName; 
 	std::string** boneChildName; 
 	int* boneChildNum;
+
 	std::string filename;
+	int* animationsBoneFrameNum;
+	Matrix** animationsBoneFrameMatrix;
+	int** animationsBoneFrameTime;
 
 	int skinVertexNum;
 	float* skinVertexPosX;

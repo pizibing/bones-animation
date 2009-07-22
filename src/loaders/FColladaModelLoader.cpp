@@ -52,7 +52,8 @@ bool FColladaModelLoader::loadModel(int kind,const char* szPathName){
 	//it is a class value, which administrate the 
 	objectManager = ObjectManager::getInstance();
 	std::string tempFilename = szPathName;
-	filename = tempFilename.substr(0, tempFilename.length()-4);
+	int tempFileNameIndex = tempFilename.find_last_of("/");
+	filename = tempFilename.substr(tempFileNameIndex+1, tempFilename.length()-5-tempFileNameIndex);
 	// new dae file
 	m_document = FCollada::NewTopDocument();
 
@@ -114,7 +115,7 @@ bool FColladaModelLoader::loadModel(int kind,const char* szPathName){
 		drawLine(ptr_root, kind);
 	}
 
-	if(kind = 2)
+	if(kind == 0)
 	{
 		BuildCharacter();
 	}
@@ -198,51 +199,56 @@ void FColladaModelLoader::BuildCharacter()
 //	printf("\n");
 
 	/* step2: initialize animations */
-
 	// create a new animation manager
 	ChAnimationManager* animations = character->getAnimations();
-	// get animation number of this CharacterObject from Fcollada
-//	int animation_num = 1;
-	// set animation number
-	animations->init(1);
-	// for each animation
-//	for(int i = 0; i < animation_num; i++){
+	// load animations from this file
+
 	// create a new animation, the name of the animation is necessary
 	// get name of the animation from Fcollada
+	// you can take the file name as animation name simply
 	std::string animationName = filename;
-//	printf("filename\n");
-//	printf("%s\n", filename.c_str());
+	printf("animationName\n");
+	printf("%s\n", animationName.c_str());
 	ChAnimation* animation = animations->getAnimation(animationName);
 	/* each bone of the skeleton has one corresponding ChTrack in one
 	animation which records the movement of the bone */
-	// get animation number from Fcollada
-	int animation_num = m_num_animations;
-//	printf("animation_num\n");
-//	printf("%i\n", animation_num);
 	// for each bone (how to go through all the bones is your choice)
-	for(int i =0; i < animation_num; i++){
-		// get bone's name from Fcollada
-		std::string boneName = "";
+	for(int i=0;i<bone_num;i++){
+		// get bone's name
+		std::string animationboneName = boneName[i];
+//		printf("boneName\n");
+//		printf("%s\n", animationboneName.c_str());
 		// get bone's relative ChTrack
-//		ChTrack* track = animation->getTrack(boneName);
+		ChTrack* track = animation->getTrack(animationboneName);
 		/* initialize the track */
 		// get key frame number of this track from Fcollada
-		int frame_num = 0;
+		// usually is the animation total key frame number
+		int frame_num = animationsBoneFrameNum[i];
+//		printf("frame_num\n");
+//		printf("%i\n", frame_num);
 		// set key frame number
-//		track->init(frame_num);
+		track->init(frame_num);
 		// for each key frame
-		for(int j = 0; j < frame_num; j++){
+		for(int j=0;j<frame_num;j++){
 			// get relative change matrix of the bone in this key frame
 			// from Fcollada
-			Matrix matrix = Matrix();
+			Matrix matrix = animationsBoneFrameMatrix[i][j];
+//			printf("boneMatrix\n");
+//			printf("%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n",
+//			matrix.m[0], matrix.m[4], matrix.m[8], matrix.m[12], 
+//			matrix.m[1], matrix.m[5], matrix.m[9], matrix.m[13], 
+//			matrix.m[2], matrix.m[6], matrix.m[10], matrix.m[14], 
+//			matrix.m[3], matrix.m[7], matrix.m[11], matrix.m[15]);
 			// get this key frame's frame number in the whole animation
 			// from Fcollada
-			int frame_time = j;
+			int frame_time = animationsBoneFrameTime[i][j];
+//			printf("frame_time\n");
+//			printf("%i\n", frame_time);
 			// add the key frame into the track
-//			track->addKeyFrame(matrix,frame_time);
+			track->addKeyFrame(matrix,frame_time);
 		}
+//		printf("\n");
 	}
-//}
 
 	/* step3: initialize skin */
 	// create new ChSkin
@@ -300,51 +306,55 @@ void FColladaModelLoader::BuildCharacter()
 
 	/* step4: initialize skeleton and skin instance */
 	// this step is easy, just use the function below
-//	character->initInstance();
+	character->initInstance();
 
 	/* step5: initialize VBOs(a VBO is a group of triangles that have the
 	same material and textures) */
 	// get number of VBOs that you need to display this CharacterObject
 	int vboNum = charactervboNum;
 	// set vbo number
-//	character->initVBOs(vboNum);
+	character->initVBOs(vboNum);
 	// for each vbo
 	for(int i = 0; i < vboNum; i++){
 		/* vertices is an array of ids of ChVertex that is contained 
 		in this VBO, you can get the id of each vertex use getId()
 		function of ChVertex, perhaps you can generate all vertices'
 		id information when you built the skin */
+		int* vertices;
+		int vSize = 0;
 		// generate each vbo's vertices
+		// get the length of vertices
 		if( i != vboNum -1){
-			int* vertices = getSkinVertexIndex(skinPolygonIndex[i], skinPolygonIndex[i+1]);
+			vertices = getSkinVertexIndex(skinPolygonIndex[i], skinPolygonIndex[i+1]);
+			vSize = skinPolygonIndex[i+1] - skinPolygonIndex[i];
 		}
 		else{
-			int* vertices = getSkinVertexIndex(skinPolygonIndex[i], skinVertexNum);
+			vertices = getSkinVertexIndex(skinPolygonIndex[i], skinVertexNum);
+			vSize = skinVertexNum - skinPolygonIndex[i];
 		}
-		// get the length of vertices
-		int vSize = character_vbo_size * 3;
+
 		// initialize i-th vbo
-//		character->initVBO(vertices,vSize,i);
+		character->initVBO(vertices,vSize,i);
 		// get texture coordinates of vertices
-		float* texCoord = character_vbo_texcoords[i];
+//		float* texCoord = character_vbo_texcoords[i];
 		// get length of texCoord
-		int tcSize = character_vbo_size * 2;
+//		int tcSize = character_vbo_size * 2;
 		// get texture id
-		GLuint texId = character_vbo_texid[i];
+//		GLuint texId = character_vbo_texid[i];
 		// set i-th vbo's texture
 //		character->setVBOTexture(texCoord,tcSize,texId,i);
 		// get material information of that vbo
-		float am[4] = {character_vbo_am[i][0], character_vbo_am[i][1], character_vbo_am[i][2], character_vbo_am[i][3]};
-		float di[4] = {character_vbo_di[i][0], character_vbo_di[i][1], character_vbo_di[i][2], character_vbo_di[i][3]};
-		float sp[4] = {character_vbo_sp[i][0], character_vbo_sp[i][1], character_vbo_sp[i][2], character_vbo_sp[i][3]};
-		float em[4] = {character_vbo_em[i][0], character_vbo_em[i][1], character_vbo_em[i][2], character_vbo_em[i][3]};
-		float sh = character_vbo_sh[i];
+//		float am[4] = {character_vbo_am[i][0], character_vbo_am[i][1], character_vbo_am[i][2], character_vbo_am[i][3]};
+//		float di[4] = {character_vbo_di[i][0], character_vbo_di[i][1], character_vbo_di[i][2], character_vbo_di[i][3]};
+//		float sp[4] = {character_vbo_sp[i][0], character_vbo_sp[i][1], character_vbo_sp[i][2], character_vbo_sp[i][3]};
+//		float em[4] = {character_vbo_em[i][0], character_vbo_em[i][1], character_vbo_em[i][2], character_vbo_em[i][3]};
+//		float sh = character_vbo_sh[i];
 		// set i-th vbo's material
 //		character->setVBOMaterial(am,di,sp,em,sh,i);
 	}
 
 	/* step6: add the character to the ObjectManager */
-//	objectManager->addVBOObject(character);
+	objectManager->addVBOObject(character);
 
 }
 
@@ -500,8 +510,7 @@ void FColladaModelLoader::storeVertices(int kind)
 						}
 					}
 				}
-				if(kind == 2)
-				{
+
 					//init the total data of the vertexs and normals
 					float * m_vbo_vertices = new GLfloat[m_num_vertices * 3];
 					float * m_vbo_normals = new GLfloat[m_num_vertices * 3];
@@ -533,6 +542,8 @@ void FColladaModelLoader::storeVertices(int kind)
 							m_vbo_texcoords[2*i+1] = (m_ptrs_texcoords+i)->y;
 						}
 					}
+				if(kind == 2)
+				{
 					//create the staticobject with vertexs
 					StaticObject* objects = new StaticObject(m_vbo_vertices, m_num_vertices * 3);
 
@@ -548,9 +559,7 @@ void FColladaModelLoader::storeVertices(int kind)
 					objectManager->addVBOObject(objects);
 				}
 			}
-			if(kind == 2){
-				m_ptrs_geometries.push_back(mesh);
-			}
+			m_ptrs_geometries.push_back(mesh);
 		}
 	}
 }
@@ -1051,11 +1060,16 @@ void FColladaModelLoader::buildSkin(FCDSkinController* skin){
 	boneParentName = new std::string[boneNumber];
 	boneChildNum = new int[boneNumber];
 	boneChildName = new std::string*[boneNumber];
+	animationsBoneFrameNum = new int[boneNumber];
+	animationsBoneFrameMatrix = new Matrix*[boneNumber];
+	animationsBoneFrameTime = new int*[boneNumber];
 
+	
 	for(int i = 0; i < (int)skin->GetJointCount(); i++)
 	{
 		FCDSkinControllerJoint* joint = skin->GetJoint(i);
 		boneName[i] = joint->GetId().c_str();
+		/*
 		FMMatrix44 inverse = joint->GetBindPoseInverse() * skin->GetBindShapeTransform();
 		float tempMatrixElement[] ={inverse.m[0][0], inverse.m[0][1], inverse.m[0][2], inverse.m[0][3], 
 		inverse.m[1][0], inverse.m[1][1], inverse.m[1][2], inverse.m[1][3],
@@ -1063,6 +1077,7 @@ void FColladaModelLoader::buildSkin(FCDSkinController* skin){
 		inverse.m[3][0], inverse.m[3][1], inverse.m[3][2], inverse.m[3][3],};
 		Matrix tempMatrix = Matrix(tempMatrixElement);
 		boneMatrix[i] = tempMatrix;
+		*/
 	}
 
 	for(int i = 0; i < (int)skin->GetInfluenceCount(); i++)
@@ -1077,132 +1092,172 @@ void FColladaModelLoader::buildSkin(FCDSkinController* skin){
 }
 void FColladaModelLoader::buildSceneMatrix(FCDSceneNode* node_origin)
 {
-	FCDTransform*  trans_origin;
+	if(node_origin ->GetJointFlag() == true){
+		int index = getBoneIndexByName(node_origin->GetSubId().c_str());
+		animationsBoneFrameNum[index] = 0;
+		if(index >= 0 && index< boneNumber)
+		{
+			FMMatrix44 inverse = node_origin->ToMatrix();
+			float tempMatrixElement[] ={inverse.m[0][0], inverse.m[0][1], inverse.m[0][2], inverse.m[0][3], 
+				inverse.m[1][0], inverse.m[1][1], inverse.m[1][2], inverse.m[1][3],
+				inverse.m[2][0], inverse.m[2][1], inverse.m[2][2], inverse.m[2][3],
+				inverse.m[3][0], inverse.m[3][1], inverse.m[3][2], inverse.m[3][3],};
+			Matrix tempMatrix = Matrix(tempMatrixElement);
+			boneMatrix[index] = tempMatrix;
 
-	// copy node transformations
-	for (int i=0; i<(int)node_origin->GetTransformCount(); i++) {
-		trans_origin=node_origin->GetTransform(i);
+			FCDTransform*  trans_origin;
 
-		// rotation
-		if (trans_origin->GetType()== FCDTransform::ROTATION) {
-			FCDTRotation* trans_rot=dynamic_cast<FCDTRotation*>(trans_origin); // casting
+			// copy node transformations
+			for (int i=0; i<(int)node_origin->GetTransformCount(); i++) {
+				trans_origin=node_origin->GetTransform(i);
 
-			// initialize curves
-			FCDAnimationCurve* m_x_curve=NULL;
-			FCDAnimationCurve* m_y_curve=NULL;
-			FCDAnimationCurve* m_z_curve=NULL;
-			FCDAnimationCurve* m_angle_curve=NULL;
+			// rotation
+				if (trans_origin->GetType()== FCDTransform::ROTATION) {
+					FCDTRotation* trans_rot=dynamic_cast<FCDTRotation*>(trans_origin); // casting
+					/*
+					// initialize curves
+					FCDAnimationCurve* m_x_curve=NULL;
+					FCDAnimationCurve* m_y_curve=NULL;
+					FCDAnimationCurve* m_z_curve=NULL;
+					FCDAnimationCurve* m_angle_curve=NULL;
 
-			// is there any animation ?
-			if (trans_rot->IsAnimated()) {
+					// is there any animation ?
+					if (trans_rot->IsAnimated()) {
+		
+						FCDAnimationCurve* curve;
 
-				FCDAnimationCurve* curve;
+						// look for x animation
+						curve=trans_rot->GetAnimated()->FindCurve(".X");
+						if (curve!=NULL) {
+							curve->GetKeyCount();
+						}
 
-				// look for x animation
-				curve=trans_rot->GetAnimated()->FindCurve(".X");
-				if (curve!=NULL) {
+						// look for y animation
+						curve=trans_rot->GetAnimated()->FindCurve(".Y");
+						if (curve!=NULL){
 
+						}
+		
+						// look for z animation
+						curve=trans_rot->GetAnimated()->FindCurve(".Z");
+						if (curve!=NULL){	
+
+						}
+
+						// look for angle animation
+						curve=trans_rot->GetAnimated()->FindCurve(".ANGLE");
+						if (curve!=NULL){
+	
+						}
+					}
+					continue;
+					*/
 				}
 
-				// look for y animation
-				curve=trans_rot->GetAnimated()->FindCurve(".Y");
-				if (curve!=NULL){
+				// translation
+				if (trans_origin->GetType()== FCDTransform::TRANSLATION) {
+					FCDTTranslation* trans_trans=dynamic_cast<FCDTTranslation*>(trans_origin); // casting
+					/*
+					// initialize curves
+					FCDAnimationCurve* m_x_curve=NULL;
+					FCDAnimationCurve* m_y_curve=NULL;
+					FCDAnimationCurve* m_z_curve=NULL;
+	
+					// is there any animation ?
+					if (trans_trans->IsAnimated()) {
+	
+						FCDAnimationCurve* curve;
 
+						// look for x animation
+						curve=trans_trans->GetAnimated()->FindCurve(".X");
+						if (curve!=NULL){
+	
+						}
+
+						// look for y animation
+						curve=trans_trans->GetAnimated()->FindCurve(".Y");
+						if (curve!=NULL) {
+	
+						}
+	
+						// look for z animation
+						curve=trans_trans->GetAnimated()->FindCurve(".Z");
+						if (curve!=NULL) {
+	
+						}
+					}	
+					continue;
+					*/
 				}
 
-				// look for z animation
-				curve=trans_rot->GetAnimated()->FindCurve(".Z");
-				if (curve!=NULL){
+				// scale
+				if (trans_origin->GetType()== FCDTransform::SCALE) {
+					FCDTScale* trans_scale=dynamic_cast<FCDTScale*>(trans_origin); // casting 
+					/*
+					// initialize curves
+					FCDAnimationCurve* m_x_curve=NULL;
+					FCDAnimationCurve* m_y_curve=NULL;
+					FCDAnimationCurve* m_z_curve=NULL;
 
+					// is there any animation ?
+					if (trans_scale->IsAnimated()) {
+	
+						FCDAnimationCurve* curve;
+	
+						// look for x animation
+						curve=trans_scale->GetAnimated()->FindCurve(".X");
+						if (curve!=NULL) {
+	
+						}
+	
+						// look for y animation
+						curve=trans_scale->GetAnimated()->FindCurve(".Y");
+						if (curve!=NULL) {
+		
+						}
+	
+						// look for z animation
+						curve=trans_scale->GetAnimated()->FindCurve(".Z");
+						if (curve!=NULL) {
+		
+						}
+					}	
+					continue; // actually, not necessary
+					*/
 				}
 
-				// look for angle animation
-				curve=trans_rot->GetAnimated()->FindCurve(".ANGLE");
-				if (curve!=NULL){
+				// matrix
+				if (trans_origin->GetType()== FCDTransform::MATRIX) {
+					FCDTMatrix* trans_matrix=dynamic_cast<FCDTMatrix*>(trans_origin); // casting
+	
+					// animation
+					FCDAnimated* animated;
+					//int num_curves;
+					if (trans_matrix->IsAnimated()) {		
+						animated=trans_matrix->GetAnimated();
+						assert((int)animated->GetValueCount() == 16);
+						int animationKeyCount = animated->GetCurves().at(0)[0]->GetKeyCount();
+						animationsBoneFrameNum[index] = animationKeyCount;
+						animationsBoneFrameMatrix[index] = new Matrix[animationKeyCount];
+						animationsBoneFrameTime[index] = new int[animationKeyCount];
+	
+						for(int j = 0; j < animationKeyCount; j++)
+						{
+							animationsBoneFrameTime[index][j] = (int)((animated->GetCurves().at(0)[0]->GetKey(j)->input * 30) + 0.5);	
+							float* tempAnimationMatrixFloat = new float[(int)animated->GetValueCount()];						
+							for(int p = 0; p < (int)animated->GetValueCount(); p++)
+							{
+								tempAnimationMatrixFloat[p] = animated->GetCurves().at(p)[0]->GetKey(j)->output;
+							}
+							
+							Matrix tempAnimationMatrix = Matrix(tempAnimationMatrixFloat);
+							animationsBoneFrameMatrix[index][j] = tempAnimationMatrix;
+						}
 
+					}
+					continue;
 				}
 			}
-			continue;
-		}
-
-		// translation
-		if (trans_origin->GetType()== FCDTransform::TRANSLATION) {
-			FCDTTranslation* trans_trans=dynamic_cast<FCDTTranslation*>(trans_origin); // casting
-			// initialize curves
-			FCDAnimationCurve* m_x_curve=NULL;
-			FCDAnimationCurve* m_y_curve=NULL;
-			FCDAnimationCurve* m_z_curve=NULL;
-
-			// is there any animation ?
-			if (trans_trans->IsAnimated()) {
-
-				FCDAnimationCurve* curve;
-
-				// look for x animation
-				curve=trans_trans->GetAnimated()->FindCurve(".X");
-				if (curve!=NULL){
-
-				}
-
-				// look for y animation
-				curve=trans_trans->GetAnimated()->FindCurve(".Y");
-				if (curve!=NULL) {
-
-				}
-
-				// look for z animation
-				curve=trans_trans->GetAnimated()->FindCurve(".Z");
-				if (curve!=NULL) {
-
-				}
-			}	
-			continue;
-		}
-
-		// scale
-		if (trans_origin->GetType()== FCDTransform::SCALE) {
-			FCDTScale* trans_scale=dynamic_cast<FCDTScale*>(trans_origin); // casting 
-			// initialize curves
-			FCDAnimationCurve* m_x_curve=NULL;
-			FCDAnimationCurve* m_y_curve=NULL;
-			FCDAnimationCurve* m_z_curve=NULL;
-
-			// is there any animation ?
-			if (trans_scale->IsAnimated()) {
-
-				FCDAnimationCurve* curve;
-
-				// look for x animation
-				curve=trans_scale->GetAnimated()->FindCurve(".X");
-				if (curve!=NULL) {
-
-				}
-
-				// look for y animation
-				curve=trans_scale->GetAnimated()->FindCurve(".Y");
-				if (curve!=NULL) {
-
-				}
-
-				// look for z animation
-				curve=trans_scale->GetAnimated()->FindCurve(".Z");
-				if (curve!=NULL) {
-
-				}
-			}	
-			continue; // actually, not necessary
-		}
-
-		// matrix
-		if (trans_origin->GetType()== FCDTransform::MATRIX) {
-			FCDTMatrix* trans_matrix=dynamic_cast<FCDTMatrix*>(trans_origin); // casting
-			// animation
-			FCDAnimated* animated;
-			//int num_curves;
-			if (trans_matrix->IsAnimated()) {		
-				animated=trans_matrix->GetAnimated();
-			}
-			continue;
 		}
 	}
 }
@@ -1471,7 +1526,7 @@ void FColladaModelLoader::setFCMaterial(int target, int index, int polygonIndex,
 		tex = textureManager->getTextureId(szFile.c_str());
 	}
 
-	if(kind == 2)
+	if(kind == 0)
 	{
 		character_vbo_am[polygonIndex] = new float[4];
 		character_vbo_di[polygonIndex] = new float[4];
@@ -1479,17 +1534,23 @@ void FColladaModelLoader::setFCMaterial(int target, int index, int polygonIndex,
 		character_vbo_em[polygonIndex] = new float[4];
 		character_vbo_texid[polygonIndex] = 0;
 		//if has texture, set the texture
-		if(tex != NULL)
-		{
-			((StaticObject *) objectManager->getVBOObject(2,index))->setTextures(m_total_texcoords[index], m_size_texcoords[index], tex);
-			character_vbo_texid[polygonIndex] = tex;
-		}
-
 		character_vbo_am[polygonIndex] = am;
 		character_vbo_di[polygonIndex] = di;
 		character_vbo_sp[polygonIndex] = sp;
 		character_vbo_em[polygonIndex] = em;
 		character_vbo_sh[polygonIndex] = sh;
+		if(tex != NULL)
+		{
+			character_vbo_texid[polygonIndex] = tex;
+		}
+	}
+	if(kind == 2)
+	{
+		if(tex != NULL)
+		{
+			((StaticObject *) objectManager->getVBOObject(2,index))->setTextures(m_total_texcoords[index], m_size_texcoords[index], tex);
+			character_vbo_texid[polygonIndex] = tex;
+		}
 
 		//set the material
 		((StaticObject *) objectManager->getVBOObject(2,index))->setMaterial(am, di, sp, em, sh);

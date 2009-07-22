@@ -72,6 +72,7 @@ int ChSkeleton::getBoneNum()const{
 
 // @return the root bone pointer
 ChBone* ChSkeleton::getRootBone()const{
+	assert(m_rootBone);
 	return m_rootBone;
 }
 
