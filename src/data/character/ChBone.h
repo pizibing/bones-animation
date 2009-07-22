@@ -31,6 +31,9 @@ public:
 
 	// @return the pointer of the parent bone
 	ChBone * getParentBone()const;
+
+	// @return the id of parent bone
+	int getParentId() const;
 	
 	// set the parent bone
 	void SetParentBone(ChBone * parent);

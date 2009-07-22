@@ -4,6 +4,7 @@ class ChBoneInstance;
 class ChSkeleton;
 class ChAnimationManager;
 class Matrix;
+class SimpleLine;
 
 // ChSkeletonInstance is a class that stores the current
 // instance of a character's skeleton
@@ -51,6 +52,13 @@ public:
 	// get a bone instance from the bones whose id equals to the given id
 	ChBoneInstance* getBoneInstance(int id);
 
+	// get a bone instance position in world space from the bones whose id equals to the given id
+	const Vector3D & getBoneInstancePosition(int id) const;
+
+	// get the lines for the skeleton
+	// modify num to get the line number
+	SimpleLine * getBoneLines(int * num);
+
 private:
 	// calculate absolute transform for all bone instance 
 	// with boneId as root bone
@@ -68,5 +76,8 @@ private:
 	ChBoneInstance** bones;
 	// the skeleton
 	ChSkeleton* m_skeleton;
+
+	// the lines for skeleton
+	SimpleLine* boneLines;
 
 };

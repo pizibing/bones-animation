@@ -20,11 +20,11 @@ TerrainModelLoader::~TerrainModelLoader(void){
 */
 bool TerrainModelLoader::loadModel(int kind, const char* path){
 	// create a new TerrainObject
-	TerrainObject* terrain = new TerrainObject();
+	//TerrainObject* terrain = new TerrainObject();
 
 	// get ObjectManager
 	ObjectManager* om = ObjectManager::getInstance();
 	// add terrain into ObjectManager
-	om->addVBOObject(terrain);
+	//om->addVBOObject(terrain);
 	return true;
 }

@@ -77,7 +77,7 @@ int CharacterObject::getID(){
 // return the line array that this object represent
 // num will be changed into the length of the line array
 SimpleLine* CharacterObject::representInLine(int* num){
-	return NULL;
+	return chSkeletonInstance->getBoneLines(num);
 }
 
 // this function change the position matrix of the 
