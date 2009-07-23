@@ -24,7 +24,7 @@ public:
 	// creates a empty quaternion
 	inline Quaternion(){}
 	// creates the quaternion with the given component values
-	inline Quaternion(float qx, float qy, float qz, float qw): x(qx),y(qy),w(qw){}
+	inline Quaternion(float qx, float qy, float qz, float qw): x(qx),y(qy),z(qz),w(qw){}
 	// creates the quaternion with the given quaternion
 	inline Quaternion(const Quaternion& q): x(q.x), y(q.y), z(q.z), w(q.w) {};
 

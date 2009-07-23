@@ -1243,7 +1243,7 @@ void FColladaModelLoader::buildSceneMatrix(FCDSceneNode* node_origin)
 	
 						for(int j = 0; j < animationKeyCount; j++)
 						{
-							animationsBoneFrameTime[index][j] = (int)((animated->GetCurves().at(0)[0]->GetKey(j)->input * 30) + 0.5);	
+							animationsBoneFrameTime[index][j] = (int)((animated->GetCurves().at(0)[0]->GetKey(j)->input * 15 * 10) + 0.5);	
 							float* tempAnimationMatrixFloat = new float[(int)animated->GetValueCount()];						
 							for(int p = 0; p < (int)animated->GetValueCount(); p++)
 							{
