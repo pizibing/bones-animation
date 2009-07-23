@@ -54,6 +54,11 @@ void ChSkinInstance::calSkinInstance(ChSkeletonInstance* skeletonInstance, ChSki
 		// calculate current position and normal
 		float position[3];
 		float normal[3];
+		// initialize position and normal to 0
+		for(int j = 0; j < 3; j++){
+			position[j] = 0;
+			normal[j] = 0;
+		}
 		// get pair
 		VBpair* pairs = vertex->getPairs();
 		int pairNum = vertex->getPairNum();
