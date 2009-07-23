@@ -125,10 +125,6 @@ void ChBone::calculateAbsoluteTransform(){
 		m_absoluteTranslation = m_translation * m_parentbone->m_absoluteRotation
 									+ m_parentbone->m_absoluteTranslation;
 		m_absoluteRotation = m_rotation * m_parentbone->m_absoluteRotation;
-		// calculate child bones
-		for(int i=0;i<m_child_num;i++){
-			m_childbones[i]->calculateAbsoluteTransform();
-		}
 	}
 	else {
 		// this is a root bone
@@ -139,6 +135,11 @@ void ChBone::calculateAbsoluteTransform(){
 	Matrix m;
 	m.set(m_absoluteRotation,m_absoluteTranslation);
 	m_bindPoseInverse = m.getInverseMatrix();
+
+	// calculate child bones
+	for(int i=0;i<m_child_num;i++){
+		m_childbones[i]->calculateAbsoluteTransform();
+	}
 }
 
 // initialize this bone with child_num child bones

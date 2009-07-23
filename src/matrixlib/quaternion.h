@@ -22,7 +22,7 @@ public:
 	// constructors/destructor
 public:
 	// creates a empty quaternion
-	inline Quaternion(){}
+	inline Quaternion():x(0.0f),y(0.0f),z(0.0f),w(1.0f){}
 	// creates the quaternion with the given component values
 	inline Quaternion(float qx, float qy, float qz, float qw): x(qx),y(qy),z(qz),w(qw){}
 	// creates the quaternion with the given quaternion

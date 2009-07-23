@@ -15,12 +15,19 @@ ChSkeletonInstance::ChSkeletonInstance(ChSkeleton* skeleton)
 	assert(skeleton);
 	m_skeleton = skeleton;
 	bones = new ChBoneInstance*[skeleton->getBoneNum()];
+	ChBone * chbone;
 	for(int i=0;i<skeleton->getBoneNum();i++){
 		bones[i] = new ChBoneInstance(i);
+		chbone =  m_skeleton->getBone(bones[i]->getId());
 		// set inverse matrix
-		bones[i]->setInverse(m_skeleton->getBone(bones[i]->getId())->getBindPoseInverse());
+		bones[i]->setInverse(chbone->getBindPoseInverse());
+		// set static transform from bone
+		bones[i]->setRotation(chbone->getRotation());
+		Vector3D v = chbone->getTranslation();
+		bones[i]->setTranslation(chbone->getTranslation());
 	}
 	root = bones[skeleton->getRootBone()->getId()];
+	calculateAbsoluteTransform(root->getId());
 }
 
 ChSkeletonInstance::~ChSkeletonInstance(void)
@@ -49,7 +56,7 @@ ChBoneInstance* ChSkeletonInstance::getRoot(){
 // current play time in animation
 Matrix ChSkeletonInstance::calSkeletonInstance(ChAnimationManager * animanager, int animationtime, const char* animation){
 	// set root bone's matrix to identity matrix
-	bones[0]->setMatrix(Matrix());
+	root->setMatrix(Matrix());
 	// for all bones except root bone, set matrix to relative matrix this animation time
 	for(int i=1;i<m_skeleton->getBoneNum();i++){
 		//bones[i]->setMatrix(animanager->blendAnimationBone(animationtime,animation,m_skeleton->getBone(i)->getName()));
@@ -83,7 +90,7 @@ Matrix ChSkeletonInstance::calSkeletonInstance(ChAnimationManager * animanager, 
 
 	for(int i=1;i<m_skeleton->getBoneNum();i++){
 		// set root bone's matrix to identity matrix
-		bones[0]->setMatrix(Matrix());
+		root->setMatrix(Matrix());
 		// for all bones except root bone, set matrix to relative matrix this animation time
 		
 		//Matrix m1 = animanager->blendAnimationBone(animationtime1,animation1,m_skeleton->getBone(i)->getName());
@@ -146,23 +153,25 @@ const Vector3D & ChSkeletonInstance::getBoneInstancePosition(int id) const{
 void ChSkeletonInstance::calculateAbsoluteTransform(int boneId){
 	ChBone * bone = m_skeleton->getBone(boneId);
 	ChBone * parent = bone->getParentBone();
-	// add bone transform to bone instance
-	bones[boneId]->setRotation(bones[boneId]->getRotation() * bone->getRotation());
-	bones[boneId]->setTranslation( bones[boneId]->getTranslation() + bone->getTranslation());
+	// calculate transform in world space for bone instance with boneId
 	if(parent){
+		// this bone's absolute transform = this bone's relative transform * parent bone's absolute transform
 		//bones[boneId]->setMatrix(bones[boneId]->getMatrix()*bones[parent->getId()]->getMatrix());
-		bones[boneId]->setAbsoluteRotation(bones[boneId]->getRotation() * bones[parent->getId()]->getRotation());
+
+		// this bone's absolute rotation = this bone's relative rotation * parent bone's absolute rotation
+		bones[boneId]->setAbsoluteRotation(bones[boneId]->getRotation() * bones[parent->getId()]->getAbsoluteRotation());
+		// this bone's absolute translation = this bone's relative translation * parent bone's absolute rotation + parent bone's translation 
 		bones[boneId]->setAbsoluteTranslation( bones[boneId]->getTranslation() * bones[parent->getId()]->getAbsoluteRotation() 
 									+ bones[parent->getId()]->getAbsoluteTranslation() );
-		ChBone ** childbones = bone->getAllChildBones();
-		for(int i=0;i<bone->getChildBoneNum();i++){
-			calculateAbsoluteTransform(childbones[i]->getId());
-		}
 	}
 	else {	
-		// this is a root bone
+		// this is a root bone, absolute transform = relative transform
 		bones[boneId]->setAbsoluteRotation(bones[boneId]->getRotation());
 		bones[boneId]->setAbsoluteTranslation(bones[boneId]->getTranslation());
+	}
+	ChBone ** childbones = bone->getAllChildBones();
+	for(int i=0;i<bone->getChildBoneNum();i++){
+		calculateAbsoluteTransform(childbones[i]->getId());
 	}
 }
 
