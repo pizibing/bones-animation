@@ -94,13 +94,14 @@ bool ChAnimationManager::init(int animation_num){
 // @param bone the name for the blending bone
 // @return the rotate transform for the bone
 Quaternion ChAnimationManager::blendAnimationBoneRotation(int animatetime,const std::string &animation,const std::string &bone){
-	unsigned int animationId = m_animationMap[animation];
-	int boneId = m_skeleton->getBoneId(bone);
-	if(animationId>=0&&animationId<m_animations.size()){
+	std::map<std::string,int>::iterator i = m_animationMap.find(animation);
+	if(i!=m_animationMap.end()){
+		unsigned int animationId = i->second;
+		int boneId = m_skeleton->getBoneId(bone);
 		ChAnimation * animation = m_animations[animationId];
 		return animation->blendBoneRotation(animatetime,boneId);
 	}
-	return Quaternion();
+		return Quaternion();
 }
 
 // calculate the translate transform for the bone with the animation
@@ -110,9 +111,10 @@ Quaternion ChAnimationManager::blendAnimationBoneRotation(int animatetime,const 
 // @param bone the name for the blending bone
 // @return the translate transform for the bone
 Vector3D ChAnimationManager::blendAnimationBoneTranslation(int animatetime,const std::string &animation,const std::string &bone){
-	unsigned int animationId = m_animationMap[animation];
-	int boneId = m_skeleton->getBoneId(bone);
-	if(animationId<m_animations.size()){
+	std::map<std::string,int>::iterator i = m_animationMap.find(animation);
+	if(i!=m_animationMap.end()){
+		unsigned int animationId = i->second;
+		int boneId = m_skeleton->getBoneId(bone);
 		ChAnimation * animation = m_animations[animationId];
 		return animation->blendBoneTranslation(animatetime,boneId);
 	}

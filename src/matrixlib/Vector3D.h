@@ -3,11 +3,9 @@
 // Vector3d.h: interface for the Vector3D class. 
 // 
 //////////////////////////////////////////////////////////////////////////////// 
-// 版权所有(2002) 
-// Copyright(2002) 
  
  
-//三维自由向量 
+//Vector3D
  
 #ifndef _Vector3D_H 
 #define _Vector3D_H 
@@ -26,85 +24,82 @@ public:
 	float x,y,z; 
  
 public: 
-	//设置与获取函数 
+	//set and get 
 	void Set(float x,float y,float z); 
 	VECTOR3D Get() const; 
  
 public: 
-	//运算符重载(=) 
+	//reload (=) 
 	inline Vector3D operator = (const Vector3D& vector); 
 	inline Vector3D operator = (const VECTOR3D& vector); 
 	 
-	//运算符重载(+),返回另一个Vector3D 
+	//reload (+)
 	inline Vector3D operator + (const Vector3D& vector); 
 	inline Vector3D operator + (const VECTOR3D& vector);		//交换律不成立(结构没有重载 "+") 
  
-	//运算符重载(+=) 
+	//reload (+=) 
 	inline Vector3D operator += (const Vector3D& vector); 
 	inline Vector3D operator += (const VECTOR3D& vector);		 
  
-	//运算符重载(-),参数为减数,返回另一个Vector3D 
+	//reload(-) 
 	inline Vector3D operator - (const Vector3D& vector); 
 	inline Vector3D operator - (const VECTOR3D& vector);		 
 	 
-	//运算符重载(-),参数为减数 
+	//reload(-)
 	inline Vector3D operator -= (const Vector3D& vector); 
 	inline Vector3D operator -= (const VECTOR3D& vector);		 
  
-	//运算符重载(*),参数为乘数,返回另一个Vector3D 
-	//向量叉积 
+	//reload(*)
 	inline Vector3D operator * (const Vector3D& vector); 
 	inline Vector3D operator * (const VECTOR3D& vector);		 
-	//标量与向量积 
+	//scalar*vector
 	inline Vector3D operator * (float fs); 
  
-	//运算符重载(*),参数为乘数,返回另一个Vector3D 
-	//向量叉积 
+	//reload(*)
 	inline Vector3D operator *= (const Vector3D& vector); 
 	inline Vector3D operator *= (const VECTOR3D& vector);		 
-	//标量与向量积 
+	//scalar*vector
 	inline Vector3D operator *= (float fs); 
  
-	//对于"/"运算符,没有必要重载 
  
 public: 
-	//向量点积 
+	//vector dot float
 	inline float Dot(const Vector3D& vector); 
 	inline float Dot(const VECTOR3D& vector); 
 	inline float Dot(float x,float y, float z); 
  
-	//向量的模 
+	//module of vector
 	inline float Mag(); 
 	inline float MagSquared(); 
  
-	//向量矢径端点之间的距离 
+	//the distance from the begining to the end of the vector
 	inline float Dist(const Vector3D& vector); 
 	inline float Dist(const VECTOR3D& vector); 
 	inline float Dist(float x,float y,float z); 
  
-	//向量单位化 
+	//unit the vector
 	inline Vector3D Unit(); 
 	inline void Unitize(); 
 	 
 public: 
  
-	//将this向量缩放 
+	//scale the vector
 	void Scale(Vector3D vector); 
 	void Scale(VECTOR3D vector); 
 	void Scale(float x, float y, float z); 
  
-	//将this向量绕三轴旋转,fTheta为角度单位 
+	//rotate with x axis
 	void RotateX(float fTheta); 
 	void RotateY(float fTheta); 
 	void RotateZ(float fTheta); 
  
-	//将this向量绕任意轴旋转,fTheta为角度单位 
+	//rotate with any axis 
 	void Rotate(float fTheta, Vector3D axis); 
 	void Rotate(float fTheta, VECTOR3D axis); 
-	//(x,y,z)为旋转轴向量 
+	//rotate with (x,y,z)
 	void Rotate(float fTheta, float x, float y, float z); 
  
-	//计算小面法线 
+	//get the normal 
 	VECTOR3D Noraml(const VERTEX3D& v1, const VERTEX3D& v2, const VERTEX3D& v3); 
 	VECTOR3D Noraml(const HOMOCOORD& v1, const HOMOCOORD& v2, const HOMOCOORD& v3); 
  
@@ -113,12 +108,11 @@ public:
  
 ////////////////////////////////////////////////////////////////////////////////////////////// 
 // 
-//					  运算符重载   
+//					  reload  
 // 
 ////////////////////////////////////////////////////////////////////////////////////////////// 
  
-//运算符重载(=) 
-//参数为Vector3D对象 
+//reload (=)
 inline Vector3D Vector3D::operator = (const Vector3D& vector) 
 { 
 	x = vector.x; 
@@ -127,8 +121,7 @@ inline Vector3D Vector3D::operator = (const Vector3D& vector)
 	return *this; 
 } 
  
-//运算符重载(=) 
-//参数为VECTOR3D结构 
+//reload(=)  
 inline Vector3D Vector3D::operator = (const VECTOR3D& vector) 
 { 
 	x = vector.x; 
@@ -137,8 +130,7 @@ inline Vector3D Vector3D::operator = (const VECTOR3D& vector)
 	return *this; 
 } 
  
-//运算符重载(+) 
-//参数为Vector3D对象,返回另一个Vector3D对象 
+//reload(+) 
 inline Vector3D Vector3D::operator + (const Vector3D& vector) 
 { 
 	Vector3D v; 
@@ -148,8 +140,7 @@ inline Vector3D Vector3D::operator + (const Vector3D& vector)
 	return v; 
 } 
 
-//运算符重载(+) 
-//参数为Vector3D对象,返回另一个Vector3D对象 
+//reload(+) 
 inline Vector3D operator + (const Vector3D& vector1, const Vector3D& vector2) 
 { 
 	Vector3D v; 
@@ -160,8 +151,7 @@ inline Vector3D operator + (const Vector3D& vector1, const Vector3D& vector2)
 } 
 
  
-//运算符重载(+) 
-//参数为VECTOR3D结构,返回另一个Vector3D对象 
+//reload(+)  
 inline Vector3D Vector3D::operator + (const VECTOR3D& vector) 
 { 
 	Vector3D v; 
@@ -172,8 +162,7 @@ inline Vector3D Vector3D::operator + (const VECTOR3D& vector)
 } 
  
  
-//运算符重载(+=) 
-//参数为Vector3D对象 
+//reload(+=) 
 inline Vector3D Vector3D::operator += (const Vector3D& vector) 
 { 
 	x += vector.x; 
@@ -182,8 +171,7 @@ inline Vector3D Vector3D::operator += (const Vector3D& vector)
 	return *this; 
 } 
  
-//运算符重载(+=) 
-//参数为VECTOR3D结构 
+//reload(+=) 
 inline Vector3D Vector3D::operator += (const VECTOR3D& vector) 
 { 
 	x += vector.x; 
@@ -192,8 +180,7 @@ inline Vector3D Vector3D::operator += (const VECTOR3D& vector)
 	return *this; 
 } 
  
-//运算符重载(-) 
-//参数为Vector3D对象,为减数,返回另一个Vector3D对象 
+//reload(-) 
 inline Vector3D Vector3D::operator - (const Vector3D& vector) 
 { 
 	Vector3D v; 
@@ -203,8 +190,7 @@ inline Vector3D Vector3D::operator - (const Vector3D& vector)
 	return v; 
 } 
  
-//运算符重载(-) 
-//参数为VECTOR3D结构,为减数,返回另一个Vector3D对象 
+//reload(-) 
 inline Vector3D Vector3D::operator - (const VECTOR3D& vector) 
 { 
 	Vector3D v; 
@@ -214,8 +200,7 @@ inline Vector3D Vector3D::operator - (const VECTOR3D& vector)
 	return v; 
 } 
  
-//运算符重载(-=) 
-//参数为Vector3D对象,为减数 
+//reload(-=) 
 inline Vector3D Vector3D::operator -= (const Vector3D& vector) 
 { 
 	x -= vector.x; 
@@ -224,8 +209,7 @@ inline Vector3D Vector3D::operator -= (const Vector3D& vector)
 	return *this; 
 } 
  
-//运算符重载(-=) 
-//参数为VECTOR3D结构,为减数 
+//reload(-=) 
 inline Vector3D Vector3D::operator -= (const VECTOR3D& vector) 
 { 
 	x -= vector.x; 
@@ -234,8 +218,7 @@ inline Vector3D Vector3D::operator -= (const VECTOR3D& vector)
 	return *this; 
 } 
  
-//运算符重载(*),作向量叉积 
-//参数为Vector3D对象,为乘数,返回另一个Vector3D对象 
+//reload(*)
 inline Vector3D Vector3D::operator * (const Vector3D& vector) 
 { 
 	Vector3D v; 
@@ -245,8 +228,7 @@ inline Vector3D Vector3D::operator * (const Vector3D& vector)
 	return v; 
 } 
  
-//运算符重载(*),作向量叉积 
-//参数为VECTOR3D结构,为乘数,返回另一个Vector3D对象 
+//reload(*)
 inline Vector3D Vector3D::operator * (const VECTOR3D& vector) 
 { 
 	Vector3D v; 
@@ -256,8 +238,7 @@ inline Vector3D Vector3D::operator * (const VECTOR3D& vector)
 	return v; 
 } 
  
-//运算符重载(*),标量与向量之积 
-//参数为浮点标量,返回另一个Vector3D对象 
+//reload(*)
 inline Vector3D Vector3D::operator * (float fs) 
 { 
 	Vector3D v; 
@@ -267,8 +248,7 @@ inline Vector3D Vector3D::operator * (float fs)
 	return v; 
 } 
 
-//运算符重载(*),标量与向量之积 
-//参数为浮点标量,返回另一个Vector3D对象 
+//reload(*)
 inline Vector3D operator * (const Vector3D & vector,float fs) 
 { 
 	Vector3D v; 
@@ -278,8 +258,7 @@ inline Vector3D operator * (const Vector3D & vector,float fs)
 	return v; 
 } 
  
-//运算符重载(*=),作向量叉积 
-//参数为Vector3D对象,为乘数, 
+//reload(*=)
 inline Vector3D Vector3D::operator *= (const Vector3D& vector) 
 { 
 	float xx = (y * vector.z - z * vector.y); 
@@ -291,8 +270,7 @@ inline Vector3D Vector3D::operator *= (const Vector3D& vector)
 	return *this; 
 } 
  
-//运算符重载(*=),作向量叉积 
-//参数为VECTOR3D结构,为乘数 
+//reload(*=)
 inline Vector3D Vector3D::operator *= (const VECTOR3D& vector) 
 { 
 	float xx = (y * vector.z - z * vector.y); 
@@ -304,8 +282,7 @@ inline Vector3D Vector3D::operator *= (const VECTOR3D& vector)
 	return *this; 
 } 
  
-//运算符重载(*),标量与向量之积 
-//参数为浮点标量 
+//reload(*)
 inline Vector3D Vector3D::operator *= (float fs) 
 { 
 	x *= fs; 
@@ -316,60 +293,59 @@ inline Vector3D Vector3D::operator *= (float fs)
  
 ////////////////////////////////////////////////////////////////////////////////////////////// 
 // 
-//					  其它基本运算   
+//					  some basic operation  
 // 
 ////////////////////////////////////////////////////////////////////////////////////////////// 
  
-//向量内积 
+//vector dot vecotr
 inline float Vector3D::Dot(const Vector3D& vector) 
 { 
 	return (x * vector.x + y * vector.y + z * vector.z); 
 } 
  
-//向量内积 
+//vector dot vector
 inline float Vector3D::Dot(const VECTOR3D& vector) 
 { 
 	return (x * vector.x + y * vector.y + z * vector.z); 
 } 
  
-//向量内积 
+//vector dot vector
 inline float Vector3D::Dot(float x,float y, float z) 
 { 
 	return (this->x * x + this->y * y + this->z * z); 
 } 
  
-//向量的模 
+//the module of the vector 
 inline float Vector3D::Mag() 
 { 
 	return (float)(sqrt(x * x + y * y + z * z)); 
 } 
  
-//向量模的平方 
+//the squared module 
 inline float Vector3D::MagSquared() 
 { 
 	return (x * x + y * y + z * z); 
 } 
  
-//两向量矢量端点之间的距离 
+//the distance from the begining to the end of the vector
 inline float Vector3D::Dist(const Vector3D& vector) 
 { 
 	return (*this - vector).Mag(); 
 } 
  
-//两向量矢量端点之间的距离 
+//the distance of two vectors
 inline float Vector3D::Dist(const VECTOR3D& vector) 
 { 
 	return (*this - vector).Mag(); 
 } 
  
-//两向量矢量端点之间的距离 
+//the distance of two vectors 
 inline float Vector3D::Dist(float x,float y,float z) 
 { 
 	return (float)sqrt((this->x - x) * (this->x - x) + (this->y - y) * (this->y - y) + (this->z - z) * (this->z - z));  
 } 
  
-//向量单位化 
-//向量单位化,返回一个单位向量 
+//unit the vector
 inline Vector3D Vector3D::Unit() 
 { 
 	Vector3D vector; 
@@ -381,7 +357,7 @@ inline Vector3D Vector3D::Unit()
 	return vector; 
 } 
  
-//自身单位化 
+//unitize 
 inline void Vector3D::Unitize() 
 { 
 	float fMag = (float)sqrt(x * x + y * y + z * z); 

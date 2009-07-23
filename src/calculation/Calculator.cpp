@@ -19,7 +19,7 @@ const float SLOW_DOWN_CHANGE_DIRECTION = 0.01;
 const float SPEED_UP = 0.01;
 
 // define the animation name of character's idle, walk and run
-const char* CHARACTER_IDLE = "";
+const char* CHARACTER_IDLE = "walk_niki";
 const char* CHARACTER_WALK = "";
 const char* CHARACTER_RUN = "";
 

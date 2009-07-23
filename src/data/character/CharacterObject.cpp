@@ -13,8 +13,16 @@
 #include "../data/character/ChAnimationManager.h"
 #include "../data/character/ChSkeletonInstance.h"
 #include "../data/character/ChSkinInstance.h"
+#include "../managers/ObjectManager.h"
 
 CharacterObject::CharacterObject(void){
+	// type is OBJECT_TYPE_STATIC
+	type = OBJECT_TYPE_CHARACTER;
+
+	// generate id
+	ObjectManager* om = ObjectManager::getInstance();
+	id = om->generateID();
+
 	meshSize = 0;
 	// init matrix to identity matrix
 	chMatrixInstance = Matrix();
@@ -28,6 +36,8 @@ CharacterObject::CharacterObject(void){
 	skeleton = NULL;
 	skin = NULL;
 	animations = NULL;
+	// init vbomesh
+	vbomeshes = 0;
 }
 
 CharacterObject::~CharacterObject(void){
