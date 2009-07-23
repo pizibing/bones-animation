@@ -55,8 +55,7 @@ void Calculator::moveCharacter(float angle){
 	static int frameControl = 0;
 
 	// get the character
-	CharacterObject* character = 
-		(CharacterObject*)objectManager->getVBOObject(OBJECT_TYPE_CHARACTER,0);
+	CharacterObject* character = (CharacterObject*)(*characters)[0];
 	// get direction of the character
 	float direction = character->getDirection();
 
