@@ -39,12 +39,15 @@ ChTrack::~ChTrack(void){
 // @param animate_time the frame time
 // @return the relative rotate transform for the bone
 const Quaternion & ChTrack::getRotation(int animate_time){
+	if(m_keyframe_num ==0) return Quaternion();
 	int i = 0;
 	// calculate the actual animation time
 	animate_time = animate_time % getAnimationTime();
 	
 	while(animate_time>m_keyframes[i]->getTime()&&i<m_keyframe_num)i++;
-	ChKeyFrame *keyFrame1 = m_keyframes[i-1];
+	ChKeyFrame *keyFrame1;
+	if(i>0) keyFrame1= m_keyframes[i-1];
+	else keyFrame1= m_keyframes[m_keyframe_num-1];
 	ChKeyFrame *keyFrame2 = m_keyframes[i];
 	float factor = (float)(animate_time - keyFrame1->getTime())/float(keyFrame2->getTime()-keyFrame1->getTime());
 	m_currentRotation = Quaternion::slerp(keyFrame1->getRotation(),keyFrame2->getRotation(),factor);
@@ -54,12 +57,15 @@ const Quaternion & ChTrack::getRotation(int animate_time){
 // @param animate_time the frame time
 // @return the relative translate transform for the bone
 const Vector3D & ChTrack::getTranslation(int animate_time){
+	if(m_keyframe_num ==0) return Vector3D();
 	int i = 0;
 	// calculate the actual animation time
 	animate_time = animate_time % getAnimationTime();
 
 	while(animate_time>m_keyframes[i]->getTime()&&i<m_keyframe_num)i++;
-	ChKeyFrame *keyFrame1 = m_keyframes[i-1];
+	ChKeyFrame *keyFrame1;
+	if(i>0) keyFrame1= m_keyframes[i-1];
+	else keyFrame1= m_keyframes[m_keyframe_num-1];
 	ChKeyFrame *keyFrame2 = m_keyframes[i];
 	float factor = (float)(animate_time - keyFrame1->getTime())/float(keyFrame2->getTime()-keyFrame1->getTime());
 	m_currentTranslation = keyFrame1->getTranslation()*(1-factor)+keyFrame2->getTranslation()*factor;

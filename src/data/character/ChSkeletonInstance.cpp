@@ -146,8 +146,9 @@ const Vector3D & ChSkeletonInstance::getBoneInstancePosition(int id) const{
 void ChSkeletonInstance::calculateAbsoluteTransform(int boneId){
 	ChBone * bone = m_skeleton->getBone(boneId);
 	ChBone * parent = bone->getParentBone();
-	bones[boneId]->setRotation(bones[boneId]->getRotation() * bones[parent->getId()]->getRotation());
-	bones[boneId]->setTranslation( bones[boneId]->getTranslation() + bones[parent->getId()]->getTranslation());
+	// add bone transform to bone instance
+	bones[boneId]->setRotation(bones[boneId]->getRotation() * bone->getRotation());
+	bones[boneId]->setTranslation( bones[boneId]->getTranslation() + bone->getTranslation());
 	if(parent){
 		//bones[boneId]->setMatrix(bones[boneId]->getMatrix()*bones[parent->getId()]->getMatrix());
 		bones[boneId]->setAbsoluteRotation(bones[boneId]->getRotation() * bones[parent->getId()]->getRotation());

@@ -60,7 +60,7 @@ void Command::drawScene(){
 //load all default models
 bool Command::loadModel(){
 	//modelLoader->loadModel(0,"cube.dae");
-	return modelLoader->loadModel(STATIC_LOADER_KIND,"resource/niki.dae");
+	return modelLoader->loadModel(CHARACTER_LOADER_KIND,"resource/walk_niki.dae");
 }
 
 // load a model with the given path
