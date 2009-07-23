@@ -22,7 +22,7 @@ public:
 public:
 	inline Matrix()	{
 		for(int i=0;i<16;i++)m[i]=0.0f;
-		for(int i=0;i<16;i+=4)m[i]=1.0f;
+		for(int i=0;i<16;i+=5)m[i]=1.0f;
 	}
 
 	inline Matrix(const Matrix & matrix)	{
