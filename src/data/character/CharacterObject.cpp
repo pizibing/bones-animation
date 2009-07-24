@@ -325,3 +325,9 @@ void CharacterObject::rotateCharacter(float angle){
 float CharacterObject::getDirection(){
 	return direction;
 }
+
+// get the position of that character
+float* CharacterObject::getPosition(){
+	// matrix instance's 12-th, 13-th, 14-th is the position
+	return chMatrixInstance.get() + 12;
+}
