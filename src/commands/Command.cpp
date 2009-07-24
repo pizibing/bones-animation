@@ -2,6 +2,9 @@
 #include "../data/VBOMesh.h"
 #include "../data/VBOObject.h"
 #include "../data/LineObject.h"
+#include "../matrixlib/matrix.h"
+#include "../data/MoveSelfObject.h"
+#include "../data/character/CharacterObject.h"
 #include "../view/Display.h"
 #include "../view/ConcreteDisplay.h"
 #include "../managers/CameraManager.h"
@@ -63,7 +66,7 @@ void Command::drawLineCharacter(){
 	// camera
 	cameraManager->look();
 	// get character
-	LineObject* character = (LineObject*)displayManager->getDisplayedCharacter(0);
+	CharacterObject* character = (CharacterObject*)displayManager->getDisplayedCharacter(0);
 	// get lines of that character
 	int num = 0;
 	SimpleLine* lines = character->representInLine(&num);

@@ -29,7 +29,7 @@ class ChSkin;
 // 5. initVBOs();
 // 6. for each VBO{ initVBO(); setVBOTexture(); setVBOMaterail();(the last two
 //                  function is optional)}
-class CharacterObject : public VBOObject, LineObject, MoveSelfObject
+class CharacterObject : public VBOObject, public LineObject, MoveSelfObject
 {
 public:
 	// constructor
