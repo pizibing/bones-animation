@@ -1,6 +1,7 @@
 #include "Command.h"
 #include "../data/VBOMesh.h"
 #include "../data/VBOObject.h"
+#include "../data/LineObject.h"
 #include "../view/Display.h"
 #include "../view/ConcreteDisplay.h"
 #include "../managers/CameraManager.h"
@@ -55,6 +56,19 @@ void Command::drawScene(){
 	int num = 0;
 	VBOMesh* vbomesh = vboobject->representInVBOMesh(&num);
 	display->display(false, vbomesh, num); */
+}
+
+// draw the character object of this scene in skeleton lines
+void Command::drawLineCharacter(){
+	// camera
+	cameraManager->look();
+	// get character
+	LineObject* character = (LineObject*)displayManager->getDisplayedCharacter(0);
+	// get lines of that character
+	int num = 0;
+	SimpleLine* lines = character->representInLine(&num);
+	// display
+	display->display(lines,num);
 }
 
 //load all default models
