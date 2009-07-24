@@ -2,6 +2,7 @@
 #include "../matrixlib/quaternion.h"
 #include "../matrixlib/matrix.h"
 #include "ChTrack.h"
+#include "ChBone.h"
 #include "ChSkeleton.h"
 #include "ChAnimation.h"
 #include "ChAnimationManager.h"
@@ -184,12 +185,14 @@ Quaternion ChAnimationManager::getCurrentRootRotation(int animatetime, const cha
 	// check whether animatetime can be exactly divided by total animation time
 	ChAnimation * chanimation = m_animations[animationId];
 	int remain = animatetime % chanimation->getAnimationTime();
+	// get root bone's id
+	int rootId = m_skeleton->getRootBone()->getId();
 	// if remain is 0, then animatetime is the last frame's time
 	if(remain == 0)
-		return chanimation->getTrack(0)->getLastRotation();
+		return chanimation->getTrack(rootId)->getLastRotation();
 	// else blend bone as usual
 	else
-		return chanimation->blendBoneRotation(animatetime,0);
+		return chanimation->blendBoneRotation(animatetime,rootId);
 }
 
 // return the  root bone's rotate transform at animatetime
@@ -203,12 +206,14 @@ Vector3D ChAnimationManager::getCurrentRootTranslation(int animatetime, const ch
 	// check whether animatetime can be exactly divided by total animation time
 	ChAnimation * chanimation = m_animations[animationId];
 	int remain = animatetime % chanimation->getAnimationTime();
+	// get root bone's id
+	int rootId = m_skeleton->getRootBone()->getId();
 	// if remain is 0, then animatetime is the last frame's time
 	if(remain == 0)
-		return chanimation->getTrack(0)->getLastTranslation();
+		return chanimation->getTrack(rootId)->getLastTranslation();
 	// else blend bone as usual
 	else
-		return chanimation->blendBoneTranslation(animatetime,0);
+		return chanimation->blendBoneTranslation(animatetime,rootId);
 }
 
 // return the root bone's transform matrix one frame before animatetime
