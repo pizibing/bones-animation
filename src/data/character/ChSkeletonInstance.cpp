@@ -28,6 +28,9 @@ ChSkeletonInstance::ChSkeletonInstance(ChSkeleton* skeleton)
 	}
 	root = bones[skeleton->getRootBone()->getId()];
 	calculateAbsoluteTransform(root->getId());
+
+	// init boneLine array to NULL
+	boneLines = NULL;
 }
 
 ChSkeletonInstance::~ChSkeletonInstance(void)
@@ -177,11 +180,12 @@ void ChSkeletonInstance::calculateAbsoluteTransform(int boneId){
 
 // get the lines for the skeleton
 // modify num to get the line number
-SimpleLine * ChSkeletonInstance::getBoneLines(int *num){
+SimpleLine * ChSkeletonInstance::getBoneLines(int *num, const Matrix & chMatrixInstance){
 	if(!boneLines){
 		// initial bone line array
 		// root bone has no line
 		boneLines = new SimpleLine[m_skeleton->getBoneNum()-1];
+		
 	}
 	int lineNum = 0;
 	ChBoneInstance * bone;
@@ -191,15 +195,17 @@ SimpleLine * ChSkeletonInstance::getBoneLines(int *num){
 	// generate lines for all bone instance except root bone
 	for(int i=0;i<m_skeleton->getBoneNum();i++){
 		bone = bones[i];
-		// get b
+		// get parent bone
 		parentId = m_skeleton->getBone(i)->getParentId();
 		if(parentId!=-1){
 			parent = bones[parentId];
 			// start point
 			v = parent->getAbsoluteTranslation();
+			chMatrixInstance.TransformVector(v);
 			boneLines[lineNum].setDot1(v.x,v.y,v.z);
 			// end point
 			v = bone->getAbsoluteTranslation();
+			chMatrixInstance.TransformVector(v);
 			boneLines[lineNum].setDot2(v.x,v.y,v.z);
 			lineNum++;
 		}

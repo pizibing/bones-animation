@@ -49,7 +49,7 @@ int arrowState = 0;
 int arrowLast = 0;
 
 /** These are the live variables passed into GLUI ***/
-
+bool displayInLineDown = false;
 
 /** Pointers to the windows and some of the controls we'll create **/
 int main_window;//id of main window
@@ -64,15 +64,14 @@ GLUI *control; // control panel that contains all controller
 // all control's possible values are defined in para.h
 void control_cb( int control ){
 	switch(control){
-		//// choose a file to open
-		//case OPEN_FILE:
-		//	command->loadModel(fb->get_file());
-		//	break;
-		//// push down the choose model button
-		//case OPEN_FILE_DOWN:
-		//	GLUI* openfile = GLUI_Master.create_glui( "open file..",0,950,100);
-		//	fb = new GLUI_FileBrowser(openfile,"", false,OPEN_FILE,control_cb);
-		//	break;
+		// push down display in lines button
+		case DISPLAY_IN_LINE_DOWN:
+			displayInLineDown = true;
+			break;
+		// push down display in meshes button
+		case DISPLAY_IN_MESH_DOWN:
+			displayInLineDown = false;
+			break;
 		default:
 			break;
 	}
@@ -93,7 +92,12 @@ void myGlutDisplay( void )
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
 
-	command->drawScene();
+	// display in lines
+	if(displayInLineDown)
+		command->drawLineCharacter();
+	// display in meshes
+	else
+		command->drawScene();
 
 	glutSwapBuffers(); 
 }
@@ -303,9 +307,12 @@ void checkVBO(){
 void createUI(){
 	// create a outer panel, set its position
 	control = GLUI_Master.create_glui( "demo control",0,850,50);
-	//// open file button
-	//GLUI_Button* openFile = 
-	//	control->add_button("choose model",OPEN_FILE_DOWN,control_cb);
+	// display in lines 
+	GLUI_Button* displayLine = 
+		control->add_button("Display In Lines",DISPLAY_IN_LINE_DOWN,control_cb);
+	// display in meshes
+	GLUI_Button* displayMesh = 
+		control->add_button("Display In Meshes",DISPLAY_IN_MESH_DOWN,control_cb);
 }
 
 /**************************************** main() ********************/

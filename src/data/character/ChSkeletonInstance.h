@@ -57,7 +57,7 @@ public:
 
 	// get the lines for the skeleton
 	// modify num to get the line number
-	SimpleLine * getBoneLines(int * num);
+	SimpleLine * getBoneLines(int * num ,const Matrix &chMatrixInstance);
 
 private:
 	// calculate absolute transform for all bone instance 
