@@ -243,6 +243,10 @@ void CharacterObject::setGesture(const char* animation, int time){
 	for(int i = 0; i < meshSize; i++){
 		vbomeshes[i] = *chvbomeshes[i]->getVBOMesh();
 	}
+	//
+	for(int i = 0; i < 16; i++)
+		printf("%f ",change[i]);
+	printf("\n");
 }
 
 // set the current gesture of the character
