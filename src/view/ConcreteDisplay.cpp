@@ -101,15 +101,17 @@ void ConcreteDisplay::display(const SimpleLine* toDisplay, int num){
 	// set light, texture, color
 	glDisable(GL_LIGHTING);
 	glDisable(GL_TEXTURE_2D);
-	glColor3f(1,1,1);
+	glColor3f(0,0.5f,0);
+	// set line width
+	glLineWidth(2);
+	glBegin(GL_LINES);
 	// for each line
 	for(int i = 0; i < num; i++){
 		SimpleLine line = toDisplay[i];
 		// draw line
-		glBegin(GL_LINE);
 		glVertex3fv(line.getDot1());
 		glVertex3fv(line.getDot2());
-		glEnd();
 	}
+	glEnd();
 }
 
