@@ -1,6 +1,7 @@
 #pragma once
 
 #define NO_LIBXML
+#define ROOT_BONE_NAME "rootbone"
 
 // disable deprecated warning 
 #pragma warning( disable : 4996 )
@@ -106,6 +107,8 @@ public:
 
 	int * getSkinVertexIndex(int begin, int end);
 
+	void deleteTempValue();
+
 	std::vector<SimpleLine*> simpleLines;
 
 	// convert FMMatrix44 to Matrix
@@ -121,7 +124,7 @@ private:
 	// pointer to dae file that will be opened using fcollada
 	FCDocument* m_document;
 
-	//numbeer of textures
+	//number of textures
 	int m_num_textures;
 	std::vector<FCDImage*> m_ptrs_textures;
 	std::vector<GLfloat*> m_total_texcoords;
@@ -155,6 +158,18 @@ private:
 	std::string* boneParentName; 
 	std::string** boneChildName; 
 	int* boneChildNum;
+	
+	//root
+	std::string rootBoneName;
+	bool isRootBoneName;
+	Matrix rootBoneMatrix;
+	FCDSceneNode* rootBoneSceneNode;
+	bool isBootBoneSceneNode;
+	int rootBoneChildNum;
+	std::string* rootBoneChildName;
+	int rootAnimationsBoneFrameNum;
+	Matrix* rootAnimationsBoneFrameMatrix;
+	int* rootAnimationsBoneFrameTime;
 
 	std::string filename;
 	int* animationsBoneFrameNum;
