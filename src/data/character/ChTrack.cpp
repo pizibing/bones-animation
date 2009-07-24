@@ -43,10 +43,6 @@ const Quaternion & ChTrack::getRotation(int animate_time){
 		m_currentRotation = m_bone->getRotation();
 		return m_currentRotation;
 	}
-	if(animate_time == 0 ){
-		m_currentRotation = m_keyframes[0]->getRotation();
-		return m_currentRotation;
-	} 
 	// calculate the actual animation time
 	animate_time = animate_time % getAnimationTime();
 	int i = 0;
@@ -66,10 +62,6 @@ const Vector3D & ChTrack::getTranslation(int animate_time){
 	if(m_keyframe_num ==0){
 		 m_currentTranslation = m_bone->getTranslation();
 		 return m_currentTranslation;
-	}
-	if(animate_time == 0 ){
-		m_currentTranslation = m_keyframes[0]->getTranslation();
-		return m_currentTranslation;
 	}
 	// calculate the actual animation time
 	animate_time = animate_time % getAnimationTime();

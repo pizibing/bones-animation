@@ -71,7 +71,7 @@ private:
 	std::string m_name;
 	//int m_frame_time;
 	// total animation time
-	int m_key_frame_num;
+	//int m_key_frame_num;
 	// number of track, the same with skeleton bone number
 	int m_track_num;
 	// skeleton to animate
