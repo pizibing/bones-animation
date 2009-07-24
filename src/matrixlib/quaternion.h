@@ -107,7 +107,7 @@ public:
 
 	/** Get the quaternion that represents the matrix rotation
 	@param mat The matrix whose rotation we will represent */
-	static Quaternion MatrixRotationQuaternion(const Matrix& matrix);
+	static Quaternion MatrixRotationQuaternion(const Matrix& mat);
 
 	/** Returns the slerp of this quaternion to other at factor time
 	@param q1 The first Quaternion 

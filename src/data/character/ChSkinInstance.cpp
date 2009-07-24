@@ -91,7 +91,7 @@ void ChSkinInstance::calSkinInstance(ChSkeletonInstance* skeletonInstance, ChSki
 				float ntemp[3];
 				for(int k = 0; k < 3; k++)
 					ntemp[k] = n[k];
-				mul.transform(ntemp);
+				mul.transformVector(ntemp);
 				// sum normal by factor power
 				for(int k = 0; k < 3; k++)
 					normal[k] += ntemp[k] * pairs[j].power;

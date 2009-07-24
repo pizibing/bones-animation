@@ -89,11 +89,23 @@ public:
 	Matrix getInverseMatrix() const;
 
 	// transform the position by the matrix
+	// (x,y,z) = (x,y,z)* rotation + translation
 	// @param position float array for a vector3d
 	void transform(float *position) const;
+	// see above , use vector3d to represent a position
+	void Matrix::transform(Vector3D & position) const;
 
-	// same as transform
-	Vector3D TransformVector(const Vector3D& v) const;
+	// get vector transformed by the matrix
+	//  (x,y,z) = (x,y,z) * rotation
+	// @param v a vector3d to be transformed
+	// @return a vector transformed by the matrix
+	void transformVector(float * v) const;
+
+	// get vector transformed by the matrix
+	//  (x,y,z) = (x,y,z) * rotation
+	// @param v a vector3d to be transformed
+	// @return a vector transformed by the matrix
+	void transformVector(Vector3D & v) const;
 
 	// rotate the matrix with axis (x,y,z) by angle degree
 	void Rotate(float x, float y, float z, float angle);

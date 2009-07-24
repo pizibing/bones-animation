@@ -107,57 +107,57 @@ void Quaternion::SetToMatrix(Matrix& m) const{
 	yy = y * ys;  yz = y * zs; zz = z * zs;
 
 	m[0] = (float)1.0 - (yy +zz);
-	m[1] = xy - wz; 
-	m[2] = xz + wy; 
+	m[4] = xy - wz; 
+	m[8] = xz + wy; 
 
-	m[4] = xy + wz; 
+	m[1] = xy + wz; 
 	m[5] = (float)1.0 - (xx +zz);
-	m[6] = yz - wx; 
+	m[9] = yz - wx; 
 
-	m[8] = xz - wy; 
-	m[9] = yz + wx; 
+	m[2] = xz - wy; 
+	m[6] = yz + wx; 
 	m[10] = (float)1.0 - (xx + yy);
 }
 
 /** Get the quaternion that represents the matrix rotation
 @param mat The matrix whose rotation we will represent */
-Quaternion Quaternion::MatrixRotationQuaternion(const Matrix& m){
+Quaternion Quaternion::MatrixRotationQuaternion(const Matrix& mat){
 	Quaternion q;
 
 	float tr,s;
 
-	tr = 1.0f + m[0] + m[5] + m[10];
+	tr = 1.0f + mat[0] + mat[5] + mat[10];
 	if (tr > 0.00001f)
 	{
 		s = sqrtf(tr) * 2.0f;
-		q.x = (m[9] - m[6]) / s;
-		q.y = (m[2] - m[8]) / s;
-		q.z = (m[4] - m[1]) / s;
+		q.x = (mat[6] - mat[9]) / s;
+		q.y = (mat[8] - mat[2]) / s;
+		q.z = (mat[1] - mat[4]) / s;
 		q.w = s * 0.25f;
 	}
-	else if (m[0] > m[5])
+	else if (mat[0] > mat[5])
 	{
-		s = sqrtf(1.0f + m[0] - m[5] - m[10]) * 2.0f;
+		s = sqrtf(1.0f + mat[0] - mat[5] - mat[10]) * 2.0f;
 		q.x = 0.25f * s;
-		q.y = (m[4] + m[1]) / s;
-		q.z = (m[2] + m[8]) / s;
-		q.w = (m[9] - m[6]) / s;
+		q.y = (mat[1] + mat[4]) / s;
+		q.z = (mat[8] + mat[2]) / s;
+		q.w = (mat[6] - mat[9]) / s;
 	}
-	else if (m[5] > m[10])
+	else if (mat[5] > mat[10])
 	{
-		s = sqrtf(1.0f + m[5] - m[0] - m[10]) * 2.0f;
-		q.x = (m[4] + m[1]) / s;
+		s = sqrtf(1.0f + mat[5] - mat[0] - mat[10]) * 2.0f;
+		q.x = (mat[1] + mat[4]) / s;
 		q.y = 0.25f * s;
-		q.z = (m[9] + m[6]) / s;
-		q.w = (m[2] - m[8]) / s;
+		q.z = (mat[6] + mat[9]) / s;
+		q.w = (mat[8] - mat[2]) / s;
 	}
 	else
 	{
-		s  = sqrtf(1.0f + m[10] - m[0] - m[5]) * 2.0f;
-		q.x = (m[2] + m[8]) / s;
-		q.y = (m[9] + m[6]) / s;
+		s  = sqrtf(1.0f + mat[10] - mat[0] - mat[5]) * 2.0f;
+		q.x = (mat[8] + mat[2]) / s;
+		q.y = (mat[6] + mat[9]) / s;
 		q.z = 0.25f * s;
-		q.w = (m[4] - m[1]) / s;
+		q.w = (mat[1] - mat[4]) / s;
 	}
 	return q;
 }
