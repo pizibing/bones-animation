@@ -7,9 +7,13 @@ class SimpleLine
 {
 public:
 	// constructor
-	inline SimpleLine(void){}
+	SimpleLine(void){
+		for(int i=0;i<3;i++){
+			dot1[i] = dot2[i]= 0;
+		}
+	}
 	// destructor
-	inline ~SimpleLine(void){}
+	~SimpleLine(void){}
 
 	// set function of dot1
 	void setDot1(const float* dot1);

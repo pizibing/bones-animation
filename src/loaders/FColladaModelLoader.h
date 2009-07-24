@@ -106,7 +106,16 @@ public:
 
 	int * getSkinVertexIndex(int begin, int end);
 
-	std::vector<SimpleLine*> simpleLines;	
+	std::vector<SimpleLine*> simpleLines;
+
+	// convert FMMatrix44 to Matrix
+	inline Matrix convertToMatrix(const FMMatrix44 & fmmatrix){
+		Matrix m;
+		for(int i=0;i<16;i++){
+			m[i]=fmmatrix.m[i/4][i%4];
+		}
+		return m;
+	} 
 
 private:
 	// pointer to dae file that will be opened using fcollada
