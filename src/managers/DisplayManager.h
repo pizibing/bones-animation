@@ -20,6 +20,10 @@ public:
 	// in the ObjectManager
 	std::vector<VBOObject*>* getDisplayedObjectsAll();
 
+	// get displayed character object from ObjectManager
+	// num is the character's id in ObjectManager's character vector
+	VBOObject* getDisplayedCharacter(int num);
+
 private:
 	ObjectManager* objectManager;
 };

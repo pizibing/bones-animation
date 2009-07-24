@@ -31,6 +31,9 @@ public:
 	// scene right now
 	void drawScene();
 
+	// draw the character object of this scene in skeleton lines
+	void drawLineCharacter();
+
 	//load all default models
 	bool loadModel();
 

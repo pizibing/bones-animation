@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "DisplayManager.h"
 #include "../data/VBOMesh.h"
 #include "../data/VBOObject.h"
@@ -28,4 +29,17 @@ std::vector<VBOObject*>* DisplayManager::getDisplayedObjectsAll(){
 	}
 
 	return result;
+}
+
+// get displayed character object from ObjectManager
+// num is the character's id in ObjectManager's character vector
+VBOObject* DisplayManager::getDisplayedCharacter(int num){
+	// get characters
+	std::vector<VBOObject*>* characters =
+		objectManager->getVBOObjects(OBJECT_TYPE_CHARACTER);
+
+	// num should be smaller than characters's size
+	assert(num < characters->size());
+
+	return (*characters)[num];
 }
