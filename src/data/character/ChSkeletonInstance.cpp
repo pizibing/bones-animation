@@ -201,11 +201,11 @@ SimpleLine * ChSkeletonInstance::getBoneLines(int *num, const Matrix & chMatrixI
 			parent = bones[parentId];
 			// start point
 			v = parent->getAbsoluteTranslation();
-			chMatrixInstance.TransformVector(v);
+			chMatrixInstance.transform(v);
 			boneLines[lineNum].setDot1(v.x,v.y,v.z);
 			// end point
 			v = bone->getAbsoluteTranslation();
-			chMatrixInstance.TransformVector(v);
+			chMatrixInstance.transform(v);
 			boneLines[lineNum].setDot2(v.x,v.y,v.z);
 			lineNum++;
 		}
