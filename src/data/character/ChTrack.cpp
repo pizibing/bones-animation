@@ -40,7 +40,7 @@ ChTrack::~ChTrack(void){
 // @return the relative rotate transform for the bone
 const Quaternion & ChTrack::getRotation(int animate_time){
 	if(m_keyframe_num ==0){
-		m_currentRotation = Quaternion();
+		m_currentRotation = m_bone->getRotation();
 		return m_currentRotation;
 	}
 	if(animate_time == 0 ){
@@ -64,7 +64,7 @@ const Quaternion & ChTrack::getRotation(int animate_time){
 // @return the relative translate transform for the bone
 const Vector3D & ChTrack::getTranslation(int animate_time){
 	if(m_keyframe_num ==0){
-		 m_currentTranslation = Vector3D();
+		 m_currentTranslation = m_bone->getTranslation();
 		 return m_currentTranslation;
 	}
 	if(animate_time == 0 ){
