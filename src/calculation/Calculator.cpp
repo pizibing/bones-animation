@@ -49,10 +49,10 @@ void Calculator::moveCharacter(float angle){
 			objectManager->getVBOObjects(OBJECT_TYPE_CHARACTER);
 	if(characters->size() == 0) return;
 
-	// every time the v of character is decreased to 0, frameControl
-	// is set to 0
-	// else frameControl increase by 1 every call to this function
-	static int frameControl = 0;
+	// frame number recorders
+	static int frameControlIdle = 0;
+	static int frameControlWalk = 0;
+	static int frameControlRun = 0;
 
 	// get the character
 	CharacterObject* character = (CharacterObject*)(*characters)[0];
@@ -112,25 +112,51 @@ void Calculator::moveCharacter(float angle){
 	float v = character->getV();
 	// idle
 	if(v == 0){
-		frameControl = 0;
-		character->setGesture(CHARACTER_IDLE,frameControl);
+		// refresh walk frame control
+		frameControlWalk = 0;
+
+		character->setGesture(CHARACTER_IDLE,frameControlIdle);
+		// add frame control
+		frameControlIdle++;
+	}
+	// idle to walk
+	else if(v < 0.5){
+		// calculate power of idle
+		float idlePower = (0.5 - v) * 2;
+		character->setGesture(CHARACTER_IDLE,CHARACTER_WALK,
+			frameControlIdle,frameControlWalk,idlePower);
+		// add frame control
+		frameControlIdle++;
+		frameControlWalk++;
 	}
 	// walk
 	else if(v < 1){
-		character->setGesture(CHARACTER_WALK,frameControl);
+		// refresh idle and run frame control
+		frameControlIdle = 0;
+		frameControlRun = 0;
+
+		character->setGesture(CHARACTER_WALK,frameControlWalk);
+		// add frame control
+		frameControlWalk++;
 	}
 	// walk and run
 	else if(v < 2){
 		// calculate power of run
 		float runPower = v - 1;
 		character->setGesture(CHARACTER_RUN,CHARACTER_WALK,
-			frameControl,frameControl,runPower);
+			frameControlRun,frameControlWalk,runPower);
+		// add frame control
+		frameControlRun++;
+		frameControlWalk++;
 	}
 	// run
 	else if(v <= 3){
-		character->setGesture(CHARACTER_RUN,frameControl);
+		// refresh walk frame control
+		frameControlWalk = 0;
+
+		character->setGesture(CHARACTER_RUN,frameControlRun);
+		// add frame control
+		frameControlRun++;
 	}
 	
-	// add frame control
-	frameControl++;
 }

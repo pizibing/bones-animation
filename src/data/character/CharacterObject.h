@@ -163,8 +163,8 @@ private:
 	// skin instance that may be changed every frame
 	ChSkinInstance* chSkinInstance;
 	/* instance physics */
-	// v is a float between 0 and 2
-	// 0: idle; 0-1: walk; 1-2: walk and run; 2: run;
+	// v is a float between 0 and 3
+	// 0: idle; 0-0.5:idle and walk 0.5-1: walk; 1-2: walk and run; 2-3: run;
 	float v;
 	// direction is an angle in degree between 0 and 360
 	// direction is the angle from +x axis to the direction
