@@ -34,11 +34,13 @@ Quaternion Quaternion::slerp(const Quaternion& other, float factor) const{
 	Quaternion q1 = this->Normalize();
 	Quaternion q2 = other.Normalize();
 
+	if(factor>=1.0f) return q2;
+	if(factor<=0.0f) return q1;
 	float theta, st, sut, sout, interp1, interp2;
 	float dot = q1.x * q2.x + q1.y * q2.y + q1.z * q2.z +
 		q1.w * q2.w;
 
-	if (dot == 1.0f) return q1;
+	if (dot >= 1.0f) return q1;
 
 	// algorithm taken from Shoemake's paper
 	theta = (float) acos(dot);

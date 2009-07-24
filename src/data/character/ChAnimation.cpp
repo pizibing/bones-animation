@@ -8,7 +8,7 @@
 
 // constructor
 ChAnimation::ChAnimation(void)
-: m_tracks(NULL),m_key_frame_num(0)
+: m_tracks(NULL)
 {}
 
 // destructor

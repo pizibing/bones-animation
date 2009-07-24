@@ -1471,11 +1471,7 @@ void FColladaModelLoader::buildSceneMatrix(FCDSceneNode* node_origin)
 		{
 			rootBoneSceneNode = node_origin;
 			FMMatrix44 inverse = node_origin->ToMatrix();
-			Matrix tempMatrix;
-			for(int i=0;i<16;i++){
-				tempMatrix[i]=inverse.m[i%4][i/4];
-			}
-			rootBoneMatrix = tempMatrix;
+			rootBoneMatrix = convertToMatrix(inverse);
 
 			FCDTransform*  trans_origin;
 			for (int i=0; i<(int)node_origin->GetTransformCount(); i++) {
@@ -1504,7 +1500,9 @@ void FColladaModelLoader::buildSceneMatrix(FCDSceneNode* node_origin)
 								tempAnimationMatrixFloat[p] = animated->GetCurves().at(p)[0]->GetKey(j)->output;
 							}
 
-							Matrix tempAnimationMatrix = Matrix(tempAnimationMatrixFloat);
+							FMMatrix44 fmmatrix(tempAnimationMatrixFloat);
+
+							Matrix tempAnimationMatrix = convertToMatrix(fmmatrix);
 							rootAnimationsBoneFrameMatrix[j] = tempAnimationMatrix;
 						}
 
