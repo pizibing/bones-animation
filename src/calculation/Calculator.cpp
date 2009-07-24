@@ -8,6 +8,7 @@
 #include "../data/MoveSelfObject.h"
 #include "../data/character/CharacterObject.h"
 #include "../managers/ObjectManager.h"
+#include "../managers/CameraManager.h"
 
 // the speed of the character to turn around in degree
 const float TURN_AROUND_SPEED = 6;
@@ -43,6 +44,8 @@ Calculator::~Calculator(void)
 // if angle is the same as default character will speed up
 // if angle is different from the character's direction
 // the speed will slow down a little too.
+//
+// camera will follow the character
 void Calculator::moveCharacter(float angle){
 	// if there's no character, return
 	std::vector<VBOObject*>* characters = 
@@ -159,4 +162,7 @@ void Calculator::moveCharacter(float angle){
 		frameControlRun++;
 	}
 	
+	// move camera
+	CameraManager* camera = CameraManager::getInstance();
+	camera->setTarget(character->getPosition());
 }

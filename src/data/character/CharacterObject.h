@@ -143,6 +143,9 @@ public:
 	// get function of direction
 	float getDirection();
 
+	// get the position of that character
+	float* getPosition();
+
 private:
 	/* display */
 	// a pointer to an array that stores all the VBOMeshes of this 
