@@ -45,7 +45,7 @@ FColladaModelLoader::FColladaModelLoader(void){
 	m_num_textures = 0;
 	rootBoneName = ROOT_BONE_NAME;
 	isRootBoneName = true;
-	isBootBoneSceneNode = true;
+	isBootBoneSceneNode = false;
 }
 
 //destructor
@@ -1043,33 +1043,35 @@ void FColladaModelLoader::buildScene(FCDSceneNode* node_origin, int kind)
 	}
 }
 void FColladaModelLoader::initBoneScene(FCDSceneNode* node_origin){
-	if(isBootBoneSceneNode == true)
-	{
-		int boneChildCount = 0;
-		for(int i = 0; i< (int)node_origin->GetChildrenCount(); i++)
+	if(node_origin ->GetJointFlag() == true){
+		printf("%i\n", boneNumber);
+		if(isBootBoneSceneNode == true)
 		{
-			int tempChildIndex= getBoneIndexByName(node_origin->GetChild(i)->GetSubId().c_str());
-			if(tempChildIndex >= 0 && tempChildIndex< boneNumber){
-				if(node_origin->GetChild(i)->GetJointFlag() ==true)
-					boneChildCount++;
-			}
-		}	
-		rootBoneChildNum = boneChildCount;
-		int tempChildNum = rootBoneChildNum;
-		rootBoneChildName = new std::string[tempChildNum];
-		int tempChildCount = 0;
-		for(int i = 0; i< (int)node_origin->GetChildrenCount(); i++){
-			if(node_origin->GetChild(i)->GetJointFlag() ==true){
+			int boneChildCount = 0;
+			for(int i = 0; i< (int)node_origin->GetChildrenCount(); i++)
+			{
 				int tempChildIndex= getBoneIndexByName(node_origin->GetChild(i)->GetSubId().c_str());
 				if(tempChildIndex >= 0 && tempChildIndex< boneNumber){
-					rootBoneChildName[tempChildCount] = boneName[tempChildIndex];
-					tempChildCount++;
+					if(node_origin->GetChild(i)->GetJointFlag() ==true)
+						boneChildCount++;
+				}
+			}	
+			rootBoneChildNum = boneChildCount;
+			int tempChildNum = rootBoneChildNum;
+			rootBoneChildName = new std::string[tempChildNum];
+			int tempChildCount = 0;
+			for(int i = 0; i< (int)node_origin->GetChildrenCount(); i++){
+				if(node_origin->GetChild(i)->GetJointFlag() ==true){
+					int tempChildIndex= getBoneIndexByName(node_origin->GetChild(i)->GetSubId().c_str());
+					if(tempChildIndex >= 0 && tempChildIndex< boneNumber){
+						rootBoneChildName[tempChildCount] = boneName[tempChildIndex];
+						tempChildCount++;
+					}
 				}
 			}
 		}
-	}
-	isBootBoneSceneNode =false;
-	if(node_origin ->GetJointFlag() == true){
+		isBootBoneSceneNode =false;
+
 		int index = getBoneIndexByName(node_origin->GetSubId().c_str());
 		if(index >= 0 && index< boneNumber)
 		{
@@ -1152,6 +1154,8 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 
 			//get the skin controller
 			FCDSkinController* skin = dynamic_cast<FCDController*>(controllerInstance->GetEntity())->GetSkinController();
+
+			isBootBoneSceneNode =true;
 
 			buildSkin(skin);
 			// look for this name in geo library
