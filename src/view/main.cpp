@@ -44,6 +44,11 @@ Command* command;//command that handles all events
 // arrow key down state of every frame,default state is ARROW_NONE
 // other states are ARROW_UP,ARROW_DOWN,ARROW_LEFT,ARROW_RIGHT
 int arrowState = 0;
+// button state
+bool updown = false;
+bool downdown = false;
+bool leftdown = false;
+bool rightdown = false;
 // when one key is down its effect should last for several frames
 // this value record the frame it lasts
 int arrowLast = 0;
@@ -125,27 +130,72 @@ void myGlutKeyboard(unsigned char Key, int x, int y)
 	};
 }
 
+// deal with special keys up events
+void myGlutSpecialUp(int a_keys, int x, int y){
+	switch(a_keys){
+		// set corresponding key down false
+	case GLUT_KEY_UP:
+		updown = false;
+		break;
+	case GLUT_KEY_DOWN:
+		downdown = false;
+		break;
+	case GLUT_KEY_LEFT:
+		leftdown = false;
+		break;
+	case GLUT_KEY_RIGHT:
+		rightdown = false;
+		break;
+	default:
+		break;
+	}
+}
+
 // deal with special keys include arrow keys and F1-F10
 void myGlutSpecial(int a_keys, int x, int y){
 	switch(a_keys){
 		// character move forward
 	case GLUT_KEY_UP:
-		arrowState = ARROW_UP;
+		updown = true;
+		// if left arrow key is also pushed down
+		if(leftdown) arrowState = ARROW_LEFT_UP;
+		// if right arrow key is also pushed down
+		else if(rightdown) arrowState = ARROW_RIGHT_UP;
+		// only up is pushed down
+		else arrowState = ARROW_UP;
 		arrowLast = 0;
 		break;
 		// character move backward
 	case GLUT_KEY_DOWN:
-		arrowState = ARROW_DOWN;
+		downdown = true;
+		// if left arrow key is also pushed down
+		if(leftdown) arrowState = ARROW_LEFT_DOWN;
+		// if right arrow key is also pushed down
+		else if(rightdown) arrowState = ARROW_RIGHT_DOWN;
+		// only down is pushed down
+		else arrowState = ARROW_DOWN;
 		arrowLast = 0;
 		break;
 		// character move left
 	case GLUT_KEY_LEFT:
-		arrowState = ARROW_LEFT;
+		leftdown = true;
+		// if up arrow key is also pushed down
+		if(updown) arrowState = ARROW_LEFT_UP;
+		// if down arrow key is also pushed down
+		else if(downdown) arrowState = ARROW_LEFT_DOWN;
+		// only left arrow is pushed down
+		else arrowState = ARROW_LEFT;
 		arrowLast = 0;
 		break;
 		// character move right
 	case GLUT_KEY_RIGHT:
-		arrowState = ARROW_RIGHT;
+		rightdown = true;
+		// if up arrow key is also pushed down
+		if(updown) arrowState = ARROW_RIGHT_UP;
+		// if down arrow key is also pushed down
+		else if(downdown) arrowState = ARROW_RIGHT_DOWN;
+		// only right arrow is pushed down
+		else arrowState = ARROW_RIGHT;
 		arrowLast = 0;
 		break;
 	default:
@@ -256,6 +306,7 @@ void initGlut(int argc, char* argv[]){
 	GLUI_Master.set_glutKeyboardFunc( myGlutKeyboard );
 	GLUI_Master.set_glutSpecialFunc( myGlutSpecial );
 	GLUI_Master.set_glutMouseFunc( myGlutMouse );
+	glutSpecialUpFunc(myGlutSpecialUp);
 	glutMotionFunc( myGlutMotion );
 }
 

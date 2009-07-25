@@ -76,7 +76,7 @@ void Command::drawLineCharacter(){
 
 //load all default models
 bool Command::loadModel(){
-	//modelLoader->loadModel(0,"cube.dae");
+	//modelLoader->loadModel(TERRAIN_LOADER_KIND,"resource/heightMap/heightmap.bmp");
 	return modelLoader->loadModel(CHARACTER_LOADER_KIND,"resource/walk_niki.dae");
 }
 
@@ -119,6 +119,18 @@ void Command::moveCharacter(int direction){
 			break;
 		case ARROW_RIGHT:
 			angle = 90 + cameraManager->getAngle();
+			break;
+		case ARROW_LEFT_UP:
+			angle = 225 + cameraManager->getAngle();
+			break;
+		case ARROW_RIGHT_UP:
+			angle = 135 + cameraManager->getAngle();
+			break;
+		case ARROW_RIGHT_DOWN:
+			angle = 45 + cameraManager->getAngle();
+			break;
+		case ARROW_LEFT_DOWN:
+			angle = 315 + cameraManager->getAngle();
 			break;
 		default:
 			angle = -1;

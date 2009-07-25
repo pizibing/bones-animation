@@ -318,7 +318,7 @@ void CharacterObject::rotateCharacter(float angle){
 	}
 
 	// rotate matrix instance according to angle
-	chMatrixInstance.AxisRotationMatrix(0,0,1,angle);
+	chMatrixInstance.Rotate(0,0,1,angle);
 }
 
 // get function of direction
@@ -330,4 +330,11 @@ float CharacterObject::getDirection(){
 float* CharacterObject::getPosition(){
 	// matrix instance's 12-th, 13-th, 14-th is the position
 	return chMatrixInstance.get() + 12;
+}
+
+// set the height position of the character
+// i.e. the z axis translation of the character
+void CharacterObject::setHeight(float height){
+	// 14-th element of matrix instance is the z axis translation
+	chMatrixInstance[14] = height; 
 }

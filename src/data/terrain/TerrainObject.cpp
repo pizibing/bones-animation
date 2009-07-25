@@ -70,7 +70,7 @@ void TerrainObject::setHeightMap(float* heights){
 	// copy height data into heightMap
 	for(int i = 0; i < width * height; i++){
 		// height's i-th element should not be null
-		assert(heights[i]);
+		assert(heights + i);
 
 		// copy
 		heightMap[i] = heights[i];
