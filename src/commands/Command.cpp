@@ -120,6 +120,18 @@ void Command::moveCharacter(int direction){
 		case ARROW_RIGHT:
 			angle = 90 + cameraManager->getAngle();
 			break;
+		case ARROW_LEFT_UP:
+			angle = 225 + cameraManager->getAngle();
+			break;
+		case ARROW_RIGHT_UP:
+			angle = 135 + cameraManager->getAngle();
+			break;
+		case ARROW_RIGHT_DOWN:
+			angle = 45 + cameraManager->getAngle();
+			break;
+		case ARROW_LEFT_DOWN:
+			angle = 315 + cameraManager->getAngle();
+			break;
 		default:
 			angle = -1;
 			break;
