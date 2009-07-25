@@ -40,27 +40,67 @@ Quaternion Quaternion::slerp(const Quaternion& other, float factor) const{
 
 	if(factor>=1.0f) return q2;
 	if(factor<=0.0f) return q1;
-	float theta, st, sut, sout, interp1, interp2;
-	float dot = q1.x * q2.x + q1.y * q2.y + q1.z * q2.z +
-		q1.w * q2.w;
+	//float theta, st, sut, sout, interp1, interp2;
+	//float dot = q1.x * q2.x + q1.y * q2.y + q1.z * q2.z +
+	//	q1.w * q2.w;
 
-	if (dot >= 1.0f) return q1;
+	//if (dot >= 1.0f) return q1;
 
-	// algorithm taken from Shoemake's paper
-	theta = (float) acos(dot);
-	theta = theta < 0.0 ? -theta : theta;
+	//// algorithm taken from Shoemake's paper
+	//theta = (float) acos(dot);
+	//theta = theta < 0.0 ? -theta : theta;
 
-	st = (float) sin(theta);
-	sut = (float) sin(factor*theta);
-	sout = (float) sin((1-factor)*theta);
-	interp1 = sout/st;
-	interp2 = sut/st;
+	//st = (float) sin(theta);
+	//sut = (float) sin(factor*theta);
+	//sout = (float) sin((1-factor)*theta);
+	//interp1 = sout/st;
+	//interp2 = sut/st;
+
+	//Quaternion result;
+	//result.x = interp1*q1.x + interp2*q2.x;
+	//result.y = interp1*q1.y + interp2*q2.y;
+	//result.z = interp1*q1.z + interp2*q2.z;
+	//result.w = interp1*q1.w + interp2*q2.w;
+
+	float norm;
+	norm = q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w;
+
+	bool bFlip;
+	bFlip = false;
+
+	if(norm < 0.0f)
+	{
+		norm = -norm;
+		bFlip = true;
+	}
+
+	float inv_d;
+	if(1.0f - norm < 0.000001f)
+	{
+		inv_d = 1.0f - factor;
+	}
+	else
+	{
+		float theta;
+		theta = (float) acos(norm);
+
+		float s;
+		s = (float) (1.0f / sin(theta));
+
+		inv_d = (float) sin((1.0f - factor) * theta) * s;
+		factor = (float) sin(factor * theta) * s;
+	}
+
+	if(bFlip)
+	{
+		factor = -factor;
+	}
 
 	Quaternion result;
-	result.x = interp1*q1.x + interp2*q2.x;
-	result.y = interp1*q1.y + interp2*q2.y;
-	result.z = interp1*q1.z + interp2*q2.z;
-	result.w = interp1*q1.w + interp2*q2.w;
+	result.x = inv_d * q1.x + factor * q2.x;
+	result.y = inv_d * q1.y + factor * q2.y;
+	result.z = inv_d * q1.z + factor * q2.z;
+	result.w = inv_d * q1.w + factor * q2.w;
 
 	result.NormalizeIt();
 	return result;
