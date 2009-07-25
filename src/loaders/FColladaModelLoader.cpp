@@ -682,21 +682,31 @@ void FColladaModelLoader::BuildCharacter()
 		// initialize i-th vbo
 		character->initVBO(vertices,vSize,i);
 		// get texture coordinates of vertices
-		//		float* texCoord = character_vbo_texcoords[i];
+		float* texCoord = character_vbo_texcoords[i];
 		// get length of texCoord
-		//		int tcSize = character_vbo_size * 2;
+		int tcSize = vSize * 2;
+//		printf("%i\n", tcSize);
+//		printf("\n");
 		// get texture id
-		//		GLuint texId = character_vbo_texid[i];
+		GLuint texId = character_vbo_texid[i];
+//		printf("%i\n", texId);
+//		printf("\n");
 		// set i-th vbo's texture
-		//		character->setVBOTexture(texCoord,tcSize,texId,i);
+		character->setVBOTexture(texCoord,tcSize,texId,i);
 		// get material information of that vbo
-		//		float am[4] = {character_vbo_am[i][0], character_vbo_am[i][1], character_vbo_am[i][2], character_vbo_am[i][3]};
-		//		float di[4] = {character_vbo_di[i][0], character_vbo_di[i][1], character_vbo_di[i][2], character_vbo_di[i][3]};
-		//		float sp[4] = {character_vbo_sp[i][0], character_vbo_sp[i][1], character_vbo_sp[i][2], character_vbo_sp[i][3]};
-		//		float em[4] = {character_vbo_em[i][0], character_vbo_em[i][1], character_vbo_em[i][2], character_vbo_em[i][3]};
-		//		float sh = character_vbo_sh[i];
+		float am[4] = {character_vbo_am[i][0], character_vbo_am[i][1], character_vbo_am[i][2], character_vbo_am[i][3]};
+		float di[4] = {character_vbo_di[i][0], character_vbo_di[i][1], character_vbo_di[i][2], character_vbo_di[i][3]};
+		float sp[4] = {character_vbo_sp[i][0], character_vbo_sp[i][1], character_vbo_sp[i][2], character_vbo_sp[i][3]};
+		float em[4] = {character_vbo_em[i][0], character_vbo_em[i][1], character_vbo_em[i][2], character_vbo_em[i][3]};
+		float sh = character_vbo_sh[i];
+//		printf("am = (%f,%f,%f,%f)\n", am[0], am[1], am[2], am[3]);
+//		printf("di = (%f,%f,%f,%f)\n", di[0], di[1], di[2], di[3]);
+//		printf("sp = (%f,%f,%f,%f)\n", sp[0], sp[1], sp[2], sp[3]);
+//		printf("em = (%f,%f,%f,%f)\n", em[0], em[1], em[2], em[3]);
+//		printf("sh = %f\n", sh);
+//		printf("\n");
 		// set i-th vbo's material
-		//		character->setVBOMaterial(am,di,sp,em,sh,i);
+		character->setVBOMaterial(am,di,sp,em,sh,i);
 	}
 
 	/* step6: add the character to the ObjectManager */
@@ -1044,7 +1054,6 @@ void FColladaModelLoader::buildScene(FCDSceneNode* node_origin, int kind)
 }
 void FColladaModelLoader::initBoneScene(FCDSceneNode* node_origin){
 	if(node_origin ->GetJointFlag() == true){
-		printf("%i\n", boneNumber);
 		if(isBootBoneSceneNode == true)
 		{
 			int boneChildCount = 0;
@@ -1406,26 +1415,29 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 				}
 			}
 		}
-		// look for this name in geo library
-		for (int j=0; j<(int)m_ptrs_geometries.size(); j++) {
-			if (m_ptrs_geometries[j]->GetDaeId().c_str()==name) {
-				//get the Geo instance
-				FCDGeometryInstance* geometry_instance=dynamic_cast<FCDGeometryInstance*>(instance);
-				//get the mesh
-				FCDGeometryMesh* mesh=m_ptrs_geometries[j];
-				//get the polygon index
-				int meshIndex=0;
-				for(int p=0; p<j; p++)
-				{
-					meshIndex+=(int)m_ptrs_geometries[p]->GetPolygonsCount();
+		if(kind == 2)
+		{
+			// look for this name in geo library
+			for (int j=0; j<(int)m_ptrs_geometries.size(); j++) {
+				if (m_ptrs_geometries[j]->GetDaeId().c_str()==name) {
+					//get the Geo instance
+					FCDGeometryInstance* geometry_instance=dynamic_cast<FCDGeometryInstance*>(instance);
+					//get the mesh
+					FCDGeometryMesh* mesh=m_ptrs_geometries[j];
+					//get the polygon index
+					int meshIndex=0;
+					for(int p=0; p<j; p++)
+					{
+						meshIndex+=(int)m_ptrs_geometries[p]->GetPolygonsCount();
+					}
+					//get the material
+					setMeshFCMaterial(geometry_instance, mesh, meshIndex, kind);
+					flag_found=true;
+					break;
 				}
-				//get the material
-				setMeshFCMaterial(geometry_instance, mesh, meshIndex, kind);
-				flag_found=true;
-				break;
 			}
+			if (flag_found) continue;
 		}
-		if (flag_found) continue;
 	}
 }
 
@@ -1945,19 +1957,29 @@ void FColladaModelLoader::setFCMaterial(int target, int index, int polygonIndex,
 		tex = textureManager->getTextureId(szFile.c_str());
 	}
 
-	character_vbo_am[polygonIndex] = new float[4];
-	character_vbo_di[polygonIndex] = new float[4];
-	character_vbo_sp[polygonIndex] = new float[4];
-	character_vbo_em[polygonIndex] = new float[4];
-	character_vbo_texid[polygonIndex] = 0;
-
 	if(kind == 0)
 	{
+		character_vbo_am[polygonIndex] = new float[4];
+		character_vbo_di[polygonIndex] = new float[4];
+		character_vbo_sp[polygonIndex] = new float[4];
+		character_vbo_em[polygonIndex] = new float[4];
 		//if has texture, set the texture
-		character_vbo_am[polygonIndex] = am;
-		character_vbo_di[polygonIndex] = di;
-		character_vbo_sp[polygonIndex] = sp;
-		character_vbo_em[polygonIndex] = em;
+		character_vbo_am[polygonIndex][0] = am[0];
+		character_vbo_am[polygonIndex][1] = am[1];
+		character_vbo_am[polygonIndex][2] = am[2];
+		character_vbo_am[polygonIndex][3] = am[3];
+		character_vbo_di[polygonIndex][0] = di[0];
+		character_vbo_di[polygonIndex][1] = di[1];
+		character_vbo_di[polygonIndex][2] = di[2];
+		character_vbo_di[polygonIndex][3] = di[3];
+		character_vbo_sp[polygonIndex][0] = sp[0];
+		character_vbo_sp[polygonIndex][1] = sp[1];
+		character_vbo_sp[polygonIndex][2] = sp[2];
+		character_vbo_sp[polygonIndex][3] = sp[3];
+		character_vbo_em[polygonIndex][0] = em[0];
+		character_vbo_em[polygonIndex][1] = em[1];
+		character_vbo_em[polygonIndex][2] = em[2];
+		character_vbo_em[polygonIndex][3] = em[3];
 		character_vbo_sh[polygonIndex] = sh;
 		if(tex != NULL)
 		{
