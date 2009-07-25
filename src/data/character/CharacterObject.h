@@ -146,6 +146,10 @@ public:
 	// get the position of that character
 	float* getPosition();
 
+	// set the height position of the character
+	// i.e. the z axis translation of the character
+	void setHeight(float height);
+
 private:
 	/* display */
 	// a pointer to an array that stores all the VBOMeshes of this 
