@@ -47,12 +47,13 @@ const Quaternion & ChTrack::getRotation(int animate_time){
 	animate_time = animate_time % getAnimationTime();
 	int i = 0;
 	while(animate_time>m_keyframes[i]->getTime()&&i<m_keyframe_num)i++;
-	ChKeyFrame *keyFrame1;
+	m_currentRotation = m_keyframes[i]->getRotation();
+	/*ChKeyFrame *keyFrame1;
 	if(i>0) keyFrame1= m_keyframes[i-1];
 	else keyFrame1= m_keyframes[m_keyframe_num-1];
 	ChKeyFrame *keyFrame2 = m_keyframes[i];
 	float factor = (float)(animate_time - keyFrame1->getTime())/float(keyFrame2->getTime()-keyFrame1->getTime());
-	m_currentRotation = Quaternion::slerp(keyFrame1->getRotation(),keyFrame2->getRotation(),factor);
+	m_currentRotation = Quaternion::slerp(keyFrame1->getRotation(),keyFrame2->getRotation(),factor);*/
 	return m_currentRotation;
 }
 
@@ -67,12 +68,13 @@ const Vector3D & ChTrack::getTranslation(int animate_time){
 	animate_time = animate_time % getAnimationTime();
 	int i = 0;
 	while(animate_time>m_keyframes[i]->getTime()&&i<m_keyframe_num)i++;
-	ChKeyFrame *keyFrame1;
+	m_currentTranslation = m_keyframes[i]->getTranslation();
+	/*ChKeyFrame *keyFrame1;
 	if(i>0) keyFrame1= m_keyframes[i-1];
 	else keyFrame1= m_keyframes[m_keyframe_num-1];
 	ChKeyFrame *keyFrame2 = m_keyframes[i];
 	float factor = (float)(animate_time - keyFrame1->getTime())/float(keyFrame2->getTime()-keyFrame1->getTime());
-	m_currentTranslation = keyFrame1->getTranslation()*(1-factor)+keyFrame2->getTranslation()*factor;
+	m_currentTranslation = keyFrame1->getTranslation()*(1-factor)+keyFrame2->getTranslation()*factor;*/
 	return m_currentTranslation;
 }
 
