@@ -83,7 +83,9 @@ SimpleLine* CharacterObject::representInLine(int* num){
 // this function change the position matrix of the 
 // class by multiplying change
 void CharacterObject::moveSelf(Matrix change){
-	chMatrixInstance = change * chMatrixInstance;
+	// default change move along y+, it should change when character's
+	// direction changes
+	chMatrixInstance = chMatrixInstance * change;
 }
 
 // this function is the factory function of skeleton

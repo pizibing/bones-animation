@@ -7,7 +7,7 @@
 #include "../managers/TextureManager.h"
 
 // define the scale from file read height to real display height
-const float HEIGHT_SCALE = 0.01;
+const float HEIGHT_SCALE = 0.015;
 // define stride
 const float STRIDE = 0.5;
 
@@ -30,7 +30,7 @@ bool TerrainModelLoader::loadModel(int kind, const char* path){
 	Image* image = loadBMP(path);
 	float* pHeightMap = new float[image->height * image->width];
 	for(int i = 0; i < image->height * image->width; i++){
-		pHeightMap[i] = ((float)((int)image->pixels[3*i])) * HEIGHT_SCALE;
+		pHeightMap[i] = ((float)((unsigned char)image->pixels[3*i])) * HEIGHT_SCALE;
 		/*if(pHeightMap[i] < 0)
 			int S = 4;*/
 	}

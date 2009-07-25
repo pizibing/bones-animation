@@ -173,7 +173,7 @@ void TerrainObject::calculateNormal(){
 			/* calculate normals of the 2 triangles constructed by
 			 row and column */
 			// first triangle
-			Vector3D v1 = Vector3D(0,stride,
+			Vector3D v1 = Vector3D(0,-stride,
 				heightMap[(r + 1) * width + c] - heightMap[r * width + c]);
 			Vector3D v2 = Vector3D(stride,0,
 				heightMap[r * width + c + 1] - heightMap[r * width + c]);
@@ -183,7 +183,7 @@ void TerrainObject::calculateNormal(){
 			normals[r * width + c + 1] += tv;
 			normals[(r + 1) * width + c] += tv;
 			// second triangle
-			v1 = Vector3D(0,-stride,
+			v1 = Vector3D(0,stride,
 				heightMap[r * width + c + 1] - heightMap[(r + 1) * width + c + 1]);
 			v2 = Vector3D(-stride,0,
 				heightMap[(r + 1) * width + c] - heightMap[(r + 1) * width + c + 1]);
@@ -261,9 +261,9 @@ void TerrainObject::calculateTextureCoordinate(){
 		for(int c = 0; c < width; c++){
 			// set dot's texture coordinate
 			// x
-			textures[(r * width + c) * 2] = c / (width - 1);
+			textures[(r * width + c) * 2] = (float)c / (float)(width - 1);
 			// y
-			textures[(r * width + c) * 2 + 1] = r / (height - 1);
+			textures[(r * width + c) * 2 + 1] = (float)r / (float)(height - 1);
 		}
 	}
 	/* convert textures into an array that map texture coordinates
