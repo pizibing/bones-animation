@@ -2,14 +2,18 @@
 #include "matrix.h"
 #include "Vector3D.h"
 
-// rotate the quaternion by another q.
-// @return a quaternion that rotate by q then by this
+// r = this * q
+// @return a quaternion for the multiplication of this and q
 Quaternion Quaternion::operator*(const Quaternion& q) const{
 	Quaternion r;
-	r.x = q.w * x + q.x * w + q.y * z - q.z * y;
+	/*r.x = q.w * x + q.x * w + q.y * z - q.z * y;
 	r.y = q.w * y + q.y * w + q.z * x - q.x * z;
 	r.z = q.w * z + q.z * w + q.x * y - q.y * x;
-	r.w = q.w * w - q.x * x - q.y * y - q.z * z;
+	r.w = q.w * w - q.x * x - q.y * y - q.z * z;*/
+	r.x =  x * q.w + y * q.z - z * q.y + w * q.x;
+	r.y = -x * q.z + y * q.w + z * q.x + w * q.y;
+	r.z =  x * q.y - y * q.x + z * q.w + w * q.z;
+	r.w = -x * q.x - y * q.y - z * q.z + w * q.w;
 	return r;
 }
 
@@ -96,36 +100,33 @@ Matrix Quaternion::ToMatrix() const{
 This will overwrite any existing rotations, but not positions
 @param m  The matrix to set our transform onto */
 void Quaternion::SetToMatrix(Matrix& m) const{
-	float s, xs, ys, zs, wx, wy, wz, xx, xy, xz, yy, yz, zz, den;
+	float x,y,z,w,l;
+	l = this->Length();
+	if(l==0.0f)l = 1.0f;
+	else l=1/l;
+	x = this->x * l;
+	y = this->y * l;
+	z = this->z * l ;
+	w = this->w * l;
+	
+	m[0] = 1.0f - 2*y*y - 2*z*z;
+	m[4] = 2*x*y - 2*z*w; 
+	m[8] = 2*x*z +2*y*w; 
 
-	// For unit q, just set s = 2.0; or or set xs = q.x + q.x, etc 
-	den =  (x*x + y*y + z*z + w*w);
-	if (den==0.0) {  s = (float)1.0; }
-	else s = (float)2.0/den;
+	m[1] = 2*x*y + 2*z*w; 
+	m[5] = 1.0f - 2*x*x - 2*z*z;
+	m[9] = 2*y*z - 2*x*w; 
 
-	xs = x * s;   ys = y * s;  zs = z * s;
-	wx = w * xs;  wy = w * ys; wz = w * zs;
-	xx = x * xs;  xy = x * ys; xz = x * zs;
-	yy = y * ys;  yz = y * zs; zz = z * zs;
-
-	m[0] = (float)1.0 - (yy +zz);
-	m[4] = xy - wz; 
-	m[8] = xz + wy; 
-
-	m[1] = xy + wz; 
-	m[5] = (float)1.0 - (xx +zz);
-	m[9] = yz - wx; 
-
-	m[2] = xz - wy; 
-	m[6] = yz + wx; 
-	m[10] = (float)1.0 - (xx + yy);
+	m[2] = 2*x*z - 2*y*w; 
+	m[6] = 2*y*z + 2*x*w; 
+	m[10] = 1.0f - 2*x*x - 2*y*y;
 }
 
 /** Get the quaternion that represents the matrix rotation
 @param mat The matrix whose rotation we will represent */
 Quaternion Quaternion::MatrixRotationQuaternion(const Matrix& mat){
 	Quaternion q;
-
+	/*
 	float tr,s;
 
 	tr = 1.0f + mat[0] + mat[5] + mat[10];
@@ -160,6 +161,34 @@ Quaternion Quaternion::MatrixRotationQuaternion(const Matrix& mat){
 		q.y = (mat[6] + mat[9]) / s;
 		q.z = 0.25f * s;
 		q.w = (mat[1] - mat[4]) / s;
+	}*/
+	float trace = mat[0] + mat[5] + mat[10];
+	if( trace > 0 ) {// I changed M_EPSILON to 0
+		float s = 0.5f / sqrtf(trace+ 1.0f);
+		q.w = 0.25f / s;
+		q.x = ( mat[6] - mat[9] ) * s;
+		q.y = ( mat[8] - mat[2] ) * s;
+		q.z = ( mat[1] - mat[4] ) * s;
+	} else {
+		if ( mat[0] > mat[5] && mat[0] > mat[10] ) {
+			float s = 2.0f * sqrtf( 1.0f + mat[0] - mat[5] - mat[10]);
+			q.w = (mat[6] - mat[9] ) / s;
+			q.x = 0.25f * s;
+			q.y = (mat[4] + mat[1] ) / s;
+			q.z = (mat[8] + mat[2] ) / s;
+		} else if (mat[5] > mat[10]) {
+			float s = 2.0f * sqrtf( 1.0f + mat[5] - mat[0] - mat[10]);
+			q.w = (mat[8] - mat[2] ) / s;
+			q.x = (mat[4] + mat[1] ) / s;
+			q.y = 0.25f * s;
+			q.z = (mat[9] + mat[6] ) / s;
+		} else {
+			float s = 2.0f * sqrtf( 1.0f + mat[10] - mat[0] - mat[5] );
+			q.w = (mat[1] - mat[4] ) / s;
+			q.x = (mat[8] + mat[2] ) / s;
+			q.y = (mat[9] + mat[6] ) / s;
+			q.z = 0.25f * s;
+		}
 	}
 	return q;
 }

@@ -161,10 +161,10 @@ void ChSkeletonInstance::calculateAbsoluteTransform(int boneId){
 		// this bone's absolute transform = this bone's relative transform * parent bone's absolute transform
 		//bones[boneId]->setMatrix(bones[boneId]->getMatrix()*bones[parent->getId()]->getMatrix());
 
-		// this bone's absolute rotation = this bone's relative rotation * parent bone's absolute rotation
-		bones[boneId]->setAbsoluteRotation(bones[boneId]->getRotation() * bones[parent->getId()]->getAbsoluteRotation());
-		// this bone's absolute translation = this bone's relative translation * parent bone's absolute rotation + parent bone's translation 
-		bones[boneId]->setAbsoluteTranslation( bones[boneId]->getTranslation() * bones[parent->getId()]->getAbsoluteRotation() 
+		// this bone's absolute rotation = parent bone's absolute rotation * this bone's relative rotation
+		bones[boneId]->setAbsoluteRotation(bones[parent->getId()]->getAbsoluteRotation() * bones[boneId]->getRotation());
+		// this bone's absolute translation = parent bone's absolute rotation * this bone's relative translation + parent bone's translation 
+		bones[boneId]->setAbsoluteTranslation( bones[parent->getId()]->getAbsoluteRotation() * bones[boneId]->getTranslation() 
 									+ bones[parent->getId()]->getAbsoluteTranslation() );
 	}
 	else {	

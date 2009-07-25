@@ -47,6 +47,8 @@ class ObjectManager;
 class LineObject;
 class Matrix;
 
+static const int sigle_frame_time = 30;
+
 //it contains the fuction to load from the fcollada data file
 class FColladaModelLoader :
 	public ModelLoader

@@ -69,8 +69,8 @@ public:
 	@return a quaternion with length 1 and same direction as this quaternion. */
 	inline Quaternion Normalize() const { float l = Length(); return Quaternion(x / l, y / l, z / l, w / l); }
 
-	// rotate the quaternion by another q.
-	// @return a quaternion that rotate by q then by this
+	// r = this * q
+	// @return a quaternion for the multiplication of this and q
 	Quaternion operator*(const Quaternion& q) const;
 
 	// rotate the vector3d by this quaternion

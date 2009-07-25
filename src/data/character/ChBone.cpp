@@ -122,9 +122,9 @@ void ChBone::setBindPoseInverse(const Matrix & m){
 // calculate transform in world space and for all child bones
 void ChBone::calculateAbsoluteTransform(){
 	if(m_parentbone){
-		m_absoluteTranslation = m_translation * m_parentbone->m_absoluteRotation
+		m_absoluteTranslation = m_parentbone->m_absoluteRotation * m_translation
 									+ m_parentbone->m_absoluteTranslation;
-		m_absoluteRotation = m_rotation * m_parentbone->m_absoluteRotation;
+		m_absoluteRotation = m_parentbone->m_absoluteRotation * m_rotation;
 	}
 	else {
 		// this is a root bone
