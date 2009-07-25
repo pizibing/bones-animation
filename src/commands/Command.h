@@ -16,6 +16,10 @@ const int ARROW_UP = 1;
 const int ARROW_DOWN = 2;
 const int ARROW_LEFT = 3;
 const int ARROW_RIGHT = 4;
+const int ARROW_LEFT_UP = 5;
+const int ARROW_RIGHT_UP = 6;
+const int ARROW_RIGHT_DOWN = 7;
+const int ARROW_LEFT_DOWN = 8;
 #endif
 
 // Command is used as the conning tower of this system
