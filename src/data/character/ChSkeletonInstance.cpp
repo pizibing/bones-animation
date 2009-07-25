@@ -58,8 +58,11 @@ ChBoneInstance* ChSkeletonInstance::getRoot(){
 // animation is the name of the animation to use, aimationtime is the 
 // current play time in animation
 Matrix ChSkeletonInstance::calSkeletonInstance(ChAnimationManager * animanager, int animationtime, const char* animation){
-	// set root bone's matrix to identity matrix
-	root->setMatrix(Matrix());
+	// set root bone's matrix's rotation according to animation, but translation to default identity
+	Matrix rootMatrix = Matrix();
+	// set rotation
+	rootMatrix.set(animanager->blendAnimationBoneRotation(animationtime,animation,m_skeleton->getRootBone()->getName()));
+	root->setMatrix(rootMatrix);
 	// for all bones except root bone, set matrix to relative matrix this animation time
 	for(int i=1;i<m_skeleton->getBoneNum();i++){
 		//bones[i]->setMatrix(animanager->blendAnimationBone(animationtime,animation,m_skeleton->getBone(i)->getName()));
@@ -91,11 +94,16 @@ Matrix ChSkeletonInstance::calSkeletonInstance(ChAnimationManager * animanager, 
     assert(power1 > 0);
 	assert(power1 < 1);
 
+	// set root bone's matrix's rotation according to animation, but translation to default identity
+	Matrix rootMatrix = Matrix();
+	// set rotation
+	Quaternion r1 = animanager->blendAnimationBoneRotation(animationtime1,animation1,m_skeleton->getRootBone()->getName());
+	Quaternion r2 = animanager->blendAnimationBoneRotation(animationtime2,animation2,m_skeleton->getRootBone()->getName());
+	rootMatrix.set(Quaternion::slerp(r1,r2,1.0f-power1));
+	root->setMatrix(rootMatrix);
+
+	// for all bones except root bone, set matrix to relative matrix this animation time
 	for(int i=1;i<m_skeleton->getBoneNum();i++){
-		// set root bone's matrix to identity matrix
-		root->setMatrix(Matrix());
-		// for all bones except root bone, set matrix to relative matrix this animation time
-		
 		//Matrix m1 = animanager->blendAnimationBone(animationtime1,animation1,m_skeleton->getBone(i)->getName());
 		//Matrix m2 = animanager->blendAnimationBone(animationtime2,animation2,m_skeleton->getBone(i)->getName());
 		//bones[i]->setMatrix(m1*power1+m2*(1-power1));
@@ -126,11 +134,11 @@ Matrix ChSkeletonInstance::calRootChange(ChAnimationManager * animanager,
 	
 	// get current transform matrix of root
 	Matrix current = Matrix();
-	current.set(animanager->getCurrentRootRotation(animationtime,animation),
+	current.set(Quaternion(),//animanager->getCurrentRootRotation(animationtime,animation),
 	 animanager->getCurrentRootTranslation(animationtime,animation));
 	// get last transform matrix of root
 	Matrix lastm = Matrix();
-	lastm.set(animanager->getLastRootRotation(animationtime,animation),
+	lastm.set(Quaternion(),//animanager->getLastRootRotation(animationtime,animation),
 	 animanager->getLastRootTranslation(animationtime,animation));
 	// get inverse matrix of last matrix
 	Matrix inverseLast = lastm.getInverseMatrix();
