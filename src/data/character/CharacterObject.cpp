@@ -331,3 +331,10 @@ float* CharacterObject::getPosition(){
 	// matrix instance's 12-th, 13-th, 14-th is the position
 	return chMatrixInstance.get() + 12;
 }
+
+// set the height position of the character
+// i.e. the z axis translation of the character
+void CharacterObject::setHeight(float height){
+	// 14-th element of matrix instance is the z axis translation
+	chMatrixInstance[14] = height; 
+}
