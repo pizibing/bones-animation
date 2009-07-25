@@ -7,6 +7,7 @@
 #include "../data/LineObject.h"
 #include "../data/MoveSelfObject.h"
 #include "../data/character/CharacterObject.h"
+#include "../data/terrain/TerrainObject.h"
 #include "../managers/ObjectManager.h"
 #include "../managers/CameraManager.h"
 
@@ -61,6 +62,19 @@ void Calculator::moveCharacter(float angle){
 	CharacterObject* character = (CharacterObject*)(*characters)[0];
 	// get direction of the character
 	float direction = character->getDirection();
+
+	// set character's position to make her stand on the terrain
+	std::vector<VBOObject*>* terrains = 
+		objectManager->getVBOObjects(OBJECT_TYPE_TERRAIN);
+	if(terrains->size() != 0){
+		// get terrain
+		TerrainObject* terrain = (TerrainObject*)(*terrains)[0];
+		// get terrain's height where character stand
+		float height = terrain->getHeightAt(character->getPosition()[0],
+			                                character->getPosition()[1]);
+		// set character height in +z position
+		character->setHeight(height);
+	}
 
 	/* change speed and direction of the character */
 	// if angle is -1 , slow down a lot
