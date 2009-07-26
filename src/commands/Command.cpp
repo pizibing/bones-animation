@@ -36,8 +36,6 @@ Command::~Command(void){
 // draw all the objects that should be displayed in the
 // scene right now
 void Command::drawScene(){
-	//calculate
-	//calculator->rotate(1,AXIS_X);
 	//light
 	GLfloat* position = lightManager->getPosition(0);
 	position[1] = 6;
@@ -54,30 +52,46 @@ void Command::drawScene(){
 		display->display(false, vbomesh, num); 
 	}
 	delete objects;
-	/*VBOObject* vboobject = objectManager->getVBOObject(2,4);
-	if(!vboobject) return;
-	int num = 0;
-	VBOMesh* vbomesh = vboobject->representInVBOMesh(&num);
-	display->display(false, vbomesh, num); */
 }
 
 // draw the character object of this scene in skeleton lines
 void Command::drawLineCharacter(){
-	// camera
+	//light
+	GLfloat* position = lightManager->getPosition(0);
+	position[1] = 6;
+	glEnable(GL_LIGHT0);
+	//draw
 	cameraManager->look();
-	// get character
-	CharacterObject* character = (CharacterObject*)displayManager->getDisplayedCharacter(0);
-	// get lines of that character
-	int num = 0;
-	SimpleLine* lines = character->representInLine(&num);
-	// display
-	display->display(lines,num);
+	// get objects to display
+	std::vector<VBOObject*>* objects = displayManager->getDisplayedObjectsAll();
+	// draw each object
+	for(int i = 0; i < (signed int)objects->size(); i++){
+		VBOObject* vboobject = (*objects)[i];
+		// display character in lines
+		if(vboobject->getType() == OBJECT_TYPE_CHARACTER){
+			// get character
+			CharacterObject* character = (CharacterObject*)vboobject;
+			// get lines of that character
+			int num = 0;
+			SimpleLine* lines = character->representInLine(&num);
+			// display
+			display->display(lines,num);
+		}
+		// display other objects in vbomeshes
+		else{
+			int num = 0;
+			VBOMesh* vbomesh = vboobject->representInVBOMesh(&num);
+			display->display(false, vbomesh, num); 
+		}
+	}
+	delete objects;
+	
 }
 
 //load all default models
 bool Command::loadModel(){
 	modelLoader->loadModel(TERRAIN_LOADER_KIND,"resource/heightMap/heightmap.bmp");
-	return modelLoader->loadModel(CHARACTER_LOADER_KIND,"resource/run_niki.dae");
+	return modelLoader->loadModel(CHARACTER_LOADER_KIND,"resource/walk_niki.dae");
 }
 
 // load a model with the given path
