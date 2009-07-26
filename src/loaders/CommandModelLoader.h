@@ -25,6 +25,7 @@ public:
 	* return: true when model is successfully loaded, vice versa
 	*/
 	bool loadModel(int kind, const char* path);
+	bool loadMulModel(int kind, int num, const char** szPathName);
 
 private:
 	// constructor
