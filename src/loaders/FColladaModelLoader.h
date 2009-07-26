@@ -42,7 +42,6 @@
 #include "FMath\FMMatrix44.h"
 
 class Vector3D;
-class ModelLoader;
 class ObjectManager;
 class LineObject;
 class Matrix;
@@ -50,8 +49,7 @@ class Matrix;
 static const int sigle_frame_time = 30;
 
 //it contains the fuction to load from the fcollada data file
-class FColladaModelLoader :
-	public ModelLoader
+class FColladaModelLoader
 {
 public:
 	FColladaModelLoader(void);

@@ -1,4 +1,3 @@
-#include "ModelLoader.h"
 #include "SimpleModelLoader.h"
 #include "../matrixlib/Vector3D.h"
 #include "../matrixlib/quaternion.h"
