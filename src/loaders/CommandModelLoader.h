@@ -25,6 +25,7 @@ public:
 	* return: true when model is successfully loaded, vice versa
 	*/
 	bool loadModel(int kind, const char* path);
+	bool loadMulModel(int kind, int num, const char** szPathName);
 
 	// this load function is only for loading of character kind model
 	// path1 record skeleton skin and one animation information
