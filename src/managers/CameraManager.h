@@ -29,7 +29,7 @@ public:
 	void rotateCamera(float angle);
 
 	// set the target position of the camera
-	void setTarget(float* tp);
+	void setTarget(float tx, float ty, float tz);
 
 	// use glLookAt() to update the camera
 	void look();
