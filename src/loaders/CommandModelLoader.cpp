@@ -64,14 +64,23 @@ bool CommandModelLoader::loadModel(int kind, const char* path){
 	// according to kind, arrange corresponding ModelLoader to
 	// achieve the task
 	switch(kind){
-		case CHARACTER_LOADER_KIND:
-			return floader->loadModel(kind,path);
-			break;
 		case TERRAIN_LOADER_KIND:
 			return tloader->loadModel(kind,path);
 			break;
+		default:
+			return false;
+	}
+}
+
+bool CommandModelLoader::loadMulModel(int kind, int num, const char** path){
+	// according to kind, arrange corresponding ModelLoader to
+	// achieve the task
+	switch(kind){
+		case CHARACTER_LOADER_KIND:
+			return floader->loadModel(kind, num, path);
+			break;
 		case STATIC_LOADER_KIND:
-			return floader->loadModel(kind,path);
+			return floader->loadModel(kind, num, path);
 			break;
 		default:
 			return false;

@@ -13,4 +13,5 @@ public:
 	 * return: true when model is successfully loaded, vice versa
 	 */
 	virtual bool loadModel(int kind, const char* path) = 0;
+	virtual bool loadMulModel(int kind, int num, const char** szPathName) = 0;
 };

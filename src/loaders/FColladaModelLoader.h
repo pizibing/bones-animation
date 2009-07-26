@@ -59,32 +59,32 @@ public:
 	//return ture if load success
 	//set the document value while load the model
 	//it also contain three methed storeVertices, storeTexture, storeMaterials. which
-	//store the vertices, texture, materials to my own structure 
-	bool loadModel(int kind,const char* path);
+	//store the vertices, texture, materials to my own structure
+	bool loadModel(int kind, int num, const char** szPathName);
 
 	//store the vertices, normals, texturecoords and create staticobjects to display
-	void storeVertices(int kind);
+	void storeVertices(int kind, FCDocument* m_document);
 
-	void storeLight();
+	void storeLight(FCDocument* m_document);
 
 	//store all the textures that contains in the document
-	void storeTexture();
+	void storeTexture(FCDocument* m_document);
 
 	//store all the materials that contains in the document
-	void storeMaterials();
+	void storeMaterials(FCDocument* m_document);
 
-	void storeCamera();
+	void storeCamera(FCDocument* m_document);
 
-	void storeAnimation();
+	void storeAnimation(FCDocument* m_document);
 
 	//build the scene include the material of the polygons, the texture of the polygons and the matrix of the bone.
-	void buildScene(FCDSceneNode* ptr_root, int kind);
+	void buildScene(FCDSceneNode** node_origin, int kind);
 
 	void buildSceneInstance(FCDSceneNode* ptr_root, int kind);
 
 	void buildSkin(FCDSkinController* skin);
 
-	void buildSceneMatrix(FCDSceneNode* ptr_root);
+	void buildSceneMatrix(FCDSceneNode* ptr_root, int m_documentIndex);
 
 	//set the material of the mesh
 	void setMeshFCMaterial(FCDGeometryInstance* geometry_instance, FCDGeometryMesh* mesh, int meshIndex, int kind);
@@ -121,8 +121,9 @@ public:
 	} 
 
 private:
+	int szFlieNum;
 	// pointer to dae file that will be opened using fcollada
-	FCDocument* m_document;
+	FCDocument** m_document;
 
 	//number of textures
 	int m_num_textures;
@@ -162,20 +163,20 @@ private:
 	
 	//root
 	std::string rootBoneName;
-	bool isRootBoneName;
+	bool* isRootBoneName;
 	Matrix rootBoneMatrix;
 	FCDSceneNode* rootBoneSceneNode;
 	bool isBootBoneSceneNode;
 	int rootBoneChildNum;
 	std::string* rootBoneChildName;
-	int rootAnimationsBoneFrameNum;
-	Matrix* rootAnimationsBoneFrameMatrix;
-	int* rootAnimationsBoneFrameTime;
+	int* rootAnimationsBoneFrameNum;
+	Matrix** rootAnimationsBoneFrameMatrix;
+	int** rootAnimationsBoneFrameTime;
 
-	std::string filename;
-	int* animationsBoneFrameNum;
-	Matrix** animationsBoneFrameMatrix;
-	int** animationsBoneFrameTime;
+	std::string* szfilename;
+	int** animationsBoneFrameNum;
+	Matrix*** animationsBoneFrameMatrix;
+	int*** animationsBoneFrameTime;
 
 	int skinVertexNum;
 	float* skinVertexPosX;
