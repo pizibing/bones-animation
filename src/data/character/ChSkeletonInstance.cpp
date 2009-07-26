@@ -59,10 +59,8 @@ ChBoneInstance* ChSkeletonInstance::getRoot(){
 // current play time in animation
 Matrix ChSkeletonInstance::calSkeletonInstance(ChAnimationManager * animanager, int animationtime, const char* animation){
 	// set root bone's matrix's rotation according to animation, but translation to default identity
-	Matrix rootMatrix = Matrix();
 	// set rotation
-	//rootMatrix.set(animanager->blendAnimationBoneRotation(animationtime,animation,m_skeleton->getRootBone()->getName()));
-	root->setMatrix(rootMatrix);
+	root->setRotation(animanager->blendAnimationBoneRotation(animationtime,animation,m_skeleton->getRootBone()->getName()));
 	// for all bones except root bone, set matrix to relative matrix this animation time
 	for(int i=1;i<m_skeleton->getBoneNum();i++){
 		//bones[i]->setMatrix(animanager->blendAnimationBone(animationtime,animation,m_skeleton->getBone(i)->getName()));
@@ -95,12 +93,10 @@ Matrix ChSkeletonInstance::calSkeletonInstance(ChAnimationManager * animanager, 
 	assert(power1 < 1);
 
 	// set root bone's matrix's rotation according to animation, but translation to default identity
-	Matrix rootMatrix = Matrix();
 	// set rotation
 	Quaternion r1 = animanager->blendAnimationBoneRotation(animationtime1,animation1,m_skeleton->getRootBone()->getName());
 	Quaternion r2 = animanager->blendAnimationBoneRotation(animationtime2,animation2,m_skeleton->getRootBone()->getName());
-	rootMatrix.set(Quaternion::slerp(r1,r2,1.0f-power1));
-	root->setMatrix(rootMatrix);
+	root->setRotation(Quaternion::slerp(r1,r2,1.0f-power1));
 
 	// for all bones except root bone, set matrix to relative matrix this animation time
 	for(int i=1;i<m_skeleton->getBoneNum();i++){

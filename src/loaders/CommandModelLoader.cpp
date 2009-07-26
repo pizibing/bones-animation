@@ -78,3 +78,13 @@ bool CommandModelLoader::loadModel(int kind, const char* path){
 	}
 }
 
+// this load function is only for loading of character kind model
+// path1 record skeleton skin and one animation information
+// path2 and path3 each records one corresponding animation to the skeleton
+// in path1
+bool CommandModelLoader::loadModel(const char* path1, const char* path2, const char* path3){
+	// use fcollada model loader to load character
+
+	return true;
+}
+
