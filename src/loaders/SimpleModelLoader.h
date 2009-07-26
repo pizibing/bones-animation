@@ -1,10 +1,8 @@
 #pragma once
 
-class ModelLoader;
 class ObjectManager;
 
-class SimpleModelLoader :
-	public ModelLoader
+class SimpleModelLoader 
 {
 public:
 	SimpleModelLoader(void);
