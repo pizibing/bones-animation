@@ -1,9 +1,7 @@
 #pragma once
-#include "../loaders/ModelLoader.h"
 
 // TerrainModelLoader load terrain object
-class TerrainModelLoader :
-	public ModelLoader
+class TerrainModelLoader
 {
 public:
 	// constructor

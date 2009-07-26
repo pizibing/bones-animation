@@ -20,7 +20,6 @@
 #include "../data/character/ChAnimationManager.h"
 #include "../data/character/CharacterObject.h"
 #include "../managers/ObjectManager.h"
-#include "ModelLoader.h"
 #include "../managers/TextureManager.h"
 #include "FCVector4D.h"
 #include "FColladaModelLoader.h"
