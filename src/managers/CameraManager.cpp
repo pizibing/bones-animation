@@ -71,13 +71,12 @@ void CameraManager::rotateCamera(float angle){
 }
 
 // set the target position of the camera
-void CameraManager::setTarget(float* tp){
-	// tp should not be null
-	assert(tp);
+void CameraManager::setTarget(float tx, float ty, float tz){
 
 	// set target
-	for(int i = 0; i < 3; i++)
-		target[i] = tp[i];
+	target[0] = tx;
+	target[1] = ty;
+	target[2] = tz;
 }
 
 // use glLookAt() to update the camera

@@ -77,7 +77,7 @@ void Command::drawLineCharacter(){
 //load all default models
 bool Command::loadModel(){
 	modelLoader->loadModel(TERRAIN_LOADER_KIND,"resource/heightMap/heightmap.bmp");
-	return modelLoader->loadModel(CHARACTER_LOADER_KIND,"resource/walk_niki.dae");
+	return modelLoader->loadModel(CHARACTER_LOADER_KIND,"resource/run_niki.dae");
 }
 
 // load a model with the given path

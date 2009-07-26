@@ -21,9 +21,9 @@ const float SLOW_DOWN_CHANGE_DIRECTION = 0.01;
 const float SPEED_UP = 0.01;
 
 // define the animation name of character's idle, walk and run
-const char* CHARACTER_IDLE = "walk_niki";
-const char* CHARACTER_WALK = "walk_niki";
-const char* CHARACTER_RUN = "walk_niki";
+static const char* CHARACTER_IDLE = "run_niki";
+static const char* CHARACTER_WALK = "run_niki";
+static const char* CHARACTER_RUN = "run_niki";
 
 //constructor
 Calculator::Calculator(void){
@@ -66,14 +66,20 @@ void Calculator::moveCharacter(float angle){
 	// set character's position to make her stand on the terrain
 	std::vector<VBOObject*>* terrains = 
 		objectManager->getVBOObjects(OBJECT_TYPE_TERRAIN);
+	// latest height
+	static float latestHeight = 0;
 	if(terrains->size() != 0){
 		// get terrain
 		TerrainObject* terrain = (TerrainObject*)(*terrains)[0];
 		// get terrain's height where character stand
 		float height = terrain->getHeightAt(character->getPosition()[0],
 			                                character->getPosition()[1]);
+		// calculate height change
+		float change = height - latestHeight;
 		// set character height in +z position
-		character->setHeight(height);
+		character->setHeight(change + character->getPosition()[2]);
+		// set latest height
+		latestHeight = height;
 	}
 
 	/* change speed and direction of the character */
@@ -197,5 +203,8 @@ void Calculator::moveCharacter(float angle){
 	
 	// move camera
 	CameraManager* camera = CameraManager::getInstance();
-	camera->setTarget(character->getPosition());
+	// set camera's x,y position the same as character, z position
+	// the same as the height of the terrain at this x, y point
+	camera->setTarget(character->getPosition()[0], 
+		character->getPosition()[1], latestHeight);
 }
