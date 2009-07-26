@@ -433,6 +433,7 @@ void FColladaModelLoader::BuildCharacter()
 	ChBone* rootBone = skeleton->getBone(ROOT_BONE_NAME);
 	Matrix matrix = rootBoneMatrix;
 	rootBone->setTransformMatrix(matrix);
+	rootBone->setBindPoseInverse(matrix.getInverseMatrix());
 	int rootChild_num = rootBoneChildNum;
 	//		printf("boneChildNum\n");
 	//		printf("%i\n", child_num);
@@ -470,6 +471,7 @@ void FColladaModelLoader::BuildCharacter()
 		//		matrix.m[3], matrix.m[7], matrix.m[11], matrix.m[15]);
 		// set bone's relative transform matrix 
 		bone->setTransformMatrix(matrix);
+		bone->setBindPoseInverse(boneInverseMatrix[i]);
 		// get parent's name from Fcollada
 		std::string parentName = boneParentName[i];
 		//		printf("boneParentName\n");
@@ -1445,6 +1447,7 @@ void FColladaModelLoader::buildSkin(FCDSkinController* skin){
 	boneNumber = (int)skin->GetJointCount();
 	boneName = new std::string[boneNumber];
 	boneMatrix = new Matrix[boneNumber];
+	boneInverseMatrix = new Matrix[boneNumber];
 	boneParentName = new std::string[boneNumber];
 	boneChildNum = new int[boneNumber];
 	boneChildName = new std::string*[boneNumber];
@@ -1457,15 +1460,15 @@ void FColladaModelLoader::buildSkin(FCDSkinController* skin){
 	{
 		FCDSkinControllerJoint* joint = skin->GetJoint(i);
 		boneName[i] = joint->GetId().c_str();
-		/*
+		
 		FMMatrix44 inverse = joint->GetBindPoseInverse() * skin->GetBindShapeTransform();
 		float tempMatrixElement[] ={inverse.m[0][0], inverse.m[0][1], inverse.m[0][2], inverse.m[0][3], 
 		inverse.m[1][0], inverse.m[1][1], inverse.m[1][2], inverse.m[1][3],
 		inverse.m[2][0], inverse.m[2][1], inverse.m[2][2], inverse.m[2][3],
 		inverse.m[3][0], inverse.m[3][1], inverse.m[3][2], inverse.m[3][3],};
 		Matrix tempMatrix = Matrix(tempMatrixElement);
-		boneMatrix[i] = tempMatrix;
-		*/
+		boneInverseMatrix[i] = tempMatrix;
+		
 	}
 
 	for(int i = 0; i < (int)skin->GetInfluenceCount(); i++)
