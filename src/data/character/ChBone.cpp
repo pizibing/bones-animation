@@ -107,7 +107,7 @@ void ChBone::setTransformMatrix(const Matrix &m){
 void ChBone::setAbsolteTransformMatrix(const Matrix &m){
 	m_absoluteRotation = m.getRotation();
 	m_translation = m.getTranslation();
-	m_bindPoseInverse = m.getInverseMatrix();
+	//m_bindPoseInverse = m.getInverseMatrix();
 }
 
 // get the bind pose inverse matrix in world space
@@ -132,9 +132,9 @@ void ChBone::calculateAbsoluteTransform(){
 		m_absoluteTranslation = m_translation;
 	}
 	//set bind pose inverse matrix
-	Matrix m;
-	m.set(m_absoluteRotation,m_absoluteTranslation);
-	m_bindPoseInverse = m.getInverseMatrix();
+	//Matrix m;
+	//m.set(m_absoluteRotation,m_absoluteTranslation);
+	//m_bindPoseInverse = m.getInverseMatrix();
 
 	// calculate child bones
 	for(int i=0;i<m_child_num;i++){

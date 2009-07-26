@@ -157,6 +157,7 @@ private:
 	int boneNumber;
 	std::string* boneName; 
 	Matrix* boneMatrix;
+	Matrix* boneInverseMatrix;
 	std::string* boneParentName; 
 	std::string** boneChildName; 
 	int* boneChildNum;
