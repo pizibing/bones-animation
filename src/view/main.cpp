@@ -248,10 +248,10 @@ void frameControl(SYSTEMTIME frameBegin,SYSTEMTIME frameEnd){
 		frameBetween = 1000 + frameEnd.wMilliseconds - frameBegin.wMilliseconds;
 
 	//control fps(mspf), and display next frame
-	if(frameBetween + 10 >= MSPF) 
+	if(frameBetween >= MSPF) 
 		glutTimerFunc(0,myGlutIdle,0);
 	else
-		glutTimerFunc(MSPF - frameBetween - 10,myGlutIdle,0);
+		glutTimerFunc(MSPF - frameBetween,myGlutIdle,0);
 }
 
 /***************************************** myGlutIdle() ***********/

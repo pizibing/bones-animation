@@ -89,8 +89,8 @@ Matrix ChSkeletonInstance::calSkeletonInstance(ChAnimationManager * animanager, 
 												 int animationtime2, const char* animation1, const char* animation2
 												 , float power1){
 	// power1 should be 0 to 1
-    assert(power1 > 0);
-	assert(power1 < 1);
+    assert(power1 >= 0);
+	assert(power1 <= 1);
 
 	// set root bone's matrix's rotation according to animation, but translation to default identity
 	// set rotation
