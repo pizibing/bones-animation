@@ -41,6 +41,8 @@ void myGlutIdle(int value);
 //////////////////////////////////////////////////////////////////////
 float xy_aspect;//screen width/height
 Command* command;//command that handles all events
+
+/* these are variables that record the states of the view */
 // arrow key down state of every frame,default state is ARROW_NONE
 // other states are ARROW_UP,ARROW_DOWN,ARROW_LEFT,ARROW_RIGHT
 int arrowState = 0;
@@ -52,6 +54,8 @@ bool rightdown = false;
 // when one key is down its effect should last for several frames
 // this value record the frame it lasts
 int arrowLast = 0;
+// fps information
+float fps;
 
 /** These are the live variables passed into GLUI ***/
 bool displayInLineDown = false;
@@ -82,6 +86,32 @@ void control_cb( int control ){
 	}
 }
 
+// draw 2D statistics information about the view on the screen
+void drawInformation(){
+	glDisable(GL_LIGHTING);
+	glDisable(GL_DEPTH_TEST);
+	glPushMatrix();   
+	glLoadIdentity();   
+	gluLookAt (0.0, 0.0, 5.0,   // vecEyePos    
+		0.0, 0.0, 0.0,  // vecLookat    
+		0.0, 1.0, 0.0); // vecUp  
+
+	//fps : **.**
+	char* print = "fps :";
+	for(int i = 0; print[i] != '\0';i++){
+		glRasterPos2f(-2.5+0.05*i,-1.75);
+		glutBitmapCharacter(GLUT_BITMAP_8_BY_13,print[i]);
+	}
+	char printFloat[32];
+	sprintf(printFloat,"%f",fps);
+	for(int i = 0; i < 5; i++){
+		glRasterPos2f(-2.1+0.05*i,-1.75);
+		glutBitmapCharacter(GLUT_BITMAP_8_BY_13,printFloat[i]);
+	}
+
+	glPopMatrix();
+	glEnable(GL_DEPTH_TEST);
+}
 /***************************************** myGlutDisplay() *****************/
 // display function of glut
 void myGlutDisplay( void )
@@ -93,16 +123,18 @@ void myGlutDisplay( void )
 	glLoadIdentity();
 	glFrustum( -xy_aspect*.04, xy_aspect*.04, -.04, .04, .1, EYE_SIGHT );
 
-	//draw scene
+	//draw 3D scene
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
-
 	// display in lines
 	if(displayInLineDown)
 		command->drawLineCharacter();
 	// display in meshes
 	else
 		command->drawScene();
+
+	// draw 2D information
+	drawInformation();
 
 	glutSwapBuffers(); 
 }
@@ -215,19 +247,27 @@ void frameControl(SYSTEMTIME frameBegin,SYSTEMTIME frameEnd){
 		frameBetween = 1000 + frameEnd.wMilliseconds - frameBegin.wMilliseconds;
 
 	//control fps(mspf), and display next frame
-	if(frameBetween >= MSPF) 
+	if(frameBetween + 10 >= MSPF) 
 		glutTimerFunc(0,myGlutIdle,0);
 	else
-		glutTimerFunc(MSPF - frameBetween,myGlutIdle,0);
+		glutTimerFunc(MSPF - frameBetween - 10,myGlutIdle,0);
 }
 
 /***************************************** myGlutIdle() ***********/
 
 void myGlutIdle(int value)
 {
-	//record begin time of this frame
+	// record begin time of this frame
 	SYSTEMTIME frameBegin;
 	GetLocalTime(&frameBegin);
+
+	// calculate fps
+	static SYSTEMTIME latestFrameTime;
+	int change_time = frameBegin.wMilliseconds - latestFrameTime.wMilliseconds;
+	if(change_time < 0) change_time += 1000;
+	fps = 1000/(float)(change_time);
+	// record latest frame time
+	latestFrameTime = frameBegin;
 
 	/* According to the GLUT specification, the current window is 
 	undefined during an idle callback.  So we need to explicitly change
