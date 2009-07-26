@@ -55,7 +55,8 @@ bool rightdown = false;
 // this value record the frame it lasts
 int arrowLast = 0;
 // fps information
-float fps;
+static float fps = 0;
+char printFloat[32];
 
 /** These are the live variables passed into GLUI ***/
 bool displayInLineDown = false;
@@ -97,13 +98,13 @@ void drawInformation(){
 		0.0, 1.0, 0.0); // vecUp  
 
 	//fps : **.**
-	char* print = "fps :";
+	static char* print = "fps :";
 	for(int i = 0; print[i] != '\0';i++){
 		glRasterPos2f(-2.5+0.05*i,-1.75);
 		glutBitmapCharacter(GLUT_BITMAP_8_BY_13,print[i]);
 	}
-	char printFloat[32];
-	sprintf(printFloat,"%f",fps);
+	
+	
 	for(int i = 0; i < 5; i++){
 		glRasterPos2f(-2.1+0.05*i,-1.75);
 		glutBitmapCharacter(GLUT_BITMAP_8_BY_13,printFloat[i]);
@@ -263,9 +264,16 @@ void myGlutIdle(int value)
 
 	// calculate fps
 	static SYSTEMTIME latestFrameTime;
+	// add fps every time
+	fps++;
 	int change_time = frameBegin.wMilliseconds - latestFrameTime.wMilliseconds;
-	if(change_time < 0) change_time += 1000;
-	fps = 1000/(float)(change_time);
+	if(change_time < 0){ 
+		// time pass 1 sec update real fps
+		sprintf(printFloat,"%.0f",fps);
+		// recount fps
+		fps = 0;
+	}
+
 	// record latest frame time
 	latestFrameTime = frameBegin;
 
