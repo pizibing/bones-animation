@@ -30,20 +30,16 @@ FColladaModelLoader::FColladaModelLoader(void){
 	//initialize the Fcollada namespace
 	FCollada::Initialize(); 
 
-	//initialize the values
-	m_document=NULL;
 	boneNumber = 0;
 	skinVertexNum = 0;
 	character_vbo_size = 0;
 	charactervboNum = 0;
-	filename = "";
 	m_num_animations = 0;
 	m_num_cameras = 0;
 	m_num_lights = 0;
 	m_num_materials = 0;
 	m_num_textures = 0;
 	rootBoneName = ROOT_BONE_NAME;
-	isRootBoneName = true;
 	isBootBoneSceneNode = false;
 }
 
@@ -183,82 +179,107 @@ FColladaModelLoader::~FColladaModelLoader(void){
 //it also contain three methed storeVertices, storeTexture, storeMaterials. which
 //store the vertices, texture, materials to my own structure 
 
-bool FColladaModelLoader::loadModel(int kind,const char* szPathName){
-
-	//it is a class value, which administrate the 
-	objectManager = ObjectManager::getInstance();
-	std::string tempFilename = szPathName;
-	int tempFileNameIndex = tempFilename.find_last_of("/");
-	filename = tempFilename.substr(tempFileNameIndex+1, tempFilename.length()-5-tempFileNameIndex);
-	// new dae file
-	m_document = FCollada::NewTopDocument();
-
-	//path in unicode
-	OLECHAR		wszPath[MAX_PATH+1];
-
-	//temp path
-	char		szPath[MAX_PATH+1];	
-
-	//if the path contains the http:// , then copy the path to the szPath 
-	if (strstr(szPathName, "http://"))									
+bool FColladaModelLoader::loadModel(int kind, int num, const char** szPathName){
+	szFlieNum = num;
+	//initialize the values
+	m_document= new FCDocument*[szFlieNum];
+	szfilename = new std::string[szFlieNum];
+	animationsBoneFrameNum = new int*[szFlieNum];
+	animationsBoneFrameMatrix = new Matrix**[szFlieNum];
+	animationsBoneFrameTime = new int**[szFlieNum];
+	rootAnimationsBoneFrameNum = new int[szFlieNum];
+	rootAnimationsBoneFrameMatrix = new Matrix*[szFlieNum];
+	rootAnimationsBoneFrameTime = new int*[szFlieNum];
+	isRootBoneName = new bool[szFlieNum];
+	for(int i = 0; i < szFlieNum; i++)
 	{
-		strcpy(szPath, szPathName);										
-	}
-	// else load the model from the file
-	else																
-	{
-		// get the current path
-		GetCurrentDirectoryA(MAX_PATH, szPath);	
-
-		//add the '\'
-		strcat(szPath, "\\");
-
-		//add the relative path
-		strcat(szPath, szPathName);										
+		isRootBoneName[i] = true;
 	}
 
-	//convert ascii to unicode
-	MultiByteToWideChar(CP_ACP, 0, szPath, -1, wszPath, MAX_PATH);
-
-	//convert the type of path to fstring
-	fstring fpath=FUStringConversion::ToFString(wszPath);
-
-	//load the document from the file. return true, if success
-	bool ret=FCollada::LoadDocumentFromFile(m_document, fpath);	
-
-	assert(ret);
-
-	//store the vertices, normals, texturecoords and create staticobjects to display
-	storeVertices(kind);
-
-	storeLight();
-
-	//store all the textures that contains in the document
-	storeTexture();
-
-	//store all the materials that contains in the document
-	storeMaterials();
-
-	storeCamera();
-
-	storeAnimation();
-
-	//build the scene
-	FCDSceneNode* ptr_root=m_document->GetVisualSceneRoot();
-	if(ptr_root!=NULL)
+	for(int i = 0; i < szFlieNum; i++)
 	{
-		buildScene(ptr_root, kind);
-		drawLine(ptr_root, kind);
-	}
+		//it is a class value, which administrate the 
+		objectManager = ObjectManager::getInstance();
+		std::string tempFilename = szPathName[i];
+		int tempFileNameIndex = tempFilename.find_last_of("/");
+		szfilename[i] = tempFilename.substr(tempFileNameIndex+1, tempFilename.length()-5-tempFileNameIndex);
+		// new dae file
+		m_document[i] = FCollada::NewTopDocument();
 
-	if(kind == 0)
-	{
-		BuildCharacter();
-	}
+		//path in unicode
+		OLECHAR		wszPath[MAX_PATH+1];
 
-	deleteTempValue();
+		//temp path
+		char		szPath[MAX_PATH+1];	
+
+		//if the path contains the http:// , then copy the path to the szPath 
+		if (strstr(szPathName[i], "http://"))									
+		{
+			strcpy(szPath, szPathName[i]);										
+		}
+		// else load the model from the file
+		else																
+		{
+			// get the current path
+			GetCurrentDirectoryA(MAX_PATH, szPath);	
+
+			//add the '\'
+			strcat(szPath, "\\");
+
+			//add the relative path
+			strcat(szPath, szPathName[i]);										
+		}
+
+		//convert ascii to unicode
+		MultiByteToWideChar(CP_ACP, 0, szPath, -1, wszPath, MAX_PATH);
+
+		//convert the type of path to fstring
+		fstring fpath=FUStringConversion::ToFString(wszPath);
+
+		//load the document from the file. return true, if success
+		bool ret=FCollada::LoadDocumentFromFile(m_document[i], fpath);	
+
+		assert(ret);
+	}
+		//store the vertices, normals, texturecoords and create staticobjects to display
+		storeVertices(kind, m_document[0]);
+
+		storeLight(m_document[0]);
+
+		//store all the textures that contains in the document
+		storeTexture(m_document[0]);
+
+		//store all the materials that contains in the document
+		storeMaterials(m_document[0]);
+
+		storeCamera(m_document[0]);
+
+		storeAnimation(m_document[0]);
+
+		//build the scene
+		FCDSceneNode** ptr_root = new FCDSceneNode*[szFlieNum];
+		for(int j = 0; j < szFlieNum; j++)
+		{
+			ptr_root[j]=m_document[j]->GetVisualSceneRoot();
+		}
+		FCDSceneNode* ptr_rootLine=m_document[0]->GetVisualSceneRoot();
+
+		if(ptr_root[0]!=NULL)
+		{
+			buildScene(ptr_root, 0);
+			drawLine(ptr_rootLine, 0);
+		}
+
+		if(kind == 0)
+		{
+			BuildCharacter();
+		}
+
+		deleteTempValue();
+	
 	return true;
 }
+
 
 void FColladaModelLoader::deleteTempValue()
 {
@@ -516,53 +537,20 @@ void FColladaModelLoader::BuildCharacter()
 	ChAnimationManager* animations = character->getAnimations();
 	// load animations from this file
 
-	// create a new animation, the name of the animation is necessary
-	// get name of the animation from Fcollada
-	// you can take the file name as animation name simply
-	std::string animationName = filename;
-	printf("animationName\n");
-	printf("%s\n", animationName.c_str());
-	ChAnimation* animation = animations->getAnimation(animationName);
-	/* each bone of the skeleton has one corresponding ChTrack in one
-	animation which records the movement of the bone */
-	//set rootbone animation
-	// get bone's name
-	std::string animationboneName = ROOT_BONE_NAME;
-	//		printf("boneName\n");
-	//		printf("%s\n", animationboneName.c_str());
-	// get bone's relative ChTrack
-	ChTrack* track = animation->getTrack(animationboneName);
-	/* initialize the track */
-	// get key frame number of this track from Fcollada
-	// usually is the animation total key frame number
-	int rootFrame_num = rootAnimationsBoneFrameNum;
-	//		printf("frame_num\n");
-	//		printf("%i\n", frame_num);
-	// set key frame number
-	track->init(rootFrame_num);
-	// for each key frame
-	for(int i=0;i<rootFrame_num;i++){
-		// get relative change matrix of the bone in this key frame
-		// from Fcollada
-		Matrix matrix = rootAnimationsBoneFrameMatrix[i];
-		//			printf("boneMatrix\n");
-		//			printf("%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n",
-		//			matrix.m[0], matrix.m[4], matrix.m[8], matrix.m[12], 
-		//			matrix.m[1], matrix.m[5], matrix.m[9], matrix.m[13], 
-		//			matrix.m[2], matrix.m[6], matrix.m[10], matrix.m[14], 
-		//			matrix.m[3], matrix.m[7], matrix.m[11], matrix.m[15]);
-		// get this key frame's frame number in the whole animation
-		// from Fcollada
-		int frame_time = rootAnimationsBoneFrameTime[i];
-		//			printf("frame_time\n");
-		//			printf("%i\n", frame_time);
-		// add the key frame into the track
-		track->addKeyFrame(matrix,frame_time);
-	}
-	// for each bone (how to go through all the bones is your choice)
-	for(int i=0;i<bone_num;i++){
+	for(int p=0; p<szFlieNum; p++)
+	{
+		// create a new animation, the name of the animation is necessary
+		// get name of the animation from Fcollada
+		// you can take the file name as animation name simply
+		std::string animationName = szfilename[p];
+		printf("animationName\n");
+		printf("%s\n", animationName.c_str());
+		ChAnimation* animation = animations->getAnimation(animationName);
+		/* each bone of the skeleton has one corresponding ChTrack in one
+		animation which records the movement of the bone */
+		//set rootbone animation
 		// get bone's name
-		std::string animationboneName = boneName[i];
+		std::string animationboneName = ROOT_BONE_NAME;
 		//		printf("boneName\n");
 		//		printf("%s\n", animationboneName.c_str());
 		// get bone's relative ChTrack
@@ -570,17 +558,17 @@ void FColladaModelLoader::BuildCharacter()
 		/* initialize the track */
 		// get key frame number of this track from Fcollada
 		// usually is the animation total key frame number
-		int frame_num = animationsBoneFrameNum[i];
-		//		printf("frame_num\n");
-		//		printf("%i\n", frame_num);
+		int rootFrame_num = rootAnimationsBoneFrameNum[p];
+		//		printf("rootFrame_num\n");
+		//		printf("%i\n", rootFrame_num);
 		// set key frame number
-		track->init(frame_num);
+		track->init(rootFrame_num);
 		// for each key frame
-		for(int j=0;j<frame_num;j++){
+		for(int i=0;i<rootFrame_num;i++){
 			// get relative change matrix of the bone in this key frame
 			// from Fcollada
-			Matrix matrix = animationsBoneFrameMatrix[i][j];
-			//			printf("boneMatrix\n");
+			Matrix matrix = rootAnimationsBoneFrameMatrix[p][i];
+			//			printf("rootBoneMatrix\n");
 			//			printf("%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n",
 			//			matrix.m[0], matrix.m[4], matrix.m[8], matrix.m[12], 
 			//			matrix.m[1], matrix.m[5], matrix.m[9], matrix.m[13], 
@@ -588,15 +576,50 @@ void FColladaModelLoader::BuildCharacter()
 			//			matrix.m[3], matrix.m[7], matrix.m[11], matrix.m[15]);
 			// get this key frame's frame number in the whole animation
 			// from Fcollada
-			int frame_time = animationsBoneFrameTime[i][j];
-			//			printf("frame_time\n");
+			int frame_time = rootAnimationsBoneFrameTime[p][i];
+			//			printf("rootFrame_time\n");
 			//			printf("%i\n", frame_time);
 			// add the key frame into the track
 			track->addKeyFrame(matrix,frame_time);
 		}
-		//		printf("\n");
+		// for each bone (how to go through all the bones is your choice)
+		for(int i=0;i<bone_num;i++){
+			// get bone's name
+			std::string animationboneName = boneName[i];
+			//		printf("boneName\n");
+			//		printf("%s\n", animationboneName.c_str());
+			// get bone's relative ChTrack
+			ChTrack* track = animation->getTrack(animationboneName);
+			/* initialize the track */
+			// get key frame number of this track from Fcollada
+			// usually is the animation total key frame number
+			int frame_num = animationsBoneFrameNum[p][i];
+			//		printf("frame_num\n");
+			//		printf("%i\n", frame_num);
+			// set key frame number
+			track->init(frame_num);
+			// for each key frame
+			for(int j=0;j<frame_num;j++){
+				// get relative change matrix of the bone in this key frame
+				// from Fcollada
+				Matrix matrix = animationsBoneFrameMatrix[p][i][j];
+				//			printf("boneMatrix\n");
+				//			printf("%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n",
+				//			matrix.m[0], matrix.m[4], matrix.m[8], matrix.m[12], 
+				//			matrix.m[1], matrix.m[5], matrix.m[9], matrix.m[13], 
+				//			matrix.m[2], matrix.m[6], matrix.m[10], matrix.m[14], 
+				//			matrix.m[3], matrix.m[7], matrix.m[11], matrix.m[15]);
+				// get this key frame's frame number in the whole animation
+				// from Fcollada
+				int frame_time = animationsBoneFrameTime[p][i][j];
+				//			printf("frame_time\n");
+				//			printf("%i\n", frame_time);
+				// add the key frame into the track
+				track->addKeyFrame(matrix,frame_time);
+			}
+			//		printf("\n");
+		}
 	}
-
 	/* step3: initialize skin */
 	// create new ChSkin
 	ChSkin* skin = character->getSkin();
@@ -686,12 +709,12 @@ void FColladaModelLoader::BuildCharacter()
 		float* texCoord = character_vbo_texcoords[i];
 		// get length of texCoord
 		int tcSize = vSize * 2;
-//		printf("%i\n", tcSize);
-//		printf("\n");
+		//		printf("%i\n", tcSize);
+		//		printf("\n");
 		// get texture id
 		GLuint texId = character_vbo_texid[i];
-//		printf("%i\n", texId);
-//		printf("\n");
+		//		printf("%i\n", texId);
+		//		printf("\n");
 		// set i-th vbo's texture
 		character->setVBOTexture(texCoord,tcSize,texId,i);
 		// get material information of that vbo
@@ -700,12 +723,12 @@ void FColladaModelLoader::BuildCharacter()
 		float sp[4] = {character_vbo_sp[i][0], character_vbo_sp[i][1], character_vbo_sp[i][2], character_vbo_sp[i][3]};
 		float em[4] = {character_vbo_em[i][0], character_vbo_em[i][1], character_vbo_em[i][2], character_vbo_em[i][3]};
 		float sh = character_vbo_sh[i];
-//		printf("am = (%f,%f,%f,%f)\n", am[0], am[1], am[2], am[3]);
-//		printf("di = (%f,%f,%f,%f)\n", di[0], di[1], di[2], di[3]);
-//		printf("sp = (%f,%f,%f,%f)\n", sp[0], sp[1], sp[2], sp[3]);
-//		printf("em = (%f,%f,%f,%f)\n", em[0], em[1], em[2], em[3]);
-//		printf("sh = %f\n", sh);
-//		printf("\n");
+		//		printf("am = (%f,%f,%f,%f)\n", am[0], am[1], am[2], am[3]);
+		//		printf("di = (%f,%f,%f,%f)\n", di[0], di[1], di[2], di[3]);
+		//		printf("sp = (%f,%f,%f,%f)\n", sp[0], sp[1], sp[2], sp[3]);
+		//		printf("em = (%f,%f,%f,%f)\n", em[0], em[1], em[2], em[3]);
+		//		printf("sh = %f\n", sh);
+		//		printf("\n");
 		// set i-th vbo's material
 		character->setVBOMaterial(am,di,sp,em,sh,i);
 	}
@@ -731,7 +754,7 @@ int FColladaModelLoader::getBoneNumber()
 	return boneNumber;
 }
 //store the vertices, normals, texturecoords and create staticobjects to display
-void FColladaModelLoader::storeVertices(int kind)
+void FColladaModelLoader::storeVertices(int kind, FCDocument* m_document)
 {
 	// how many geometries there are?
 	FCDGeometryLibrary* geolib=m_document->GetGeometryLibrary();
@@ -925,7 +948,7 @@ void FColladaModelLoader::storeVertices(int kind)
 
 
 
-void FColladaModelLoader::storeLight(){
+void FColladaModelLoader::storeLight(FCDocument* m_document){
 	// how many lights there are?
 	FCDLightLibrary* lightlib=m_document->GetLightLibrary();
 	m_num_lights=(int) lightlib->GetEntityCount();
@@ -967,7 +990,7 @@ void FColladaModelLoader::storeLight(){
 }
 
 //store all the textures that contains in the document
-void FColladaModelLoader::storeTexture(){
+void FColladaModelLoader::storeTexture(FCDocument* m_document){
 	//get the image from the document
 	FCDImageLibrary* imagelib=m_document->GetImageLibrary();
 	//get the number of the image
@@ -981,7 +1004,7 @@ void FColladaModelLoader::storeTexture(){
 }
 
 //store all the materials that contains in the document
-void FColladaModelLoader::storeMaterials(){
+void FColladaModelLoader::storeMaterials(FCDocument* m_document){
 	//get the material from the document
 	FCDMaterialLibrary* materiallib=m_document->GetMaterialLibrary();
 	//get the number of the material
@@ -997,7 +1020,7 @@ void FColladaModelLoader::storeMaterials(){
 	}
 }
 
-void FColladaModelLoader::storeCamera(){
+void FColladaModelLoader::storeCamera(FCDocument* m_document){
 	// copy cameras to my structures
 	// cameras
 	FCDCameraLibrary* cameralib=m_document->GetCameraLibrary();
@@ -1024,7 +1047,7 @@ void FColladaModelLoader::storeCamera(){
 
 }
 
-void FColladaModelLoader::storeAnimation(){
+void FColladaModelLoader::storeAnimation(FCDocument* m_document){
 	// how many animations are there?
 	FCDAnimationLibrary* animationlib=m_document->GetAnimationLibrary();
 	m_num_animations=(int) animationlib->GetEntityCount();
@@ -1037,19 +1060,23 @@ void FColladaModelLoader::storeAnimation(){
 }
 
 //build the scene include the material of the polygons, the texture of the polygons and the matrix of the bone.
-void FColladaModelLoader::buildScene(FCDSceneNode* node_origin, int kind)
+void FColladaModelLoader::buildScene(FCDSceneNode** node_origin, int kind)
 {
 	//child scene node
-	FCDSceneNode* child_origin;
+	FCDSceneNode** child_origin = new FCDSceneNode*[szFlieNum];
 
-	buildSceneInstance(node_origin, kind);
+	buildSceneInstance(node_origin[0], kind);
 
-	buildSceneMatrix(node_origin);
+	for(int i = 0; i < szFlieNum; i++){
+		buildSceneMatrix(node_origin[i], i);
+	}
+	initBoneScene(node_origin[0]);
 
-	initBoneScene(node_origin);
-
-	for (int i=0; i<(int)node_origin->GetChildrenCount(); i++) {
-		child_origin=node_origin->GetChild(i);
+	for (int i=0; i<(int)node_origin[0]->GetChildrenCount(); i++) {
+		for(int j = 0; j < szFlieNum; j++)
+		{
+			child_origin[j]=node_origin[j]->GetChild(i);
+		}
 		buildScene(child_origin, kind);
 	}
 }
@@ -1450,24 +1477,25 @@ void FColladaModelLoader::buildSkin(FCDSkinController* skin){
 	boneParentName = new std::string[boneNumber];
 	boneChildNum = new int[boneNumber];
 	boneChildName = new std::string*[boneNumber];
-	animationsBoneFrameNum = new int[boneNumber];
-	animationsBoneFrameMatrix = new Matrix*[boneNumber];
-	animationsBoneFrameTime = new int*[boneNumber];
-
+	for(int i = 0; i < szFlieNum; i++){
+		animationsBoneFrameNum[i] = new int[boneNumber];
+		animationsBoneFrameMatrix[i] = new Matrix*[boneNumber];
+		animationsBoneFrameTime[i] = new int*[boneNumber];
+	}
 
 	for(int i = 0; i < (int)skin->GetJointCount(); i++)
 	{
 		FCDSkinControllerJoint* joint = skin->GetJoint(i);
 		boneName[i] = joint->GetId().c_str();
-		
+
 		FMMatrix44 inverse = joint->GetBindPoseInverse() * skin->GetBindShapeTransform();
 		float tempMatrixElement[] ={inverse.m[0][0], inverse.m[0][1], inverse.m[0][2], inverse.m[0][3], 
-		inverse.m[1][0], inverse.m[1][1], inverse.m[1][2], inverse.m[1][3],
-		inverse.m[2][0], inverse.m[2][1], inverse.m[2][2], inverse.m[2][3],
-		inverse.m[3][0], inverse.m[3][1], inverse.m[3][2], inverse.m[3][3],};
+			inverse.m[1][0], inverse.m[1][1], inverse.m[1][2], inverse.m[1][3],
+			inverse.m[2][0], inverse.m[2][1], inverse.m[2][2], inverse.m[2][3],
+			inverse.m[3][0], inverse.m[3][1], inverse.m[3][2], inverse.m[3][3],};
 		Matrix tempMatrix = Matrix(tempMatrixElement);
 		boneInverseMatrix[i] = tempMatrix;
-		
+
 	}
 
 	for(int i = 0; i < (int)skin->GetInfluenceCount(); i++)
@@ -1480,12 +1508,12 @@ void FColladaModelLoader::buildSkin(FCDSkinController* skin){
 	}
 
 }
-void FColladaModelLoader::buildSceneMatrix(FCDSceneNode* node_origin)
+void FColladaModelLoader::buildSceneMatrix(FCDSceneNode* node_origin, int m_documentIndex)
 {
 	if(node_origin ->GetJointFlag() == true){
 		int index = getBoneIndexByName(node_origin->GetSubId().c_str());
-		animationsBoneFrameNum[index] = 0;
-		if(isRootBoneName == true)
+		animationsBoneFrameNum[m_documentIndex][index] = 0;
+		if(isRootBoneName[m_documentIndex] == true)
 		{
 			rootBoneSceneNode = node_origin;
 			FMMatrix44 inverse = node_origin->ToMatrix();
@@ -1505,13 +1533,14 @@ void FColladaModelLoader::buildSceneMatrix(FCDSceneNode* node_origin)
 						animated=trans_matrix->GetAnimated();
 						assert((int)animated->GetValueCount() == 16);
 						int animationKeyCount = animated->GetCurves().at(0)[0]->GetKeyCount();
-						rootAnimationsBoneFrameNum = animationKeyCount;
-						rootAnimationsBoneFrameMatrix = new Matrix[animationKeyCount];
-						rootAnimationsBoneFrameTime = new int[animationKeyCount];
+						printf("%i\n", animationKeyCount);
+						rootAnimationsBoneFrameNum[m_documentIndex] = animationKeyCount;
+						rootAnimationsBoneFrameMatrix[m_documentIndex] = new Matrix[animationKeyCount];
+						rootAnimationsBoneFrameTime[m_documentIndex] = new int[animationKeyCount];
 
 						for(int j = 0; j < animationKeyCount; j++)
 						{
-							rootAnimationsBoneFrameTime[j] = (int)((animated->GetCurves().at(0)[0]->GetKey(j)->input * sigle_frame_time) + 0.5);	
+							rootAnimationsBoneFrameTime[m_documentIndex][j] = (int)((animated->GetCurves().at(0)[0]->GetKey(j)->input * sigle_frame_time) + 0.5);	
 							float* tempAnimationMatrixFloat = new float[(int)animated->GetValueCount()];						
 							for(int p = 0; p < (int)animated->GetValueCount(); p++)
 							{
@@ -1521,7 +1550,7 @@ void FColladaModelLoader::buildSceneMatrix(FCDSceneNode* node_origin)
 							FMMatrix44 fmmatrix(tempAnimationMatrixFloat);
 
 							Matrix tempAnimationMatrix = convertToMatrix(fmmatrix);
-							rootAnimationsBoneFrameMatrix[j] = tempAnimationMatrix;
+							rootAnimationsBoneFrameMatrix[m_documentIndex][j] = tempAnimationMatrix;
 						}
 
 					}
@@ -1529,7 +1558,7 @@ void FColladaModelLoader::buildSceneMatrix(FCDSceneNode* node_origin)
 				}
 			}
 		}
-		isRootBoneName = false;
+		isRootBoneName[m_documentIndex] = false;
 
 		if(index >= 0 && index< boneNumber)
 		{
@@ -1669,13 +1698,13 @@ void FColladaModelLoader::buildSceneMatrix(FCDSceneNode* node_origin)
 						animated=trans_matrix->GetAnimated();
 						assert((int)animated->GetValueCount() == 16);
 						int animationKeyCount = animated->GetCurves().at(0)[0]->GetKeyCount();
-						animationsBoneFrameNum[index] = animationKeyCount;
-						animationsBoneFrameMatrix[index] = new Matrix[animationKeyCount];
-						animationsBoneFrameTime[index] = new int[animationKeyCount];
+						animationsBoneFrameNum[m_documentIndex][index] = animationKeyCount;
+						animationsBoneFrameMatrix[m_documentIndex][index] = new Matrix[animationKeyCount];
+						animationsBoneFrameTime[m_documentIndex][index] = new int[animationKeyCount];
 
 						for(int j = 0; j < animationKeyCount; j++)
 						{
-							animationsBoneFrameTime[index][j] = (int)((animated->GetCurves().at(0)[0]->GetKey(j)->input * sigle_frame_time) + 0.5);	
+							animationsBoneFrameTime[m_documentIndex][index][j] = (int)((animated->GetCurves().at(0)[0]->GetKey(j)->input * sigle_frame_time) + 0.5);	
 							float* tempAnimationMatrixFloat = new float[(int)animated->GetValueCount()];						
 							for(int p = 0; p < (int)animated->GetValueCount(); p++)
 							{
@@ -1684,7 +1713,7 @@ void FColladaModelLoader::buildSceneMatrix(FCDSceneNode* node_origin)
 							FMMatrix44 fmmatrix(tempAnimationMatrixFloat);
 
 							Matrix tempAnimationMatrix = convertToMatrix(fmmatrix);
-							animationsBoneFrameMatrix[index][j] = tempAnimationMatrix;
+							animationsBoneFrameMatrix[m_documentIndex][index][j] = tempAnimationMatrix;
 						}
 
 					}

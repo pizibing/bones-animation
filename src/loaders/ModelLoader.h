@@ -13,7 +13,7 @@ public:
 	 * return: true when model is successfully loaded, vice versa
 	 */
 	virtual bool loadModel(int kind, const char* path) = 0;
-
+	virtual bool loadMulModel(int kind, int num, const char** szPathName) = 0;
 	// this load function is only for loading of character kind model
 	// path1 record skeleton skin and one animation information
 	// path2 and path3 each records one corresponding animation to the skeleton
