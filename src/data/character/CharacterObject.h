@@ -150,6 +150,9 @@ public:
 	// i.e. the z axis translation of the character
 	void setHeight(float height);
 
+	// set the x,y position of the character
+	void setPositionXY(float x, float y);
+
 private:
 	/* display */
 	// a pointer to an array that stores all the VBOMeshes of this 

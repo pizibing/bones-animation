@@ -340,3 +340,9 @@ void CharacterObject::setHeight(float height){
 	// 14-th element of matrix instance is the z axis translation
 	chMatrixInstance[14] = height; 
 }
+
+// set the x,y position of the character
+void CharacterObject::setPositionXY(float x, float y){
+	chMatrixInstance[12] = x;
+	chMatrixInstance[13] = y;
+}

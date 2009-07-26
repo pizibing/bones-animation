@@ -61,7 +61,7 @@ Matrix ChSkeletonInstance::calSkeletonInstance(ChAnimationManager * animanager, 
 	// set root bone's matrix's rotation according to animation, but translation to default identity
 	Matrix rootMatrix = Matrix();
 	// set rotation
-	rootMatrix.set(animanager->blendAnimationBoneRotation(animationtime,animation,m_skeleton->getRootBone()->getName()));
+	//rootMatrix.set(animanager->blendAnimationBoneRotation(animationtime,animation,m_skeleton->getRootBone()->getName()));
 	root->setMatrix(rootMatrix);
 	// for all bones except root bone, set matrix to relative matrix this animation time
 	for(int i=1;i<m_skeleton->getBoneNum();i++){

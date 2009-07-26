@@ -125,7 +125,11 @@ void Calculator::moveCharacter(float angle){
 		}
 	}
 
-	// choose the animation to use
+	// record the character's x and y position before move
+	float x = character->getPosition()[0];
+	float y = character->getPosition()[1];
+
+	// choose the animation to use and move character
 	float v = character->getV();
 	// idle
 	if(v == 0){
@@ -174,6 +178,21 @@ void Calculator::moveCharacter(float angle){
 		character->setGesture(CHARACTER_RUN,frameControlRun);
 		// add frame control
 		frameControlRun++;
+	}
+
+	// if character move out of the area of terrain, cancel the
+	// move
+	if(terrains->size() != 0){
+		// get terrain
+		TerrainObject* terrain = (TerrainObject*)(*terrains)[0];
+		// get current position of character
+		float cx = character->getPosition()[0];
+		float cy = character->getPosition()[1];
+		// check whether character is out of terrain
+		if(!terrain->isInsideThisTerrain(cx,cy)){
+			// cancel move
+			character->setPositionXY(x,y);
+		}
 	}
 	
 	// move camera
