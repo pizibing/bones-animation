@@ -96,7 +96,7 @@ void drawInformation(){
 	gluLookAt (0.0, 0.0, 5.0,   // vecEyePos    
 		0.0, 0.0, 0.0,  // vecLookat    
 		0.0, 1.0, 0.0); // vecUp  
-
+	glColor3f(1.0f,1.0f,1.0f);
 	//fps : **.**
 	static char* print = "fps :";
 	for(int i = 0; print[i] != '\0';i++){
