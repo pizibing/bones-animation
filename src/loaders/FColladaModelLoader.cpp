@@ -1515,7 +1515,7 @@ void FColladaModelLoader::buildSceneMatrix(FCDSceneNode* node_origin, int m_docu
 {
 	if(node_origin ->GetJointFlag() == true){
 		int index = getBoneIndexByName(node_origin->GetSubId().c_str());
-		animationsBoneFrameNum[m_documentIndex][index] = 0;
+		if(index>=0)animationsBoneFrameNum[m_documentIndex][index] = 0;
 		if(isRootBoneName[m_documentIndex] == true)
 		{
 			rootBoneSceneNode = node_origin;
@@ -1534,21 +1534,27 @@ void FColladaModelLoader::buildSceneMatrix(FCDSceneNode* node_origin, int m_docu
 					//int num_curves;
 					if (trans_matrix->IsAnimated()) {		
 						animated=trans_matrix->GetAnimated();
-						if (animated->GetCurves().at(0).size() != 0)
-						{
-							int animationKeyCount = animated->GetCurve(0)->GetKeyCount();
+						// get first animation curve id
+						unsigned int firstCurveId = 0;
+						while(firstCurveId<animated->GetValueCount() && animated->GetCurve(firstCurveId)==NULL)firstCurveId++;
+						if(firstCurveId < animated->GetValueCount()){
+							// has animation
+							int animationKeyCount = animated->GetCurve(firstCurveId)->GetKeyCount();
 							rootAnimationsBoneFrameNum[m_documentIndex] = animationKeyCount;
 							rootAnimationsBoneFrameMatrix[m_documentIndex] = new Matrix[animationKeyCount];
 							rootAnimationsBoneFrameTime[m_documentIndex] = new int[animationKeyCount];
-
+							float tempAnimationMatrixFloat[16];
 							for(int j = 0; j < animationKeyCount; j++)
-							{
-								rootAnimationsBoneFrameTime[m_documentIndex][j] = (int)((animated->GetCurve(0)->GetKey(j)->input * sigle_frame_time) + 0.5);	
-								float* tempAnimationMatrixFloat = new float[(int)animated->GetValueCount()];						
-								for(int p = 0; p < (int)animated->GetValueCount(); p++)
+							{					
+								for(int p = 0; p < 16; p++)
 								{
-									animated->GetQualifier(p);
-									tempAnimationMatrixFloat[p] = animated->GetCurve(p)->GetKey(j)->output;
+									FCDAnimationCurve * curve =animated->GetCurve(p);
+									if(curve == NULL){
+										tempAnimationMatrixFloat[p] = int(p%5 == 0); 
+										continue;
+									}
+									rootAnimationsBoneFrameTime[m_documentIndex][j] = (int)(curve->GetKey(j)->input * sigle_frame_time + 0.5);
+									tempAnimationMatrixFloat[p] = curve->GetKey(j)->output;
 								}
 
 								FMMatrix44 fmmatrix(tempAnimationMatrixFloat);
@@ -1557,12 +1563,11 @@ void FColladaModelLoader::buildSceneMatrix(FCDSceneNode* node_origin, int m_docu
 								rootAnimationsBoneFrameMatrix[m_documentIndex][j] = tempAnimationMatrix;
 							}
 						}
-						else
-						{
+						else {
+							// no animation
 							rootAnimationsBoneFrameNum[m_documentIndex] = 0;
 						}
 					}
-					continue;
 				}
 			}
 		}
