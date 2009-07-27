@@ -72,6 +72,14 @@ bool CommandModelLoader::loadModel(int kind, const char* path){
 	}
 }
 
+// load multiple models at one time
+// kind is the role of the model in the entire world. e.g.TERRAIN_LOADER_KIND,
+// CHARACTER_LOADER_KIND, STATIC_LOADER_KIND
+// num is the number of models to load
+// szPathName is the path names of those model to load
+// if kind is CHARACTER_LOADER_KIND, then the first model will be treated
+// as a normal character while the others will be treated as animations of
+// the first character.
 bool CommandModelLoader::loadMulModel(int kind, int num, const char** path){
 	// according to kind, arrange corresponding ModelLoader to
 	// achieve the task
@@ -85,15 +93,5 @@ bool CommandModelLoader::loadMulModel(int kind, int num, const char** path){
 		default:
 			return false;
 	}
-}
-
-// this load function is only for loading of character kind model
-// path1 record skeleton skin and one animation information
-// path2 and path3 each records one corresponding animation to the skeleton
-// in path1
-bool CommandModelLoader::loadModel(const char* path1, const char* path2, const char* path3){
-	// use fcollada model loader to load character
-
-	return true;
 }
 

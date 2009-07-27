@@ -14,15 +14,15 @@
 // the speed of the character to turn around in degree
 const float TURN_AROUND_SPEED = 6;
 // the amount the character's speed slow down when there's no move
-const float SLOW_DOWN_NO_MOVE = 0.05;
+const float SLOW_DOWN_NO_MOVE = 0.03;
 // the amount the character's speed slow down when changing direction
 const float SLOW_DOWN_CHANGE_DIRECTION = 0.01;
 // the amount the character's speed go up every frame
 const float SPEED_UP = 0.01;
 
 // define the animation name of character's idle, walk and run
-static const char* CHARACTER_IDLE = "run_niki";
-static const char* CHARACTER_WALK = "run_niki";
+static const char* CHARACTER_IDLE = "walk_niki";
+static const char* CHARACTER_WALK = "walk_niki";
 static const char* CHARACTER_RUN = "run_niki";
 
 //constructor
