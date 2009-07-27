@@ -97,5 +97,8 @@ const Vector3D& ChAnimation::blendBoneTranslation(int animatetime,int boneId){
 
 // @return the total time of the animation;
 int ChAnimation::getAnimationTime(){
-	return m_tracks[0]->getAnimationTime();
+	int time = 0;
+	int i = 0;
+	while( i< m_track_num && (time = m_tracks[i++]->getAnimationTime()) == 0 );
+	return time;
 }

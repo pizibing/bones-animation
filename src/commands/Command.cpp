@@ -91,12 +91,15 @@ void Command::drawLineCharacter(){
 //load all default models
 bool Command::loadModel(){
 	modelLoader->loadModel(TERRAIN_LOADER_KIND,"resource/heightMap/heightmap.bmp");
-	const char** niki= new const char*[2];
-	std::string temp1 = "resource/walk_niki.dae";
+	const char** niki= new const char*[3];
+	std::string temp1 = "resource/idle_niki.dae";
 	niki[0] = (const char*)temp1.c_str();
-	std::string temp2 = "resource/run_niki.dae"; 
+	std::string temp2 = "resource/walk_niki.dae"; 
 	niki[1] = (const char*)temp2.c_str();
-	return modelLoader->loadMulModel(CHARACTER_LOADER_KIND, 2 , niki);
+	std::string temp3 = "resource/run_niki.dae"; 
+	niki[2] = (const char*)temp3.c_str();
+
+	return modelLoader->loadMulModel(CHARACTER_LOADER_KIND, 3 , niki);
 }
 
 // load a model with the given path

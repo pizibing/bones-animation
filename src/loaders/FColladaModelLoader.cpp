@@ -241,42 +241,42 @@ bool FColladaModelLoader::loadModel(int kind, int num, const char** szPathName){
 
 		assert(ret);
 	}
-		//store the vertices, normals, texturecoords and create staticobjects to display
-		storeVertices(kind, m_document[0]);
+	//store the vertices, normals, texturecoords and create staticobjects to display
+	storeVertices(kind, m_document[0]);
 
-		storeLight(m_document[0]);
+	storeLight(m_document[0]);
 
-		//store all the textures that contains in the document
-		storeTexture(m_document[0]);
+	//store all the textures that contains in the document
+	storeTexture(m_document[0]);
 
-		//store all the materials that contains in the document
-		storeMaterials(m_document[0]);
+	//store all the materials that contains in the document
+	storeMaterials(m_document[0]);
 
-		storeCamera(m_document[0]);
+	storeCamera(m_document[0]);
 
-		storeAnimation(m_document[0]);
+	storeAnimation(m_document[0]);
 
-		//build the scene
-		FCDSceneNode** ptr_root = new FCDSceneNode*[szFlieNum];
-		for(int j = 0; j < szFlieNum; j++)
-		{
-			ptr_root[j]=m_document[j]->GetVisualSceneRoot();
-		}
-		FCDSceneNode* ptr_rootLine=m_document[0]->GetVisualSceneRoot();
+	//build the scene
+	FCDSceneNode** ptr_root = new FCDSceneNode*[szFlieNum];
+	for(int j = 0; j < szFlieNum; j++)
+	{
+		ptr_root[j]=m_document[j]->GetVisualSceneRoot();
+	}
+	FCDSceneNode* ptr_rootLine=m_document[0]->GetVisualSceneRoot();
 
-		if(ptr_root[0]!=NULL)
-		{
-			buildScene(ptr_root, 0);
-			drawLine(ptr_rootLine, 0);
-		}
+	if(ptr_root[0]!=NULL)
+	{
+		buildScene(ptr_root, 0);
+		drawLine(ptr_rootLine, 0);
+	}
 
-		if(kind == 0)
-		{
-			BuildCharacter();
-		}
+	if(kind == 0)
+	{
+		BuildCharacter();
+	}
 
-		deleteTempValue();
-	
+	deleteTempValue();
+
 	return true;
 }
 
@@ -561,26 +561,29 @@ void FColladaModelLoader::BuildCharacter()
 		int rootFrame_num = rootAnimationsBoneFrameNum[p];
 		//		printf("rootFrame_num\n");
 		//		printf("%i\n", rootFrame_num);
-		// set key frame number
-		track->init(rootFrame_num);
-		// for each key frame
-		for(int i=0;i<rootFrame_num;i++){
-			// get relative change matrix of the bone in this key frame
-			// from Fcollada
-			Matrix matrix = rootAnimationsBoneFrameMatrix[p][i];
-			//			printf("rootBoneMatrix\n");
-			//			printf("%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n",
-			//			matrix.m[0], matrix.m[4], matrix.m[8], matrix.m[12], 
-			//			matrix.m[1], matrix.m[5], matrix.m[9], matrix.m[13], 
-			//			matrix.m[2], matrix.m[6], matrix.m[10], matrix.m[14], 
-			//			matrix.m[3], matrix.m[7], matrix.m[11], matrix.m[15]);
-			// get this key frame's frame number in the whole animation
-			// from Fcollada
-			int frame_time = rootAnimationsBoneFrameTime[p][i];
-			//			printf("rootFrame_time\n");
-			//			printf("%i\n", frame_time);
-			// add the key frame into the track
-			track->addKeyFrame(matrix,frame_time);
+		if(rootFrame_num != 0)
+		{
+			// set key frame number
+			track->init(rootFrame_num);
+			// for each key frame
+			for(int i=0;i<rootFrame_num;i++){
+				// get relative change matrix of the bone in this key frame
+				// from Fcollada
+				Matrix matrix = rootAnimationsBoneFrameMatrix[p][i];
+				//			printf("rootBoneMatrix\n");
+				//			printf("%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n",
+				//			matrix.m[0], matrix.m[4], matrix.m[8], matrix.m[12], 
+				//			matrix.m[1], matrix.m[5], matrix.m[9], matrix.m[13], 
+				//			matrix.m[2], matrix.m[6], matrix.m[10], matrix.m[14], 
+				//			matrix.m[3], matrix.m[7], matrix.m[11], matrix.m[15]);
+				// get this key frame's frame number in the whole animation
+				// from Fcollada
+				int frame_time = rootAnimationsBoneFrameTime[p][i];
+				//			printf("rootFrame_time\n");
+				//			printf("%i\n", frame_time);
+				// add the key frame into the track
+				track->addKeyFrame(matrix,frame_time);
+			}
 		}
 		// for each bone (how to go through all the bones is your choice)
 		for(int i=0;i<bone_num;i++){
@@ -1531,28 +1534,33 @@ void FColladaModelLoader::buildSceneMatrix(FCDSceneNode* node_origin, int m_docu
 					//int num_curves;
 					if (trans_matrix->IsAnimated()) {		
 						animated=trans_matrix->GetAnimated();
-						assert((int)animated->GetValueCount() == 16);
-						int animationKeyCount = animated->GetCurves().at(0)[0]->GetKeyCount();
-						printf("%i\n", animationKeyCount);
-						rootAnimationsBoneFrameNum[m_documentIndex] = animationKeyCount;
-						rootAnimationsBoneFrameMatrix[m_documentIndex] = new Matrix[animationKeyCount];
-						rootAnimationsBoneFrameTime[m_documentIndex] = new int[animationKeyCount];
-
-						for(int j = 0; j < animationKeyCount; j++)
+						if (animated->GetCurves().at(0).size() != 0)
 						{
-							rootAnimationsBoneFrameTime[m_documentIndex][j] = (int)((animated->GetCurves().at(0)[0]->GetKey(j)->input * sigle_frame_time) + 0.5);	
-							float* tempAnimationMatrixFloat = new float[(int)animated->GetValueCount()];						
-							for(int p = 0; p < (int)animated->GetValueCount(); p++)
+							int animationKeyCount = animated->GetCurve(0)->GetKeyCount();
+							rootAnimationsBoneFrameNum[m_documentIndex] = animationKeyCount;
+							rootAnimationsBoneFrameMatrix[m_documentIndex] = new Matrix[animationKeyCount];
+							rootAnimationsBoneFrameTime[m_documentIndex] = new int[animationKeyCount];
+
+							for(int j = 0; j < animationKeyCount; j++)
 							{
-								tempAnimationMatrixFloat[p] = animated->GetCurves().at(p)[0]->GetKey(j)->output;
+								rootAnimationsBoneFrameTime[m_documentIndex][j] = (int)((animated->GetCurve(0)->GetKey(j)->input * sigle_frame_time) + 0.5);	
+								float* tempAnimationMatrixFloat = new float[(int)animated->GetValueCount()];						
+								for(int p = 0; p < (int)animated->GetValueCount(); p++)
+								{
+									animated->GetQualifier(p);
+									tempAnimationMatrixFloat[p] = animated->GetCurve(p)->GetKey(j)->output;
+								}
+
+								FMMatrix44 fmmatrix(tempAnimationMatrixFloat);
+
+								Matrix tempAnimationMatrix = convertToMatrix(fmmatrix);
+								rootAnimationsBoneFrameMatrix[m_documentIndex][j] = tempAnimationMatrix;
 							}
-
-							FMMatrix44 fmmatrix(tempAnimationMatrixFloat);
-
-							Matrix tempAnimationMatrix = convertToMatrix(fmmatrix);
-							rootAnimationsBoneFrameMatrix[m_documentIndex][j] = tempAnimationMatrix;
 						}
-
+						else
+						{
+							rootAnimationsBoneFrameNum[m_documentIndex] = 0;
+						}
 					}
 					continue;
 				}
