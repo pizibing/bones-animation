@@ -83,12 +83,14 @@ const Vector3D & ChTrack::getTranslation(int animate_time){
 
 // @return the relative rotate transform of the last frame
 const Quaternion& ChTrack::getLastRotation() const{
+	if(m_keyframe_num == 0 ) return m_bone->getRotation();
 	return m_keyframes[m_keyframe_num - 1]->getRotation();
 }
 
 // @return the relative translate transform of the last frame
 const Vector3D& ChTrack::getLastTranslation() const{
-	return m_keyframes[m_keyframe_num - 1]->getTranslation();
+	if(m_keyframe_num == 0 ) return m_bone->getTranslation();
+	return m_keyframes[m_keyframe_num - 1]->getTranslation(); 
 }
 
 // @return the bone of the track
@@ -114,7 +116,9 @@ bool ChTrack::addKeyFrame(const Matrix &matrix,int frame_time){
 
 // @return the total animation time of the track
 int ChTrack::getAnimationTime() const{
-	return m_keyframes[m_keyframe_num-1]->getTime();
+	if(m_keyframe_num != 0)
+		return m_keyframes[m_keyframe_num-1]->getTime();
+	else return 0;
 }
 
 // initialized the key frame array
