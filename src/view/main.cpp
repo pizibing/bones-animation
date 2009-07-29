@@ -190,50 +190,46 @@ void myGlutSpecial(int a_keys, int x, int y){
 		// character move forward
 	case GLUT_KEY_UP:
 		updown = true;
-		// if left arrow key is also pushed down
-		if(leftdown) arrowState = ARROW_LEFT_UP;
-		// if right arrow key is also pushed down
-		else if(rightdown) arrowState = ARROW_RIGHT_UP;
-		// only up is pushed down
-		else arrowState = ARROW_UP;
 		arrowLast = 0;
 		break;
 		// character move backward
 	case GLUT_KEY_DOWN:
 		downdown = true;
-		// if left arrow key is also pushed down
-		if(leftdown) arrowState = ARROW_LEFT_DOWN;
-		// if right arrow key is also pushed down
-		else if(rightdown) arrowState = ARROW_RIGHT_DOWN;
-		// only down is pushed down
-		else arrowState = ARROW_DOWN;
 		arrowLast = 0;
 		break;
 		// character move left
 	case GLUT_KEY_LEFT:
 		leftdown = true;
-		// if up arrow key is also pushed down
-		if(updown) arrowState = ARROW_LEFT_UP;
-		// if down arrow key is also pushed down
-		else if(downdown) arrowState = ARROW_LEFT_DOWN;
-		// only left arrow is pushed down
-		else arrowState = ARROW_LEFT;
 		arrowLast = 0;
 		break;
 		// character move right
 	case GLUT_KEY_RIGHT:
 		rightdown = true;
-		// if up arrow key is also pushed down
-		if(updown) arrowState = ARROW_RIGHT_UP;
-		// if down arrow key is also pushed down
-		else if(downdown) arrowState = ARROW_RIGHT_DOWN;
-		// only right arrow is pushed down
-		else arrowState = ARROW_RIGHT;
 		arrowLast = 0;
 		break;
 	default:
 		break;
 	}
+}
+
+// according to the arrow key states to decide the arrowState
+void arrowControl(){
+	// if up and left arrow key are pushed down
+	if(updown && leftdown) arrowState = ARROW_LEFT_UP;
+	// if down and left arrow key are pushed down
+	else if(downdown && leftdown) arrowState = ARROW_LEFT_DOWN;
+	// if up and right arrow key are pushed down
+	else if(updown && rightdown) arrowState = ARROW_RIGHT_UP;
+	// if down and right arrow key are pushed down
+	else if(downdown && rightdown) arrowState = ARROW_RIGHT_DOWN;
+	// only up arrow key is pushed down
+	else if(updown) arrowState = ARROW_UP;
+	// only down arrow key is pushed down
+	else if(downdown) arrowState = ARROW_DOWN;
+	// only left arrow key is pushed down
+	else if(leftdown) arrowState = ARROW_LEFT;
+	// only right arrow key is pushed down
+	else if(rightdown) arrowState = arrowState = ARROW_RIGHT;
 }
 
 // control the frame update time to MSPF
@@ -282,6 +278,9 @@ void myGlutIdle(int value)
 	it if necessary */
 	if ( glutGetWindow() != main_window ) 
 		glutSetWindow(main_window);  
+
+	// decide arrowState
+	arrowControl();
 
 	// move the character
 	command->moveCharacter(arrowState);
