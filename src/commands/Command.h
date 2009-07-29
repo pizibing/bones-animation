@@ -57,6 +57,12 @@ public:
 	// up,down,left and right is always the direction on the screen
 	void moveCharacter(int direction);
 
+	// move camera closer to the character
+	void moveCloser();
+
+	// move camera away from the character
+	void moveAway();
+
 private:
 	// all managers
 	Display* display;

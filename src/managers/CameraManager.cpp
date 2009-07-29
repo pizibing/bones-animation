@@ -31,6 +31,10 @@ CameraManager::CameraManager(void){
 	gesture[0] = 0;
 	gesture[1] = 0;
 	gesture[2] = 1;
+
+	// init camera height and distance
+	CAMERA_HEIGHT = 5;
+	CAMERA_DISTANCE = 5;
 }
 
 // destructor
@@ -94,4 +98,20 @@ void CameraManager::look(){
 // get function of angle
 float CameraManager::getAngle(){
 	return angle;
+}
+
+// move camera closer to the character
+void CameraManager::moveCloser(){
+	// camera should not be to closer
+	if(CAMERA_HEIGHT <= 0.3 || CAMERA_DISTANCE <= 0.3) return;
+	CAMERA_HEIGHT = CAMERA_HEIGHT - 0.1;
+	CAMERA_DISTANCE = CAMERA_DISTANCE - 0.1;
+}
+
+// move camera away from the character
+void CameraManager::moveAway(){
+	// camera should not be to far away
+	if(CAMERA_HEIGHT >= 5 || CAMERA_DISTANCE >= 5) return;
+	CAMERA_HEIGHT = CAMERA_HEIGHT + 0.1;
+	CAMERA_DISTANCE = CAMERA_DISTANCE + 0.1;
 }
