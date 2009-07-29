@@ -157,6 +157,14 @@ void myGlutKeyboard(unsigned char Key, int x, int y)
 	case 'x':
 		command->rotateCamera(-3);
 		break;
+	// move camera closer to the character
+	case 'a':
+		command->moveCloser();
+		break;
+	// move camera far from the character
+	case 's':
+		command->moveAway();
+		break;
 	//default
 	default:
 		break;

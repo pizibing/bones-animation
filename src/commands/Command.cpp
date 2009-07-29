@@ -170,3 +170,13 @@ void Command::moveCharacter(int direction){
 	// use calculator to calculate character move
 	calculator->moveCharacter(angle);
 }
+
+// move camera closer to the character
+void Command::moveCloser(){
+	cameraManager->moveCloser();
+}
+
+// move camera away from the character
+void Command::moveAway(){
+	cameraManager->moveAway();
+}

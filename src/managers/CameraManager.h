@@ -2,11 +2,6 @@
 
 #include <gl/glut.h>
 
-// the distance from the character to the camera in vertical(+z axis)
-const float CAMERA_HEIGHT = 5;
-// the distance from the character to the camera in horizontal
-const float CAMERA_DISTANCE = 5;
-
 // PI
 const float PI = 3.1415;
 
@@ -37,6 +32,12 @@ public:
 	// get function of angle
 	float getAngle();
 
+	// move camera closer to the character
+	void moveCloser();
+
+	// move camera away from the character
+	void moveAway();
+
 private:
 	// constructor
 	CameraManager(void);
@@ -55,4 +56,9 @@ private:
 	// the angle of the camera position to the +x axis in horizontal
 	// angle is presented in degree, 0 to 360 is allowed
 	float angle;
+
+	// the distance from the character to the camera in vertical(+z axis)
+	float CAMERA_HEIGHT;
+	// the distance from the character to the camera in horizontal
+	float CAMERA_DISTANCE;
 };
