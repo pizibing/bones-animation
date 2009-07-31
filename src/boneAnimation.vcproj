@@ -61,9 +61,9 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="glui32.lib glut32.lib glu32.lib opengl32.lib FColladaU.lib DevIL.lib ILU.lib"
 				AdditionalLibraryDirectories="$(ProjectDir)\lib"
-				IgnoreDefaultLibraryNames="LIBCMT"
+				IgnoreDefaultLibraryNames="LIBCMTD"
 				GenerateDebugInformation="true"
-				LinkTimeCodeGeneration="1"
+				LinkTimeCodeGeneration="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -470,14 +470,6 @@
 			</File>
 			<File
 				RelativePath=".\matrixlib\matrix.h"
-				>
-			</File>
-			<File
-				RelativePath=".\matrixlib\mtxlib.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\matrixlib\mtxlib.h"
 				>
 			</File>
 			<File
