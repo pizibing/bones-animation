@@ -34,9 +34,6 @@ FColladaModelLoader::FColladaModelLoader(void){
 	skinVertexNum = 0;
 	character_vbo_size = 0;
 	charactervboNum = 0;
-	m_num_animations = 0;
-	m_num_cameras = 0;
-	m_num_lights = 0;
 	m_num_materials = 0;
 	m_num_textures = 0;
 	rootBoneName = ROOT_BONE_NAME;
@@ -44,45 +41,81 @@ FColladaModelLoader::FColladaModelLoader(void){
 }
 
 //destructor
-FColladaModelLoader::~FColladaModelLoader(void){
-	/*	
-	delete m_document;
+FColladaModelLoader::~FColladaModelLoader(void){	
+	//document
+	for(int j=0; j < szFlieNum; j++)
+	{
+		delete[] m_document[j];
+		m_document[j] = NULL;
+	}
+	delete[] m_document;
+	m_document = NULL;
 
-	//animation
-	delete[] animationsBoneName;
-
-	//character value
+	//bone value
 	delete[] boneName;
 	delete[] boneMatrix;
+	delete[] boneInverseMatrix;
 	delete[] boneParentName;
 	delete[] boneChildNum;
 
+	//bone child name
 	for(int i=0; i < boneNumber; i++)
 	{
-	delete[] boneChildName[i];
-	boneChildName[i] = NULL;
+		delete[] boneChildName[i];
+		boneChildName[i] = NULL;
 	}
 	delete boneChildName;
 	boneChildName = NULL;
 
-	//character animation
-	delete[] animationsBoneFrameNum;
+	//root bone value
+	delete[] isRootBoneName;
+	delete[] rootBoneChildName;
 
-	for(int i=0; i < boneNumber; i++)
+	//root bone animation
+	for(int j=0; j < szFlieNum; j++)
 	{
-	delete[] animationsBoneFrameMatrix[i];
-	animationsBoneFrameMatrix[i] = NULL;
+		if(rootAnimationsBoneFrameNum[j] != 0)
+		{
+			delete[] rootAnimationsBoneFrameMatrix[j];
+			rootAnimationsBoneFrameMatrix[j] = NULL;
+			delete[] rootAnimationsBoneFrameTime[j];
+			rootAnimationsBoneFrameTime[j] = NULL;
+		}
 	}
-	delete animationsBoneFrameMatrix; 
+	delete[] rootAnimationsBoneFrameNum;
+	rootAnimationsBoneFrameNum = NULL;
+
+	//file name
+	delete[] szfilename;
+
+	//bone animation
+	for(int j=0; j < szFlieNum; j++)
+	{
+		for(int i=0; i < boneNumber; i++)
+		{
+			if(animationsBoneFrameNum[j][i] != 0)
+			{
+				delete[] animationsBoneFrameMatrix[j][i];
+				animationsBoneFrameMatrix[j][i] = NULL;
+				delete[] animationsBoneFrameTime[j][i];
+				animationsBoneFrameTime[j][i] = NULL;
+			}
+		}
+		delete[] animationsBoneFrameMatrix[j]; 
+		animationsBoneFrameMatrix[j] = NULL;
+
+		delete[] animationsBoneFrameTime[j];
+		animationsBoneFrameTime[j] = NULL;
+
+		delete[] animationsBoneFrameNum[j];
+		animationsBoneFrameNum[j] = NULL;
+	}
+	delete[] animationsBoneFrameMatrix;
 	animationsBoneFrameMatrix = NULL;
-
-	for(int i=0; i < boneNumber; i++)
-	{
-	delete[] animationsBoneFrameTime[i];
-	animationsBoneFrameTime[i] = NULL;
-	}
-	delete animationsBoneFrameTime;
+	delete[] animationsBoneFrameTime;
 	animationsBoneFrameTime = NULL;
+	delete[] animationsBoneFrameNum;
+	animationsBoneFrameNum = NULL;
 
 	//character skin
 	delete[] skinVertexPosX;
@@ -97,16 +130,16 @@ FColladaModelLoader::~FColladaModelLoader(void){
 
 	for(int i=0; i < skinVertexNum; i++)
 	{
-	delete[] skinVertexBoneName[i];
-	skinVertexBoneName[i] = NULL;
+		delete[] skinVertexBoneName[i];
+		skinVertexBoneName[i] = NULL;
 	}
 	delete skinVertexBoneName; 
 	skinVertexBoneName = NULL;
 
 	for(int i=0; i < skinVertexNum; i++)
 	{
-	delete skinVertexBonePower[i];
-	skinVertexBonePower[i] = NULL;
+		delete[] skinVertexBonePower[i];
+		skinVertexBonePower[i] = NULL;
 	}
 	delete skinVertexBonePower; 
 	skinVertexBonePower = NULL;
@@ -114,63 +147,62 @@ FColladaModelLoader::~FColladaModelLoader(void){
 	//character vbo
 	for(int i=0; i < charactervboNum; i++)
 	{
-	delete character_vbo_vertices[i];
-	character_vbo_vertices[i] = NULL;
+		delete[] character_vbo_vertices[i];
+		character_vbo_vertices[i] = NULL;
 	}
 	delete character_vbo_vertices; 
 	character_vbo_vertices = NULL;
 
 	for(int i=0; i < charactervboNum; i++)
 	{
-	delete character_vbo_normals[i];
-	character_vbo_normals[i] = NULL;
+		delete[] character_vbo_normals[i];
+		character_vbo_normals[i] = NULL;
 	}
-	delete character_vbo_normals; 
+	delete[] character_vbo_normals; 
 	character_vbo_normals = NULL;
 
 	for(int i=0; i < charactervboNum; i++)
 	{
-	delete character_vbo_texcoords[i];
-	character_vbo_texcoords[i] = NULL;
+		delete[] character_vbo_texcoords[i];
+		character_vbo_texcoords[i] = NULL;
 	}
-	delete character_vbo_texcoords; 
+	delete[] character_vbo_texcoords; 
 	character_vbo_texcoords = NULL;
 
 	for(int i=0; i < charactervboNum; i++)
 	{
-	delete character_vbo_am[i];
-	character_vbo_am[i] = NULL;
+		delete[] character_vbo_am[i];
+		character_vbo_am[i] = NULL;
 	}
-	delete character_vbo_am; 
+	delete[] character_vbo_am; 
 	character_vbo_am = NULL;
 
 	for(int i=0; i < charactervboNum; i++)
 	{
-	delete character_vbo_di[i];
-	character_vbo_di[i] = NULL;
+		delete[] character_vbo_di[i];
+		character_vbo_di[i] = NULL;
 	}
-	delete character_vbo_di; 
+	delete[] character_vbo_di; 
 	character_vbo_di = NULL;
 
 	for(int i=0; i < charactervboNum; i++)
 	{
-	delete character_vbo_sp[i];
-	character_vbo_sp[i] = NULL;
+		delete[] character_vbo_sp[i];
+		character_vbo_sp[i] = NULL;
 	}
 	delete character_vbo_sp; 
 	character_vbo_sp = NULL;
 
 	for(int i=0; i < charactervboNum; i++)
 	{
-	delete character_vbo_em[i];
-	character_vbo_em[i] = NULL;
+		delete[] character_vbo_em[i];
+		character_vbo_em[i] = NULL;
 	}
-	delete character_vbo_em; 
+	delete[] character_vbo_em; 
 	character_vbo_em = NULL;
 
-	delete character_vbo_sh;
-	delete character_vbo_texid;
-	*/
+	delete[] character_vbo_sh;
+	delete[] character_vbo_texid;
 }
 
 //load the model from a path of a fcollada file
@@ -178,9 +210,13 @@ FColladaModelLoader::~FColladaModelLoader(void){
 //set the document value while load the model
 //it also contain three methed storeVertices, storeTexture, storeMaterials. which
 //store the vertices, texture, materials to my own structure 
-
+//init the value m_document, szfilename, animationsBoneFrameNum,animationsBoneFrameMatrix
+//animationsBoneFrameTime, rootAnimationsBoneFrameNum, rootAnimationsBoneFrameMatrix,
+//rootAnimationsBoneFrameTime, isRootBoneName
 bool FColladaModelLoader::loadModel(int kind, int num, const char** szPathName){
+	//set the File num that we used
 	szFlieNum = num;
+
 	//initialize the values
 	m_document= new FCDocument*[szFlieNum];
 	szfilename = new std::string[szFlieNum];
@@ -191,16 +227,22 @@ bool FColladaModelLoader::loadModel(int kind, int num, const char** szPathName){
 	rootAnimationsBoneFrameMatrix = new Matrix*[szFlieNum];
 	rootAnimationsBoneFrameTime = new int*[szFlieNum];
 	isRootBoneName = new bool[szFlieNum];
+
+	//set the isRootBoneName flag for setting the root bone
 	for(int i = 0; i < szFlieNum; i++)
 	{
 		isRootBoneName[i] = true;
 	}
 
+	//it is a class value, which administrate the object
+	objectManager = ObjectManager::getInstance();
+
+	//look through the files, get the right file name and set the document
 	for(int i = 0; i < szFlieNum; i++)
 	{
-		//it is a class value, which administrate the 
-		objectManager = ObjectManager::getInstance();
+		//get the origin name
 		std::string tempFilename = szPathName[i];
+		//get the file name to tell from animations and store the value to my struct
 		int tempFileNameIndex = tempFilename.find_last_of("/");
 		szfilename[i] = tempFilename.substr(tempFileNameIndex+1, tempFilename.length()-5-tempFileNameIndex);
 		// new dae file
@@ -244,47 +286,42 @@ bool FColladaModelLoader::loadModel(int kind, int num, const char** szPathName){
 	//store the vertices, normals, texturecoords and create staticobjects to display
 	storeVertices(kind, m_document[0]);
 
-	storeLight(m_document[0]);
-
 	//store all the textures that contains in the document
 	storeTexture(m_document[0]);
 
 	//store all the materials that contains in the document
 	storeMaterials(m_document[0]);
 
-	storeCamera(m_document[0]);
-
-	storeAnimation(m_document[0]);
-
 	//build the scene
+	//set the root of the scene 
 	FCDSceneNode** ptr_root = new FCDSceneNode*[szFlieNum];
 	for(int j = 0; j < szFlieNum; j++)
 	{
 		ptr_root[j]=m_document[j]->GetVisualSceneRoot();
 	}
-	FCDSceneNode* ptr_rootLine=m_document[0]->GetVisualSceneRoot();
-
+	
+	//build the scene through the root
 	if(ptr_root[0]!=NULL)
 	{
 		buildScene(ptr_root, 0);
-		drawLine(ptr_rootLine, 0);
 	}
 
+	//build the character object
 	if(kind == 0)
 	{
 		BuildCharacter();
 	}
 
+	//delete the temp value
 	deleteTempValue();
 
 	return true;
 }
 
 
+//delete the temp value
 void FColladaModelLoader::deleteTempValue()
 {
-	delete m_document;
-
 	//texture
 	m_ptrs_textures.clear();
 	m_total_texcoords.clear();
@@ -296,27 +333,23 @@ void FColladaModelLoader::deleteTempValue()
 	// materials
 	m_ptrs_materials.clear();
 
-	//light
-	m_ptrs_Ambientlights.clear();
-	m_ptrs_Spotlights.clear();
-	m_ptrs_Directionallights.clear();
-	m_ptrs_Pointlights.clear();
+	//document
+	for(int j=0; j < szFlieNum; j++)
+	{
+		delete[] m_document[j];
+		m_document[j] = NULL;
+	}
+	delete[] m_document;
+	m_document = NULL;
 
-	// cameras
-	m_ptrs_Perspectivecameras.clear();
-	m_ptrs_Orthographiccameras.clear();
-
-	//animation
-	delete[] animationsBoneName;
-	m_ptrs_animation.clear();
-
-	/*
-	//character value
+	//bone value
 	delete[] boneName;
 	delete[] boneMatrix;
+	delete[] boneInverseMatrix;
 	delete[] boneParentName;
 	delete[] boneChildNum;
 
+	//bone child name
 	for(int i=0; i < boneNumber; i++)
 	{
 	delete[] boneChildName[i];
@@ -324,26 +357,57 @@ void FColladaModelLoader::deleteTempValue()
 	}
 	delete boneChildName;
 	boneChildName = NULL;
+	
+	//root bone value
+	delete[] isRootBoneName;
+	delete[] rootBoneChildName;
 
-	//character animation
-	//	if(animationsBoneFrameNum) delete[] animationsBoneFrameNum;
+	//root bone animation
+	for(int j=0; j < szFlieNum; j++)
+	{
+		if(rootAnimationsBoneFrameNum[j] != 0)
+		{
+			delete[] rootAnimationsBoneFrameMatrix[j];
+			rootAnimationsBoneFrameMatrix[j] = NULL;
+			delete[] rootAnimationsBoneFrameTime[j];
+			rootAnimationsBoneFrameTime[j] = NULL;
+		}
+	}
+	delete[] rootAnimationsBoneFrameNum;
+	rootAnimationsBoneFrameNum = NULL;
 
-	//	for(int i=0; i < boneNumber; i++)
-	//	{
-	//		delete[] animationsBoneFrameMatrix[i];
-	//		animationsBoneFrameMatrix[i] = NULL;
-	//	}
-	//	delete[] animationsBoneFrameMatrix; 
-	//	animationsBoneFrameMatrix = NULL;
+	//file name
+	delete[] szfilename;
 
-	//	for(int i=0; i < boneNumber; i++)
-	//	{
-	//		delete[] animationsBoneFrameTime[i];
-	//		animationsBoneFrameTime[i] = NULL;
-	//	}
-	//	delete animationsBoneFrameTime;
-	//	animationsBoneFrameTime = NULL;
+	//bone animation
+	for(int j=0; j < szFlieNum; j++)
+	{
+		for(int i=0; i < boneNumber; i++)
+		{
+			if(animationsBoneFrameNum[j][i] != 0)
+			{
+				delete[] animationsBoneFrameMatrix[j][i];
+				animationsBoneFrameMatrix[j][i] = NULL;
+				delete[] animationsBoneFrameTime[j][i];
+				animationsBoneFrameTime[j][i] = NULL;
+			}
+		}
+		delete[] animationsBoneFrameMatrix[j]; 
+		animationsBoneFrameMatrix[j] = NULL;
 
+		delete[] animationsBoneFrameTime[j];
+		animationsBoneFrameTime[j] = NULL;
+
+		delete[] animationsBoneFrameNum[j];
+		animationsBoneFrameNum[j] = NULL;
+	}
+	delete[] animationsBoneFrameMatrix;
+	animationsBoneFrameMatrix = NULL;
+	delete[] animationsBoneFrameTime;
+	animationsBoneFrameTime = NULL;
+	delete[] animationsBoneFrameNum;
+	animationsBoneFrameNum = NULL;
+	
 	//character skin
 	delete[] skinVertexPosX;
 	delete[] skinVertexPosY;
@@ -430,8 +494,12 @@ void FColladaModelLoader::deleteTempValue()
 
 	delete[] character_vbo_sh;
 	delete[] character_vbo_texid;
-	*/
 }
+
+//build the character object
+// first build the skeleton, then build the animation,
+//then build the skin, then build the vbo objects
+//at last, put the object to my object manager
 void FColladaModelLoader::BuildCharacter()
 {
 	// create a new CharacterObject
@@ -443,7 +511,7 @@ void FColladaModelLoader::BuildCharacter()
 	// get bone number of the skeleton from Fcollada
 	int bone_num = 0;
 
-	bone_num = getBoneNumber();
+	bone_num = boneNumber;
 	//	printf("boneNumber\n");
 	//	printf("%i\n", boneNumber);
 	//	printf("\n");
@@ -741,21 +809,23 @@ void FColladaModelLoader::BuildCharacter()
 
 }
 
+
+//set the index of the vertex in the vertex lib in my struct
 int * FColladaModelLoader::getSkinVertexIndex(int begin, int end){
 	assert(begin != end);
+	// init the length of the result, the length is end - begin
 	int * tempSkinVertexIndex = new int[end-begin];
+
 	for(int i=0; i<end - begin; i++)
 	{
+		//set the index value
 		tempSkinVertexIndex[i] = begin + i;
 	}
+
 	return tempSkinVertexIndex;
 }
 
 
-int FColladaModelLoader::getBoneNumber()
-{
-	return boneNumber;
-}
 //store the vertices, normals, texturecoords and create staticobjects to display
 void FColladaModelLoader::storeVertices(int kind, FCDocument* m_document)
 {
@@ -951,47 +1021,6 @@ void FColladaModelLoader::storeVertices(int kind, FCDocument* m_document)
 
 
 
-void FColladaModelLoader::storeLight(FCDocument* m_document){
-	// how many lights there are?
-	FCDLightLibrary* lightlib=m_document->GetLightLibrary();
-	m_num_lights=(int) lightlib->GetEntityCount();
-
-	// copy lights to my structures
-	FCDLight* light;
-
-	for (int i=0; i<m_num_lights; i++) {
-		light = lightlib->GetEntity(i);
-
-		// ambiental light
-		if (light->GetLightType()==FCDLight::AMBIENT) {
-			// add our new light
-			m_ptrs_Ambientlights.push_back(light);
-			continue;
-		}
-
-		// spot light (luz focal)
-		if (light->GetLightType()==FCDLight::SPOT) {
-			// add our new light
-			m_ptrs_Spotlights.push_back(light);
-			continue;
-		}
-
-		// directional  light
-		if (light->GetLightType()==FCDLight::DIRECTIONAL) {
-			// add our new light
-			m_ptrs_Directionallights.push_back(light);
-			continue;
-		}
-
-		// point light
-		if (light->GetLightType()==FCDLight::POINT) {
-			// add our new light
-			m_ptrs_Pointlights.push_back(light);
-			continue;
-		}
-	}
-}
-
 //store all the textures that contains in the document
 void FColladaModelLoader::storeTexture(FCDocument* m_document){
 	//get the image from the document
@@ -1023,58 +1052,32 @@ void FColladaModelLoader::storeMaterials(FCDocument* m_document){
 	}
 }
 
-void FColladaModelLoader::storeCamera(FCDocument* m_document){
-	// copy cameras to my structures
-	// cameras
-	FCDCameraLibrary* cameralib=m_document->GetCameraLibrary();
-	m_num_cameras=(int) cameralib->GetEntityCount();
 
-	FCDCamera* camera;
-	for (int i=0; i<m_num_cameras; i++) {
-		camera = cameralib->GetEntity(i);
-
-		// perspective camera
-		if (camera->IsPerspective()==true) {
-			// add our new camera
-			m_ptrs_Perspectivecameras.push_back(camera);
-			continue;
-		}
-
-		// orthographic camera
-		if (camera->IsOrthographic()==true) {
-			// add our new camera
-			m_ptrs_Orthographiccameras.push_back(camera);
-			continue;
-		}
-	}
-
-}
-
-void FColladaModelLoader::storeAnimation(FCDocument* m_document){
-	// how many animations are there?
-	FCDAnimationLibrary* animationlib=m_document->GetAnimationLibrary();
-	m_num_animations=(int) animationlib->GetEntityCount();
-	animationsBoneName = new std::string[m_num_animations];
-	FCDAnimation* animation;
-	for (int i=0; i<m_num_animations; i++) {
-		animation = animationlib->GetEntity(i);
-		m_ptrs_animation.push_back(animation);
-	}
-}
 
 //build the scene include the material of the polygons, the texture of the polygons and the matrix of the bone.
+//first pass in a set of root node, then look through all the scene node by find the scene node's child node
+//for every set of root node, 
+//load the instance from the first root node, then store the information of the instance to my struct
+//load the right matrix information and the animation information from the set of the node, then 
+//store a set of animation matrix for the set of node, a position matrix for the whole scene node
+//load the bone information from the scene node. 
 void FColladaModelLoader::buildScene(FCDSceneNode** node_origin, int kind)
 {
 	//child scene node
 	FCDSceneNode** child_origin = new FCDSceneNode*[szFlieNum];
 
+	//build the scene instance include the skin information and the material and textrue information
 	buildSceneInstance(node_origin[0], kind);
 
+	//build the scene matrix, include the bone position information and animation information
 	for(int i = 0; i < szFlieNum; i++){
 		buildSceneMatrix(node_origin[i], i);
 	}
+
+	//build the bone scene, include the bone information
 	initBoneScene(node_origin[0]);
 
+	//build the child node
 	for (int i=0; i<(int)node_origin[0]->GetChildrenCount(); i++) {
 		for(int j = 0; j < szFlieNum; j++)
 		{
@@ -1083,68 +1086,108 @@ void FColladaModelLoader::buildScene(FCDSceneNode** node_origin, int kind)
 		buildScene(child_origin, kind);
 	}
 }
+
+//store the information about root bone and joint bone.
+// the information include the parent name, children number and children name
+//the value contains boneParentName, boneChildName and boneChildNum.
 void FColladaModelLoader::initBoneScene(FCDSceneNode* node_origin){
+	//check if the node is a joint
 	if(node_origin ->GetJointFlag() == true){
+		//check if the joint is root scene
 		if(isBootBoneSceneNode == true)
 		{
+			//get the root bone child count
 			int boneChildCount = 0;
 			for(int i = 0; i< (int)node_origin->GetChildrenCount(); i++)
 			{
+				//check if the child's name is in my struct. 
 				int tempChildIndex= getBoneIndexByName(node_origin->GetChild(i)->GetSubId().c_str());
+
+				//count the bone child which we need
 				if(tempChildIndex >= 0 && tempChildIndex< boneNumber){
 					if(node_origin->GetChild(i)->GetJointFlag() ==true)
 						boneChildCount++;
 				}
 			}	
+			//store to my struct
 			rootBoneChildNum = boneChildCount;
+
+			//get the root bone child name
+			//get the bone child name
 			int tempChildNum = rootBoneChildNum;
 			rootBoneChildName = new std::string[tempChildNum];
+
 			int tempChildCount = 0;
 			for(int i = 0; i< (int)node_origin->GetChildrenCount(); i++){
+				//check if the child is a joint
 				if(node_origin->GetChild(i)->GetJointFlag() ==true){
+					//look for the bone name in my struct 
 					int tempChildIndex= getBoneIndexByName(node_origin->GetChild(i)->GetSubId().c_str());
 					if(tempChildIndex >= 0 && tempChildIndex< boneNumber){
+						//store the root bone name
 						rootBoneChildName[tempChildCount] = boneName[tempChildIndex];
 						tempChildCount++;
 					}
 				}
 			}
 		}
+		//set the flag, so the first node is the root scene node
 		isBootBoneSceneNode =false;
 
+		//get the index of the joint node by the name 
 		int index = getBoneIndexByName(node_origin->GetSubId().c_str());
+
+		//check if the name is in my struct 
 		if(index >= 0 && index< boneNumber)
 		{
+			//check if the node has a parent
 			if(node_origin->GetParentCount() > 0){
+				//get the index of the parent node
 				int parentIndex = getBoneIndexByName(node_origin->GetParent(0)->GetSubId().c_str());
+
+				//check whether the parent node is in my struct
 				if(parentIndex >= 0 && parentIndex< boneNumber)
 				{
 					boneParentName[index] = boneName[parentIndex];
 				}
+
+				//set the parent to "", if the parent is not in my struct
 				else{
 					boneParentName[index] = "";
 				}
 			}
+
+			//set the parent to "", if the node has no parent
 			else{
 				boneParentName[index] = "";
 			}
 
+			//get the bone child num
 			int boneChildCount = 0;
 			for(int i = 0; i< (int)node_origin->GetChildrenCount(); i++)
 			{
+				//find the index of the child node by the name
 				int tempChildIndex= getBoneIndexByName(node_origin->GetChild(i)->GetSubId().c_str());
 				if(tempChildIndex >= 0 && tempChildIndex< boneNumber){
 					if(node_origin->GetChild(i)->GetJointFlag() ==true)
 						boneChildCount++;
 				}
 			}
+			
+			//store to my struct
 			boneChildNum[index] = boneChildCount;
+
+			//get the bone child name
 			int tempChildNum = boneChildNum[index];
 			boneChildName[index] = new std::string[tempChildNum];
 			int tempChildCount = 0;
 			for(int i = 0; i< (int)node_origin->GetChildrenCount(); i++){
+				//check whether the child is a joint
 				if(node_origin->GetChild(i)->GetJointFlag() ==true){
+					//get the index of the child by the name
 					int tempChildIndex= getBoneIndexByName(node_origin->GetChild(i)->GetSubId().c_str());
+
+					//store the child name to my struct
 					if(tempChildIndex >= 0 && tempChildIndex< boneNumber){
 						boneChildName[index][tempChildCount] = boneName[tempChildIndex];
 						tempChildCount++;
@@ -1155,6 +1198,9 @@ void FColladaModelLoader::initBoneScene(FCDSceneNode* node_origin){
 	}
 }
 
+
+
+//search the index of name in the boneName value , return -1, if can't find the name in it
 int FColladaModelLoader::getBoneIndexByName(std::string name)
 {
 	for(int i=0; i<boneNumber; i++)
@@ -1165,6 +1211,14 @@ int FColladaModelLoader::getBoneIndexByName(std::string name)
 	return -1;
 }
 
+
+//set the skin instance information and geo instance information
+//contains the skin information, weight information, the vbo information
+//it set the value: skinPolygonIndex, skinVertexNum, skinVertexPosX,
+//skinVertexPosY, skinVertexPosZ, skinNormalPosX, skinNormalPosY, skinNormalPosZ,
+//skinVertexBoneCount, skinPolygonVertexIndex, skinVertexBoneName, skinVertexBonePower,
+//it init the value charactervboNum, character_vbo_vertices, character_vbo_normals, character_vbo_texcoords,
+//character_vbo_am, character_vbo_di, character_vbo_sp, character_vbo_em, character_vbo_sh, character_vbo_texid,
 void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind)
 {
 	// copy node instances
@@ -1197,6 +1251,7 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 
 			isBootBoneSceneNode =true;
 
+			//build the skin
 			buildSkin(skin);
 			// look for this name in geo library
 			for (int j=0; j<(int)m_ptrs_geometries.size(); j++) {
@@ -1212,8 +1267,11 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 
 					//get the geometry mesh
 					FCDGeometryMesh* mesh=m_ptrs_geometries[j];
+
 					// create my own polygons
 					int m_num_polygons=(int) mesh->GetPolygonsCount();
+
+					//init vbo value
 					charactervboNum = m_num_polygons;
 					character_vbo_vertices = new float*[charactervboNum];
 					character_vbo_normals = new float*[charactervboNum];
@@ -1225,10 +1283,12 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 					character_vbo_sh = new float[charactervboNum];
 					character_vbo_texid = new GLuint[charactervboNum];
 
-					skinPolygonIndex = new int[m_num_polygons];
+					//temp value for calculating the skin polygon index
 					int tempSkinPolygonIndexCount = 0;
 
+					//temp value for setting the size
 					int skinPolygonTotalVertexNum = 0;
+
 					for (int p=0;p<m_num_polygons;p++) {
 						FCDGeometryPolygons* ptr_polygons = mesh->GetPolygons(p);
 						FCDGeometryPolygonsInput* geometrypolygonsinput;
@@ -1239,7 +1299,9 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 						int m_num_vertices=(int) geometrypolygonsinput->GetIndexCount();
 						skinPolygonTotalVertexNum += m_num_vertices;
 					}
-
+					
+					//init the skin value
+					skinPolygonIndex = new int[m_num_polygons];
 					skinVertexNum = skinPolygonTotalVertexNum;
 					skinVertexPosX = new float[skinVertexNum];
 					skinVertexPosY = new float[skinVertexNum];
@@ -1251,6 +1313,8 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 					skinPolygonVertexIndex = new int[skinVertexNum];
 					skinVertexBoneName = new std::string*[skinVertexNum];
 					skinVertexBonePower = new float*[skinVertexNum];
+
+					//temp value for building the vbo object
 					int tempPolygonVertexIndex = 0;
 
 					for (int p=0;p<m_num_polygons;p++) {
@@ -1284,6 +1348,7 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 							m_ptrs_vertices[im].x=p[0];
 							m_ptrs_vertices[im].y=p[1];
 							m_ptrs_vertices[im].z=p[2];
+							//store the skin vertex position
 							skinVertexPosX[tempPolygonVertexIndex+im] = p[0];
 							skinVertexPosY[tempPolygonVertexIndex+im] = p[1];
 							skinVertexPosZ[tempPolygonVertexIndex+im] = p[2];
@@ -1315,6 +1380,7 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 								m_ptrs_normals[im].x=p[0];
 								m_ptrs_normals[im].y=p[1];
 								m_ptrs_normals[im].z=p[2];
+								//store the skin normal value
 								skinNormalPosX[tempPolygonVertexIndex+im] = p[0];
 								skinNormalPosY[tempPolygonVertexIndex+im] = p[1];
 								skinNormalPosZ[tempPolygonVertexIndex+im] = p[2];
@@ -1391,27 +1457,47 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 								m_vbo_texcoords[2*im+1] = (m_ptrs_texcoords+im)->y;
 							}
 						}
+
+						//calculate the index information for vbo, and store to my struct
+						
+						//get the size of the vertex, normal and texcoord
 						character_vbo_size = m_num_vertices;
 						character_vbo_vertices[p] = m_vbo_vertices;
 						character_vbo_normals[p] = m_vbo_normals;
 						character_vbo_texcoords[p] = m_vbo_texcoords;
+						
+						//count the temp value for storing the vbo
 						tempPolygonVertexIndex += m_num_vertices;
+						
+						//get the index of the polygon for calculating the vertex index
 						skinPolygonIndex[p] = tempSkinPolygonIndexCount;
+						
+						//count the number to get the right skin polygon index
 						tempSkinPolygonIndexCount += m_num_vertices;
 					}
+					
+					//set the influences of the vertex pair
 					for (int i= 0; i<skinVertexNum; i++)
 					{
+						//get the influence struct
 						FCDSkinControllerVertex* influences = skin->GetVertexInfluence(skinPolygonVertexIndex[i]);
+						//store the bone count
 						skinVertexBoneCount[i] = (int)influences->GetPairCount();
+						//init the skin bone name
 						skinVertexBoneName[i] = new std::string[skinVertexBoneCount[i]];
+						//store the bone power
 						skinVertexBonePower[i] = new float[skinVertexBoneCount[i]];
 						for(int j =0; j < (int)influences->GetPairCount(); j++)
 						{
+							//get the weight pair struct
 							FCDJointWeightPair* pairs = influences->GetPair(j);
+							//store the skin bone name
 							skinVertexBoneName[i][j] = boneName[(int)pairs->jointIndex];
+							//store the skin bone power
 							skinVertexBonePower[i][j] = pairs->weight;
 						}
 					}
+
 					FCDMaterial* material;
 
 					//the id of the pointed material
@@ -1472,6 +1558,10 @@ void FColladaModelLoader::buildSceneInstance(FCDSceneNode* node_origin, int kind
 	}
 }
 
+//build the bone information, the inverse information
+//it set the value boneNumber boneName boneMatrix boneInverseMatrix boneParentName 
+//boneChildNum boneChildName
+//it init the value animationsBoneFrameNum animationsBoneFrameMatrix animationsBoneFrameTime.
 void FColladaModelLoader::buildSkin(FCDSkinController* skin){
 	boneNumber = (int)skin->GetJointCount();
 	boneName = new std::string[boneNumber];
@@ -1480,17 +1570,22 @@ void FColladaModelLoader::buildSkin(FCDSkinController* skin){
 	boneParentName = new std::string[boneNumber];
 	boneChildNum = new int[boneNumber];
 	boneChildName = new std::string*[boneNumber];
+
+	//init the animation bone informaiton
 	for(int i = 0; i < szFlieNum; i++){
 		animationsBoneFrameNum[i] = new int[boneNumber];
 		animationsBoneFrameMatrix[i] = new Matrix*[boneNumber];
 		animationsBoneFrameTime[i] = new int*[boneNumber];
 	}
 
+	//look through the joint
 	for(int i = 0; i < (int)skin->GetJointCount(); i++)
 	{
+		//store the bone name
 		FCDSkinControllerJoint* joint = skin->GetJoint(i);
 		boneName[i] = joint->GetId().c_str();
 
+		//store the inverse of the joint
 		FMMatrix44 inverse = joint->GetBindPoseInverse() * skin->GetBindShapeTransform();
 		float tempMatrixElement[] ={inverse.m[0][0], inverse.m[0][1], inverse.m[0][2], inverse.m[0][3], 
 			inverse.m[1][0], inverse.m[1][1], inverse.m[1][2], inverse.m[1][3],
@@ -1500,30 +1595,39 @@ void FColladaModelLoader::buildSkin(FCDSkinController* skin){
 		boneInverseMatrix[i] = tempMatrix;
 
 	}
-
-	for(int i = 0; i < (int)skin->GetInfluenceCount(); i++)
-	{
-		FCDSkinControllerVertex* influences = skin->GetVertexInfluence(i);
-		for(int j =0; j < (int)influences->GetPairCount(); j++)
-		{
-			FCDJointWeightPair* pairs = influences->GetPair(j);
-		}
-	}
-
 }
+
+
+
+//build the matrix of the node, include the matrix for the node and the animation information
+//it store the value animationsBoneFrameNum animationsBoneFrameMatrix animationsBoneFrameTime
+//rootAnimationsBoneFrameNum rootAnimationsBoneFrameMatrix rootAnimationsBoneFrameTime;
 void FColladaModelLoader::buildSceneMatrix(FCDSceneNode* node_origin, int m_documentIndex)
 {
+	//check if the node is a joint
 	if(node_origin ->GetJointFlag() == true){
+		//get the index of the bone
 		int index = getBoneIndexByName(node_origin->GetSubId().c_str());
-		if(index>=0)animationsBoneFrameNum[m_documentIndex][index] = 0;
+
+		//check if the index is available
+		if(index>=0 && index< boneNumber){
+			//init the value animationsBoneFrameNum
+			animationsBoneFrameNum[m_documentIndex][index] = 0;
+		}
+
+		//check if the node is root bone 
 		if(isRootBoneName[m_documentIndex] == true)
 		{
-			rootBoneSceneNode = node_origin;
+			//store the root bone scene node
+			FCDSceneNode* rootBoneSceneNode = node_origin;
+
+			//store the root bone matrix
 			FMMatrix44 inverse = node_origin->ToMatrix();
 			rootBoneMatrix = convertToMatrix(inverse);
 
 			FCDTransform*  trans_origin;
 			for (int i=0; i<(int)node_origin->GetTransformCount(); i++) {
+				//get the transform struct
 				trans_origin=node_origin->GetTransform(i);
 				// matrix
 				if (trans_origin->GetType()== FCDTransform::MATRIX) {
@@ -1533,13 +1637,18 @@ void FColladaModelLoader::buildSceneMatrix(FCDSceneNode* node_origin, int m_docu
 					FCDAnimated* animated;
 					//int num_curves;
 					if (trans_matrix->IsAnimated()) {		
+						//get the animated struct
 						animated=trans_matrix->GetAnimated();
 						// get first animation curve id
 						unsigned int firstCurveId = 0;
-						while(firstCurveId<animated->GetValueCount() && animated->GetCurve(firstCurveId)==NULL)firstCurveId++;
+						while(firstCurveId<animated->GetValueCount() && animated->GetCurve(firstCurveId)==NULL)
+							firstCurveId++;
+						
 						if(firstCurveId < animated->GetValueCount()){
 							// has animation
 							int animationKeyCount = animated->GetCurve(firstCurveId)->GetKeyCount();
+
+							//store the frame number, init the matrix and time information
 							rootAnimationsBoneFrameNum[m_documentIndex] = animationKeyCount;
 							rootAnimationsBoneFrameMatrix[m_documentIndex] = new Matrix[animationKeyCount];
 							rootAnimationsBoneFrameTime[m_documentIndex] = new int[animationKeyCount];
@@ -1553,12 +1662,14 @@ void FColladaModelLoader::buildSceneMatrix(FCDSceneNode* node_origin, int m_docu
 										tempAnimationMatrixFloat[p] = int(p%5 == 0); 
 										continue;
 									}
+									//store the frame time information
 									rootAnimationsBoneFrameTime[m_documentIndex][j] = (int)(curve->GetKey(j)->input * sigle_frame_time + 0.5);
 									tempAnimationMatrixFloat[p] = curve->GetKey(j)->output;
 								}
 
 								FMMatrix44 fmmatrix(tempAnimationMatrixFloat);
 
+								//store the matrix information
 								Matrix tempAnimationMatrix = convertToMatrix(fmmatrix);
 								rootAnimationsBoneFrameMatrix[m_documentIndex][j] = tempAnimationMatrix;
 							}
@@ -1573,8 +1684,10 @@ void FColladaModelLoader::buildSceneMatrix(FCDSceneNode* node_origin, int m_docu
 		}
 		isRootBoneName[m_documentIndex] = false;
 
+		//check if the node is the bone in the skin
 		if(index >= 0 && index< boneNumber)
 		{
+			//store the bone matrix
 			FMMatrix44 inverse = node_origin->ToMatrix();
 
 			boneMatrix[index] = convertToMatrix(inverse);
@@ -1584,122 +1697,6 @@ void FColladaModelLoader::buildSceneMatrix(FCDSceneNode* node_origin, int m_docu
 			// copy node transformations
 			for (int i=0; i<(int)node_origin->GetTransformCount(); i++) {
 				trans_origin=node_origin->GetTransform(i);
-
-				// rotation
-				if (trans_origin->GetType()== FCDTransform::ROTATION) {
-					FCDTRotation* trans_rot=dynamic_cast<FCDTRotation*>(trans_origin); // casting
-					/*
-					// initialize curves
-					FCDAnimationCurve* m_x_curve=NULL;
-					FCDAnimationCurve* m_y_curve=NULL;
-					FCDAnimationCurve* m_z_curve=NULL;
-					FCDAnimationCurve* m_angle_curve=NULL;
-
-					// is there any animation ?
-					if (trans_rot->IsAnimated()) {
-
-					FCDAnimationCurve* curve;
-
-					// look for x animation
-					curve=trans_rot->GetAnimated()->FindCurve(".X");
-					if (curve!=NULL) {
-					curve->GetKeyCount();
-					}
-
-					// look for y animation
-					curve=trans_rot->GetAnimated()->FindCurve(".Y");
-					if (curve!=NULL){
-
-					}
-
-					// look for z animation
-					curve=trans_rot->GetAnimated()->FindCurve(".Z");
-					if (curve!=NULL){	
-
-					}
-
-					// look for angle animation
-					curve=trans_rot->GetAnimated()->FindCurve(".ANGLE");
-					if (curve!=NULL){
-
-					}
-					}
-					continue;
-					*/
-				}
-
-				// translation
-				if (trans_origin->GetType()== FCDTransform::TRANSLATION) {
-					FCDTTranslation* trans_trans=dynamic_cast<FCDTTranslation*>(trans_origin); // casting
-					/*
-					// initialize curves
-					FCDAnimationCurve* m_x_curve=NULL;
-					FCDAnimationCurve* m_y_curve=NULL;
-					FCDAnimationCurve* m_z_curve=NULL;
-
-					// is there any animation ?
-					if (trans_trans->IsAnimated()) {
-
-					FCDAnimationCurve* curve;
-
-					// look for x animation
-					curve=trans_trans->GetAnimated()->FindCurve(".X");
-					if (curve!=NULL){
-
-					}
-
-					// look for y animation
-					curve=trans_trans->GetAnimated()->FindCurve(".Y");
-					if (curve!=NULL) {
-
-					}
-
-					// look for z animation
-					curve=trans_trans->GetAnimated()->FindCurve(".Z");
-					if (curve!=NULL) {
-
-					}
-					}	
-					continue;
-					*/
-				}
-
-				// scale
-				if (trans_origin->GetType()== FCDTransform::SCALE) {
-					FCDTScale* trans_scale=dynamic_cast<FCDTScale*>(trans_origin); // casting 
-					/*
-					// initialize curves
-					FCDAnimationCurve* m_x_curve=NULL;
-					FCDAnimationCurve* m_y_curve=NULL;
-					FCDAnimationCurve* m_z_curve=NULL;
-
-					// is there any animation ?
-					if (trans_scale->IsAnimated()) {
-
-					FCDAnimationCurve* curve;
-
-					// look for x animation
-					curve=trans_scale->GetAnimated()->FindCurve(".X");
-					if (curve!=NULL) {
-
-					}
-
-					// look for y animation
-					curve=trans_scale->GetAnimated()->FindCurve(".Y");
-					if (curve!=NULL) {
-
-					}
-
-					// look for z animation
-					curve=trans_scale->GetAnimated()->FindCurve(".Z");
-					if (curve!=NULL) {
-
-					}
-					}	
-					continue; // actually, not necessary
-					*/
-				}
-
 				// matrix
 				if (trans_origin->GetType()== FCDTransform::MATRIX) {
 					FCDTMatrix* trans_matrix=dynamic_cast<FCDTMatrix*>(trans_origin); // casting
@@ -1711,18 +1708,22 @@ void FColladaModelLoader::buildSceneMatrix(FCDSceneNode* node_origin, int m_docu
 						animated=trans_matrix->GetAnimated();
 						assert((int)animated->GetValueCount() == 16);
 						int animationKeyCount = animated->GetCurves().at(0)[0]->GetKeyCount();
+						//store the frame number, init the matrix and time information
 						animationsBoneFrameNum[m_documentIndex][index] = animationKeyCount;
 						animationsBoneFrameMatrix[m_documentIndex][index] = new Matrix[animationKeyCount];
 						animationsBoneFrameTime[m_documentIndex][index] = new int[animationKeyCount];
 
 						for(int j = 0; j < animationKeyCount; j++)
 						{
+							//store the frame time
 							animationsBoneFrameTime[m_documentIndex][index][j] = (int)((animated->GetCurves().at(0)[0]->GetKey(j)->input * sigle_frame_time) + 0.5);	
 							float* tempAnimationMatrixFloat = new float[(int)animated->GetValueCount()];						
 							for(int p = 0; p < (int)animated->GetValueCount(); p++)
 							{
 								tempAnimationMatrixFloat[p] = animated->GetCurves().at(p)[0]->GetKey(j)->output;
 							}
+
+							//store the matrix
 							FMMatrix44 fmmatrix(tempAnimationMatrixFloat);
 
 							Matrix tempAnimationMatrix = convertToMatrix(fmmatrix);
@@ -1776,7 +1777,7 @@ void FColladaModelLoader::setMeshFCMaterial(FCDGeometryInstance* geometry_instan
 	}
 }
 
-//set the target material to the polygon
+//set the target material and texture to the polygon
 void FColladaModelLoader::setFCMaterial(int target, int index, int polygonIndex, int kind)
 {
 	//target material
@@ -2003,6 +2004,7 @@ void FColladaModelLoader::setFCMaterial(int target, int index, int polygonIndex,
 
 	if(kind == 0)
 	{
+		//store the vbo material and texture information
 		character_vbo_am[polygonIndex] = new float[4];
 		character_vbo_di[polygonIndex] = new float[4];
 		character_vbo_sp[polygonIndex] = new float[4];
@@ -2060,28 +2062,3 @@ FCDImage *FColladaModelLoader::SearchTextureByName(fm::string textureid){
 
 
 
-
-void FColladaModelLoader::drawLine(FCDSceneNode* node_origin, int kind)
-{
-	FMVector3 v_origin;
-	if(node_origin ->GetJointFlag() == true){
-		v_origin = node_origin->CalculateWorldTransform().GetTranslation();
-	}
-	for (int i=0; i<(int)node_origin->GetChildrenCount(); i++) {
-		FCDSceneNode* child_origin=node_origin->GetChild(i);
-		if ( child_origin ->GetJointFlag() == true)
-		{
-			FMVector3 v_child;
-			v_child = child_origin->CalculateWorldTransform().GetTranslation();
-			SimpleLine *simpleLine= new SimpleLine();
-			float dot1[3];
-			dot1[0] = v_origin.x; dot1[1] = v_origin.y; dot1[2] = v_origin.z;
-			float dot2[3];
-			dot2[0] = v_child.x; dot2[1] = v_child.y; dot2[2] = v_child.z;
-			simpleLine->setDot1(dot1);
-			simpleLine->setDot2(dot2);
-			simpleLines.push_back(simpleLine);
-		}
-		drawLine(child_origin, kind);
-	}
-}
